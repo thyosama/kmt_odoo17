@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <record id="kmt_view_order_form" model="ir.ui.view">
+            <field name="name">sale.order</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="client_po_number"  />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

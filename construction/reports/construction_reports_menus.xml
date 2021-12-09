@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="construction_test_reports_action" model="ir.actions.act_window">
+            <field name="name">Reports</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">construction.test</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <record id="construction_invoice_contratct_owner" model="ir.actions.act_window">
+            <field name="name">Owner Invoice Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">invoice.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+
+            <field name="context">{'default_type':'owner'}</field>
+
+        </record>
+        <record id="construction_invoice_contratct_supconstractor" model="ir.actions.act_window">
+            <field name="name">Sub contractor Invoice Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">invoice.wizard</field>
+
+            <field name="target">inline</field>
+            <field name="view_mode">form</field>
+
+            <field name="context">{'default_type':'supconstractor'}</field>
+        </record>
+        <record id="construction_time_variant" model="ir.actions.act_window">
+            <field name="name">Time Variance Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">time.variance</field>
+
+            <field name="target">inline</field>
+            <field name="view_mode">form</field>
+        </record>
+
+        <record id="construction_profit_project" model="ir.actions.act_window">
+            <field name="name">Profit Project Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">project.profit.report</field>
+            <field name="search_view_id" ref="view_profit_project_search"/>
+            <field name="target">current</field>
+            <field name="view_mode">tree</field>
+        </record>
+        <record id="construction_costing_analysis" model="ir.actions.act_window">
+            <field name="name">Costing AnalysisReport</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cost.analysis.wizard</field>
+            <field name="target">inline</field>
+            <field name="view_mode">form</field>
+        </record>
+
+        <record id="construction_costing_comparison" model="ir.actions.act_window">
+            <field name="name">Cost Comparison Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cost.comparison</field>
+
+            <field name="target">inline</field>
+            <field name="view_mode">form</field>
+        </record>
+
+
+        <menuitem id="construction_reports" name="Reports" parent="construction.construction_root" sequence="11"/>
+
+        <menuitem id="partner_ledger_menu" name="Partner Ledger" parent="construction.construction_reports" sequence="1"
+                  action="account.action_account_moves_ledger_partner"/>
+        <menuitem id="owner_invoices_menu" name="Owner Invoices" parent="construction.construction_reports" sequence="2"
+                  action="construction_invoice_contratct_owner"/>
+        <menuitem id="sub_contractors_invoices_menu" name="Sub Contractors Invoices"
+                  parent="construction.construction_reports" sequence="3"
+                  action="construction_invoice_contratct_supconstractor"/>
+        <menuitem id="time_variance_menu" name="Time Variance Report" parent="construction.construction_reports"
+                  sequence="4" action="construction_time_variant"/>
+        <menuitem id="owner_additional_deduction_menu" name="Owner Additional And Deduction Report"
+                  parent="construction.construction_reports" sequence="5" action="deduction_additional_report_query_owner"/>
+        <menuitem id="sub_contractor_additional_deduction_menu" name="Sub Contractor Additional And Deduction Report"
+                  parent="construction.construction_reports" sequence="6" action="deduction_additional_report_query_supconstractor"/>
+        <menuitem id="project_profit_menu" name="Projects Profit Report" parent="construction.construction_reports"
+                  sequence="7" action="construction_profit_project"/>
+        <menuitem id="costing_analysis_menu" name="Costing Analysis Report" parent="construction.construction_reports"
+                  sequence="8" action="construction_costing_analysis"/>
+        <menuitem id="costing_comparison_menu" name="Cost Comparison Report" parent="construction.construction_reports"
+                  sequence="9" action="construction_costing_comparison"/>
+
+    </data>
+</odoo>

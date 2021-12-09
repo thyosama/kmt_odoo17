@@ -1,0 +1,80 @@
+<odoo>
+
+    <record id="view_contract_dudection_report_invoice" model="ir.ui.view">
+        <field name="name">view_contract_dudection_report_invoice</field>
+        <field name="model">account.invoice</field>
+        <field name="priority">1000</field>
+
+        <field name="arch" type="xml">
+
+            <tree>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="current_total_value"/>
+            </tree>
+        </field>
+    </record>
+    <record id="deduction_additional_report_query_owner" model="ir.actions.act_window">
+            <field name="name">Owner Deduction Additional Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">deduction.aditional.report.owner</field>
+
+<!--            <field name="target">inline</field>-->
+            <field name="view_mode">tree</field>
+
+        </record>
+    <record id="deduction_additional_report_query_supconstractor" model="ir.actions.act_window">
+            <field name="name">sub contractor Deduction Additional Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">deduction.aditional.report.supconstractor</field>
+
+<!--            <field name="target">inline</field>-->
+            <field name="view_mode">tree</field>
+
+        </record>
+
+
+     <record id="view_contract_dudection_report_owner" model="ir.ui.view">
+        <field name="name">view_contract_dudection_report_owner</field>
+        <field name="model">deduction.aditional.report.owner</field>
+        <field name="arch" type="xml">
+            <tree>
+<!--                <field name="invoice_id"/>-->
+                <field name="type"/>
+                <field name="contract_type_id"/>
+                <field name="account_id"/>
+                <field name="value"/>
+                <field name="value_contract"/>
+                <field name="remaining_value"/>
+                <field name="project_id"/>
+                <field name="contract_id"/>
+                <field name="partner_id"/>
+                <field name="contract_date"/>
+                <button type="object" name="get_invoice" string="INVOICES" />
+            </tree>
+
+        </field>
+     </record>
+     <record id="view_contract_dudection_report_supconstractor" model="ir.ui.view">
+        <field name="name">view_contract_dudection_report_supconstractor</field>
+        <field name="model">deduction.aditional.report.supconstractor</field>
+        <field name="arch" type="xml">
+            <tree>
+<!--                <field name="invoice_id"/>-->
+                <field name="type"/>
+                <field name="contract_type_id"/>
+                <field name="account_id"/>
+                <field name="value"/>
+                <field name="value_contract"/>
+                <field name="remaining_value"/>
+                <field name="project_id"/>
+                <field name="contract_id"/>
+                <field name="partner_id"/>
+                <field name="contract_date"/>
+                <button type="object" name="get_invoice" string="INVOICES" />
+            </tree>
+
+        </field>
+     </record>
+
+</odoo>

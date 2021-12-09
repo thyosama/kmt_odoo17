@@ -1,0 +1,57 @@
+<odoo>
+    <data>
+        <record id="kmt_view_picking_form" model="ir.ui.view">
+            <field name="name">stock.picking</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="shipment" attrs="{'invisible':[('picking_type_code', '!=', 'internal')]}"/>
+                    <field name="registration_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    <field name="sid_ids"  widget="many2many_tags" options="{'no_create': True}"/>
+                </xpath>
+                <xpath expr="//group[@name='other_infos']" position="inside">
+                    <field name="picking_type_code" invisible="1" />
+                    <field name="incoterm_id" />
+                </xpath>
+            </field>
+        </record>
+        <menuitem id="stock_menu_action_incoterm_open"
+                  parent="stock.menu_stock_warehouse_mgmt"
+                  action="account.action_incoterms_tree" sequence="3"/>
+
+        <record id="sid_view_tree" model="ir.ui.view">
+            <field name="name">S-ID</field>
+            <field name="model">s.id</field>
+            <field name="arch" type="xml">
+                <tree string="sid_tree" editable="bottom">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="registration_number_view_tree" model="ir.ui.view">
+            <field name="name">Registration Number</field>
+            <field name="model">registration.number</field>
+            <field name="arch" type="xml">
+                <tree string="sid_tree" editable="bottom">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="sid_action" model="ir.actions.act_window">
+            <field name="name">S-ID</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">s.id</field>
+            <field name="view_mode">tree</field>
+        </record>
+        <record id="registration_number_action" model="ir.actions.act_window">
+            <field name="name">Registration Number</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">registration.number</field>
+            <field name="view_mode">tree</field>
+        </record>
+        <menuitem id="sid_menu" name="S-ID" parent="stock.menu_stock_config_settings" action="sid_action"/>
+        <menuitem id="registration_number_menu" name="Registration Number" parent="stock.menu_stock_config_settings" action="registration_number_action"/>
+    </data>
+</odoo>

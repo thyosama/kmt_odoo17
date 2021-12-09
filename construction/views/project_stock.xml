@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Inherit Form View to Modify it -->
+
+
+
+
+         <record id="sale_order_form_inherited1" model="ir.ui.view">
+            <field name="name">sale.order</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="project_id"/>
+                </xpath>
+
+            </field>
+        </record>
+
+
+             <record id="view_move_form_inherited1" model="ir.ui.view">
+            <field name="name">account.move</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//div[@name='journal_div']" position="after">
+                    <field name="project_id"/>
+                </xpath>
+                <xpath expr="//notebook/page[@id='aml_tab']/field[@name='line_ids']/tree/field[@name='name']" position="after">
+                        <field name="item_ids" invisible="1"/>
+                        <field name="item"/>
+                        <field name="project_id" invisible="1"/>
+
+                </xpath>
+                <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='account_id']"
+                       position="after">
+                        <field name="item_ids" invisible="1"/>
+                        <field name="item"  attrs="{'column_invisible': [('parent.move_type', '!=', 'in_invoice')]}"/>
+                        <field name="project_id"  />
+
+                </xpath>
+             </field>
+        </record>
+
+
+
+
+
+
+
+
+
+    </data>
+</odoo>

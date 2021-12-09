@@ -1,0 +1,238 @@
+<odoo>
+    <odoo>
+        <template id="contract_template_id_print">
+            <t t-call="web.external_layout">
+
+                <div class="page">
+                    <h2 class="text-center">
+                        <span t-field="doc.name"/>
+                    </h2>
+                    <br></br>
+                    <br></br>
+                     <table class="table table-sm o_main_table">
+                        <!-- In case we want to repeat the header, remove "display: table-row-group" -->
+                        <thead style="display: table-row-group">
+                        </thead>
+                        <tbody class="sale_tbody">
+                            <tr>
+                             <td >
+                                 Project :<span t-field="doc.project_id.name"/>
+
+                             </td>
+                                <td >
+                                 Customer :<span t-field="doc.parner_id.name"/>
+                             </td>
+
+
+                             </tr>
+                            <tr>
+                                 <td >
+                                 Contract :<span t-field="doc.contract_id.name"/>
+                             </td>
+                                <td >
+                                 Date :<span t-field="doc.date"/>
+                             </td>
+                        </tr>
+                            <tr>
+                                 <td >
+                                 Recieve Date :<span t-field="doc.recieve_date"/>
+                             </td>
+                                 <td >
+                                 Order:<span t-field="doc.order_id.name"/>
+                             </td>
+
+                            </tr>
+
+                             <tr>
+                                 <td >
+                                 Account:<span t-field="doc.account_id.name"/>
+                             </td>
+                                   <td>
+                                 Down Payment:<span t-field="doc.down_payment_prectenge"/>
+                             </td>
+
+                            </tr> <tr>
+                                 <td>
+                                 Down Payment Value:<span t-field="doc.down_payment_value"/>
+                             </td>
+
+                            </tr>
+
+
+
+                        </tbody>
+                     </table>
+                    <div class="oe_structure"/>
+                    <h3> Lines</h3>
+                    <table class="table table-sm o_main_table">
+                        <!-- In case we want to repeat the header, remove "display: table-row-group" -->
+                        <thead style="display: table-row-group">
+                            <tr>
+                                <th class="text-left">Code</th>
+
+                                <th class="text-center">item</th>
+                                <th class="text-center">Desc</th>
+                                <th class="text-center">Unit of Measure</th>
+                                <th class="text-center">Quantity</th>
+
+                                <th class="text-center">Price Unit</th>
+                                <th class="text-center">Discount</th>
+
+
+                                <th class="text-center">Value</th>
+
+                                <th class="text-center">
+                                    Notes
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="sale_tbody">
+
+                            <t t-set="current_subtotal" t-value="0"/>
+
+                            <tr t-foreach="doc.lines_id" t-as="line">
+
+                                <td class="text-center">
+                                    <span t-field="line.code"/>
+                                </td>
+                                <td class="text-center">
+                                    <span t-field="line.item"/>
+                                </td>
+                                <td class="text-center">
+                                    <span t-field="line.description"/>
+                                </td>
+
+                                <td class="text-center">
+                                    <span t-field="line.uom_id.name"/>
+                                </td>
+
+                                <td class="text-center">
+                                    <span t-field="line.qty"/>
+                                </td>
+
+
+                                <td class="text-center">
+                                    <span t-field="line.price_unit"/>
+                                </td>
+                                <td class="text-center">
+                                    <span t-field="line.discount"/>
+                                </td>
+
+
+                                <td class="text-center">
+                                    <span t-field="line.total_value" sum="total"/>
+                                </td>
+
+
+                                <td class="text-center">
+                                    <span t-field="line.notes"/>
+                                </td>
+
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <h3>Deduction</h3>
+                    <table class="table table-sm o_main_table">
+                        <!-- In case we want to repeat the header, remove "display: table-row-group" -->
+                        <thead style="display: table-row-group">
+                            <tr>
+                                <th class="text-left">Name</th>
+
+                                <th class="text-center">Account Id</th>
+                                <th class="text-center">is Precentage</th>
+                                <th class="text-center">Precentage</th>
+                                <th class="text-center">total Value</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody class="sale_tbody">
+
+                            <t t-set="current_subtotal" t-value="0"/>
+
+                            <tr t-foreach="doc.deduction_ids" t-as="line">
+                                <t t-if="line.type=='deduction'">
+                                    <td class="text-center">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.account_id"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.is_precentage"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.precentage"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.is_down_payment" sum="Total"/>
+                                    </td>
+                                </t>
+
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <h3>Additionals</h3>
+                    <table class="table table-sm o_main_table">
+                        <!-- In case we want to repeat the header, remove "display: table-row-group" -->
+                        <thead style="display: table-row-group">
+                            <tr>
+                                <th class="text-left">Name</th>
+
+                                <th class="text-center">Account Id</th>
+                                <th class="text-center">is Precentage</th>
+                                <th class="text-center">Precentage</th>
+                                <th class="text-center">total Value</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody class="sale_tbody">
+
+                            <t t-set="current_subtotal" t-value="0"/>
+
+                            <tr t-foreach="doc.allowance_ids" t-as="line">
+                                <t t-if="line.type=='addition'">
+                                    <td class="text-center">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.account_id"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.is_precentage"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.precentage"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.is_down_payment" sum="Total"/>
+                                    </td>
+                                </t>
+
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </t>
+        </template>
+        <template id="contract_template_id">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="construction.contract_template_id_print"/>
+                </t>
+            </t>
+        </template>
+    </odoo>
+</odoo>
