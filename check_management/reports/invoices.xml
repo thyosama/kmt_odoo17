@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<!--        <template id="check+report_invoice_document_remove" inherit_id="account.report_invoice_document">-->
+<!--            <xpath expr="//span[@t-field='o.amount_residual']/../.." position="replace">-->
+<!--                <tr class="" style="background:#ffffff !important;">-->
+<!--                    <td style="background:#ffffff !important; color: black !important;"><strong>Amount Due</strong></td>-->
+<!--                    <td style="background:#ffffff !important; border-left: 1px solid black; color: black !important;" class="text-right">-->
+<!--                        <span t-field="o.amount_residual"/>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//span[@t-field='o.tax_totals_json']/../.." position="replace">-->
+<!--                <tr class="border-black o_total">-->
+<!--                    <td style="background:#ffffff !important;"><strong style="color: black !important;">Total</strong></td>-->
+<!--                    <td style="background:#ffffff !important; color: black !important; border-left: 1px solid black;" class="text-right">-->
+<!--                        <span style="color: black !important;" class="text-nowrap" t-field="o.amount_total"/>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--            </xpath>-->
+<!--        </template>-->
+    </data>
+</odoo>

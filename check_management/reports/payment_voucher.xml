@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="cheque_external_layout_inherit" inherit_id="web.external_layout">
+
+        </template>
+
+        <template id="alfath_payment_template">
+            <t t-call="web.html_container">
+
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div style="border: 2px solid black;margin-left:-8px;margin-top:-1px; padding:20px;border-radius:10px">
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <div class="row">
+                                <div class="col-5">
+                                    <span>NO.:</span>
+                                    <span t-field="o.name"/>
+                                </div>
+                                <div class="col-4">
+                                    <p>سند صرف</p>
+                                    <p>Payment Voucher</p>
+                                </div>
+                                <div class="text-right col-3">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th>جنيه </th>
+                                                <th>قرش</th>
+                                            </tr>
+                                            <tr>
+                                                <th><span t-esc="int(o.amount)"/></th>
+                                                <th><span t-esc="(o.amount- int(o.amount))*100"/></th>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 text-left">
+<!--                                    <span>Date :<span t-field="o.payment_date"/></span>-->
+                                    <span>Date :<span t-field="o.date"/></span>
+                                </div>
+                                <div class="col-6 text-right">
+<!--                                    <span> التاريخ :<span style="direction: rtl;" t-field="o.payment_date"/></span>-->
+                                    <span> التاريخ :<span style="direction: rtl;" t-field="o.date"/></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4 text-left">
+                                    <span>Spent To MR. / Messers :</span>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <span t-field="o.partner_id"/>
+                                </div>
+                                <div class="col-4 text-right">
+                                    : صرفنا لأمر السيد / السادة
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4 text-left">
+                                    The Sum Of :
+                                </div>
+                                <div class="col-4 text-center">
+                                    <span t-field="o.total_in_words"/>
+                                </div>
+                                <div class="col-4 text-right">
+                                    : مبلغ وقدره
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div t-if="o.is_cheque == True" class="col-4 text-left">
+                                    Cheque No. :
+                                </div>
+                                <div t-if="o.is_cheque == False" class="col-4 text-left">
+                                    Cash :
+                                </div>
+                                <div class="col-4">
+                                    <span t-if="o.is_cheque == True" style="float:right">
+                                        : بنك
+                                    </span>
+                                    <span style="float:left">
+                                        : تاريخ
+                                    </span>
+                                </div>
+                                <div t-if="o.is_cheque == False" class="col-4 text-right">
+                                    : نقدا
+                                </div>
+                                <div t-if="o.is_cheque == True" class="col-4 text-right">
+                                    : شيك رقم
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4 text-left">
+                                    For
+                                </div>
+                                <div class="col-4 text-center">
+<!--                                    <span t-field="o.communication"/>-->
+                                    <span t-field="o.ref"/>
+                                </div>
+                                <div class="col-4 text-right">
+                                    : وذلك عن
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3 text-center">
+                                    <p>توقيع المدير</p>
+                                    <p>Manger Sign</p>
+                                    <p>..............................</p>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <p>المندوب</p>
+                                    <p>Delegate</p>
+                                    <p t-field="o.delegate"/>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <p>المستلم</p>
+                                    <p>Received By</p>
+                                    <p>..............................</p>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <p>أعدهــــــا</p>
+                                    <p>Prepared By</p>
+                                    <p t-field="o.create_uid"/>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <br/>
+                                <div style="border-top: 2px solid black; direction:rtl" class="col-12 text-center">
+                                    <span t-field="o.company_id.street"/> -
+                                    <span t-field="o.company_id.street2"/> -
+                                    <span t-field="o.company_id.city"/> -
+                                    <span t-field="o.company_id.state_id.name"/> -
+                                    <span t-field="o.company_id.country_id.name"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+
+            </t>
+        </template>
+
+
+        <report
+                id="alfath_payment_voucher"
+                model="account.payment"
+                report_type="qweb-pdf"
+                string="Payment Voucher"
+                name="check_management.alfath_payment_template"
+                file="check_management.alfath_payment_template"
+        />
+        <record id="paperformat_a6_report1" model="report.paperformat">
+            <field name="name">Alfath</field>
+            <field name="default" eval="True"/>
+            <field name="format">A5</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">5</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">5</field>
+            <field name="margin_right">5</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+        <record id="check_management.alfath_payment_voucher" model="ir.actions.report">
+            <field name="paperformat_id" ref="check_management.paperformat_a6_report1"/>
+        </record>
+    </data>
+</odoo>
