@@ -7,8 +7,8 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="shipment" attrs="{'invisible':[('picking_type_code', '!=', 'internal')]}"/>
-                    <field name="registration_ids" widget="many2many_tags" options="{'no_create': True}"/>
-                    <field name="sid_ids"  widget="many2many_tags" options="{'no_create': True}"/>
+                    <field name="registration_ids" widget="many2many_tags" />
+                    <field name="sid_ids"  widget="many2many_tags" />
                 </xpath>
                 <xpath expr="//group[@name='other_infos']" position="inside">
                     <field name="picking_type_code" invisible="1" />

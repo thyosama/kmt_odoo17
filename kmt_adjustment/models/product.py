@@ -24,7 +24,6 @@ class ProductProduct(models.Model):
     @api.constrains('default_code')
     def constrains_default_code(self):
         for rec in self:
-            print(">>>>>>>>>>>>>>>>>> ", rec.default_code)
             product_id = self.env['product.product'].search([
                 ('default_code', '=', rec.default_code),
                 ('default_code', '!=', False)],limit=1)
