@@ -13,5 +13,7 @@
         'views/stock.xml',
         'views/invoice.xml',
         'views/sale.xml',
+        'views/purchase.xml',
+        'report/purchase.xml',
     ],
 }
