@@ -34,7 +34,7 @@
                                                class="col-md-3 o_light_label"/>
                                         <field name="ks_payment_cash"/>
                                           <label for="ks_payment_return_cash"
-                                               class="col-md-3 o_light_label"/>
+                                               class="col-md-3 o_light_label"  attrs="{'invisible':[('ks_payment_cash','=',False)]}"/>
                                         <field name="ks_payment_return_cash" attrs="{'invisible':[('ks_payment_cash','=',False)]}"/>
                                     </div>
 
@@ -61,6 +61,15 @@
                                     </div>
 
                                 </div>
+
+                                      <div class="row mt16" >
+                                        <label for="ks_payment_cash_send"
+                                               class="col-md-3 o_light_label"/>
+                                        <field name="ks_payment_cash_send"/>
+                                          <label for="ks_payment_return_cash_send"
+                                               class="col-md-3 o_light_label" attrs="{'invisible':[('ks_payment_cash_send','=',False)]}"/>
+                                        <field name="ks_payment_return_cash_send" attrs="{'invisible':[('ks_payment_cash_send','=',False)]}"/>
+                                    </div>
                             </div>
                         </div>
 

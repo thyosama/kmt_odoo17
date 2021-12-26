@@ -20,6 +20,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="bank_account" required="1"/>
                             <field name="bank_name"/>
 <!--                            <field name="account_id"/>-->
                             <field name="journal_id"/>
@@ -47,7 +48,8 @@
         <field name="model">cheque.document</field>
         <field name="arch" type="xml">
             <tree string="">
-                <field name="name"/>
+                <field name="bank_account"/>
+
                 <field name="bank_name"/>
 <!--                <field name="account_id"/>-->
                 <field name="journal_id"/>

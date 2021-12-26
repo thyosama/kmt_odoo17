@@ -17,7 +17,8 @@ class AccountCheque(models.Model):
 
 class ChequesDocs(models.Model):
     _name = "cheque.document"
-    _rec_name='bank_name'
+    _rec_name='display_name'
+    display_name = fields.Char()
 
     name = fields.Integer(string="Document Number", required=False, )
     num_cheque = fields.Integer(string="Number of Cheques", required=True, )
@@ -33,7 +34,19 @@ class ChequesDocs(models.Model):
         string='Account Number',  domain="[('user_type_id.type','=','liquidity')]",
         required=False)
     company_id = fields.Many2one('res.company',default=lambda self: self.env.company)
+    bank_account = fields.Char("Bank Account")
+    _sql_constraints = [
+            ('bank_account_uniq', 'unique (bank_account)','Bank Account must be unique !')
+        ]
+    def get_display_name(self,bank_name,bank_account):
 
+        display_name=''
+
+        if bank_name:
+            display_name+=bank_name.name
+        if bank_account:
+            display_name+="("+bank_account+")"
+        return display_name
 
 
     @api.constrains('name')
@@ -49,7 +62,18 @@ class ChequesDocs(models.Model):
         for record in self:
             record.active = not record.active
 
-    # 
+    #
+    @api.model
+    def create(self,vals):
+        res = super(ChequesDocs, self).create(vals)
+        res.display_name=res.get_display_name(res.bank_name,res.bank_account)
+        return res
+    def write(self,vals):
+        res=super(ChequesDocs, self).write(vals)
+        if 'bank_name' in vals or 'bank_account' in vals:
+            self.display_name=self.get_display_name(self.bank_name,self.bank_account)
+        return res
+        
     def generate_cheques(self):
         if not self.num_cheque:
             raise ValidationError('Please Enter Number of Cheques')

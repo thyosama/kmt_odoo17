@@ -11,7 +11,7 @@
     'author': "Mohamed AbdElrhman",
     'website': "http://www.yourcompany.com",
     'category': 'account',
-    'version': '0.1',
+    'version': '15.0.0.2',
 
     # any module necessary for this one to work correctly
     'depends': ['base', 'account'],

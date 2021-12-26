@@ -81,6 +81,7 @@ class AccountPayment(models.Model):
     hide_payment_method = fields.Boolean(compute="_compute_hide_payment_method")
     vendor_id = fields.Many2one("res.partner", string="Vendor",copy=False)
     ks_payment_cash = fields.Boolean(related='company_id.ks_payment_cash', string="Payment Cash")
+    ks_payment_cash_send = fields.Boolean(related='company_id.x_ks_payment_cash_send', string="Payment Cash")
     ks_payment_vendor = fields.Boolean(related='company_id.ks_payment_vendor', string="Payment Vendor")
     is_transfer = fields.Boolean(default=False)
     journal_transfer = fields.Many2one('account.journal', string="Transfer Journal", domain=[('transfer', '=', True)])
@@ -242,50 +243,100 @@ class AccountPayment(models.Model):
                 raise ValidationError(_("Please define a payment method line on your payment."))
     def return_cheque_cash(self):# return cheque to customer at pay is cah
         lines = []
-        if self.account_med and self.check_mid == True:
-            property_account = self.account_med
-            second_journal_line = {
-                'account_id': self.account_med.id,
+        if self.type_cheq=='send_che':
+            if self.account_med and self.check_mid == True:
+                property_account = self.account_med_send
+                second_journal_line = {
+                    'account_id': self.account_med_send.id,
+                    'partner_id': self.partner_id.id,
+                    'name': self.ref,
+                    'date_maturity': self.effective_date,
+                    'credit': self.amount,
+                    'debit': 0,
+                }
+            else:
+                property_account = self.partner_id.property_account_payable_id
+                second_journal_line = {
+                    'account_id': self.partner_id.property_account_payable_id.id,
+                    'partner_id': self.partner_id.id,
+                    'name': self.ref,
+                    'date_maturity': self.effective_date,
+                    'credit': self.amount,
+                    'debit': 0,
+                }
+
+            property_account_journal = self.journal_cheque.default_account_id
+            first = {
+                'account_id': self.journal_cheque.default_account_id.id,
                 'partner_id': self.partner_id.id,
-                'name': self.name,
+                'name': self.ref,
+
                 'date_maturity': self.effective_date,
-                'debit': self.amount,
                 'credit': 0,
-            }
-        else:
-            property_account = self.partner_id.property_account_receivable_id
-            second_journal_line = {
-                'account_id': self.partner_id.property_account_receivable_id.id,
-                'partner_id': self.partner_id.id,
-                'name': self.name,
-                'date_maturity': self.effective_date,
                 'debit': self.amount,
-                'credit': 0,
             }
 
-        if self.journal_reject:
-            property_account_journal = self.journal_reject.default_account_id
-            first = {
-                'account_id': self.journal_reject.default_account_id.id,
-                'partner_id': self.partner_id.id,
-                'name': self.name,
-                'date_maturity': self.effective_date,
-                'debit': 0,
-                'credit': self.amount,
-            }
-        else:
-            property_account_journal = self.journal_id.default_account_id
-            first = {
-                'account_id': self.journal_id.default_account_id.id,
-                'partner_id': self.partner_id.id,
-                'name': self.name,
-                'date_maturity': self.effective_date,
-                'debit': 0,
-                'credit': self.amount,
-            }
+            lines.append((0, 0, second_journal_line))
+            lines.append((0, 0, first))
 
-        lines.append((0, 0, second_journal_line))
-        lines.append((0, 0, first))
+
+        elif self.type_cheq=='recieve_chq':
+
+            if self.account_med and self.check_mid == True:
+                property_account = self.account_med
+                second_journal_line = {
+                    'account_id': self.account_med.id,
+                    'partner_id': self.partner_id.id,
+                    'name': self.ref,
+                    'date_maturity': self.effective_date,
+                    'debit': self.amount,
+                    'credit': 0,
+                }
+            else:
+                property_account = self.partner_id.property_account_receivable_id
+                second_journal_line = {
+                    'account_id': self.partner_id.property_account_receivable_id.id,
+                    'partner_id': self.partner_id.id,
+                    'name': self.ref,
+                    'date_maturity': self.effective_date,
+                    'debit': self.amount,
+                    'credit': 0,
+                }
+
+            if self.journal_reject:
+                property_account_journal = self.journal_reject.default_account_id
+                first = {
+                    'account_id': self.journal_reject.default_account_id.id,
+                    'partner_id': self.partner_id.id,
+                    'name': self.ref,
+                    'date_maturity': self.effective_date,
+                    'debit': 0,
+                    'credit': self.amount,
+                }
+            else:
+                property_account_journal = self.journal_id.default_account_id
+                first = {
+                    'account_id': self.journal_id.default_account_id.id,
+                    'partner_id': self.partner_id.id,
+                    'name': self.ref,
+                    'date_maturity': self.effective_date,
+                    'debit': 0,
+                    'credit': self.amount,
+                }
+
+            lines.append((0, 0, second_journal_line))
+            lines.append((0, 0, first))
+            move2 = self.env['account.move'].create({'date': datetime.today(),
+                                                     'ref': "Cheque Num/" + self.cheque_no or '',
+                                                     'partner_id': self.partner_id.id or '',
+
+                                                     'company_id': self.company_id.id,
+                                                     'journal_id': self.journal_id.id if not self.journal_reject else self.journal_reject.id,
+                                                     'line_ids': lines,
+                                                     'cheque_number': self.cheque_no,
+
+                                                     })
+            # self.state_cheque = 'return'
         move2 = self.env['account.move'].create({'date': datetime.today(),
                                                  'ref': "Cheque Num/" + self.cheque_no or '',
                                                  'partner_id': self.partner_id.id or '',
@@ -296,10 +347,27 @@ class AccountPayment(models.Model):
                                                  'cheque_number': self.cheque_no,
 
                                                  })
-        # self.state_cheque = 'return'
+
         move2.post()
         self._get_reconsile(property_account)
         self._get_reconsile(property_account_journal)
+    def write(self,vals):
+        res = super(AccountPayment, self).write(vals)
+        if 'journal_cheque' in vals:
+            for rec in self:
+                rec.journal_last=rec.journal_cheque
+                rec.move_id.journal_id=rec.journal_cheque
+        for rec in self:
+            if rec.cheque_no:
+                rec.move_id.cheque_number = rec.cheque_no
+            #self.move_id.ref=self.cheque_no
+
+            for rec in self.move_id.line_ids:
+                rec.name = self.ref
+                # rec.ref = self.cheque_no
+
+
+        return res
     @api.model
     def create(self, vals):
         if vals.get('journal_cheque'):
@@ -427,39 +495,40 @@ class AccountPayment(models.Model):
         )
         balance=liquidity_balance
         if self.is_cheque ==False:
+            self.name = ''
 
             line_vals_list = [
                 # Liquidity line.
                 {
                     'name': liquidity_line_name or default_line_name,
                     'date_maturity': self.date,
-                    'amount_currency': -counterpart_amount_currency,
+                    'amount_currency': liquidity_amount_currency,
                     'currency_id': currency_id,
-                    'debit': balance < 0.0 and -balance or 0.0,
-                    'credit': balance > 0.0 and balance or 0.0,
+                    'debit': liquidity_balance if liquidity_balance > 0.0 else 0.0,
+                    'credit': -liquidity_balance if liquidity_balance < 0.0 else 0.0,
                     'partner_id': self.partner_id.id,
-                    'account_id': self.journal_id.default_account_id.id,
+                    'account_id': self.outstanding_account_id.id,
                 },
                 # Receivable / Payable.
                 {
                     'name': self.payment_reference or default_line_name,
                     'date_maturity': self.date,
-                    'amount_currency': counterpart_amount_currency + write_off_amount_currency if currency_id else 0.0,
+                    'amount_currency': counterpart_amount_currency,
                     'currency_id': currency_id,
-                    'debit': balance + write_off_balance > 0.0 and balance + write_off_balance or 0.0,
-                    'credit': balance + write_off_balance < 0.0 and -balance - write_off_balance or 0.0,
+                    'debit': counterpart_balance if counterpart_balance > 0.0 else 0.0,
+                    'credit': -counterpart_balance if counterpart_balance < 0.0 else 0.0,
                     'partner_id': self.partner_id.id,
                     'account_id': self.destination_account_id.id,
                 },
             ]
-            if write_off_balance:
+            if not self.currency_id.is_zero(write_off_amount_currency):
                 # Write-off line.
                 line_vals_list.append({
                     'name': write_off_line_vals.get('name') or default_line_name,
-                    'amount_currency': -write_off_amount_currency,
+                    'amount_currency': write_off_amount_currency,
                     'currency_id': currency_id,
-                    'debit': write_off_balance < 0.0 and -write_off_balance or 0.0,
-                    'credit': write_off_balance > 0.0 and write_off_balance or 0.0,
+                    'debit': write_off_balance if write_off_balance > 0.0 else 0.0,
+                    'credit': -write_off_balance if write_off_balance < 0.0 else 0.0,
                     'partner_id': self.partner_id.id,
                     'account_id': write_off_line_vals.get('account_id'),
                 })
@@ -476,25 +545,29 @@ class AccountPayment(models.Model):
             self.move_id.cheque_number= self.cheque_no
 
             if self.type_cheq =='recieve_chq':
+
                 line_vals_list= self.create_journal_lines(
                     self.journal_cheque if self.journal_cheque
                     else self.journal_id,
                 account_id)
             else:
-
+                self.name=''
                 line_vals_list = self.create_move_line_send_cheques( self.journal_cheque if self.journal_cheque
                     else self.journal_id,
                     account_id)
-            # self.name = self._get_payment_name(self.journal_id.id)
+
 
 
         return line_vals_list
 
 
     def _get_payment_name(self,journal,date):
+
         date_from="1-"+str(date.month)+"-"+str(date.year)
         date_to=str(calendar.monthrange(date.year, date.month)[1])+"-"+str(date.month)+"-"+str(date.year)
         sequ = self.env['account.move'].search([('journal_id','=',journal.id),('date','>=',datetime.strptime(date_from,"%d-%m-%Y")),('date','<=',datetime.strptime(date_to,"%d-%m-%Y"))])
+        if not sequ:
+            sequ=[1]
         if journal and date:
             name = journal.code+"/"+str(date.year)+"/"\
                    +str(date.month)+"/"+str(len(sequ)+1).zfill(5)
@@ -574,8 +647,8 @@ class AccountPayment(models.Model):
                     'partner_id': liquidity_lines.partner_id.id,
                 })
 
-            move.write(move._cleanup_write_orm_values(move, move_vals_to_write))
-            pay.write(move._cleanup_write_orm_values(pay, payment_vals_to_write))
+                move.write(move._cleanup_write_orm_values(move, move_vals_to_write))
+                pay.write(move._cleanup_write_orm_values(pay, payment_vals_to_write))
     def post_cheque(self):
 
         # if not self.journal_id.post_at_bank_rec:
@@ -721,7 +794,7 @@ class AccountPayment(models.Model):
         second_journal_line = {
             'account_id': debit_account.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+             'name': self.ref,
             'date_maturity': self.effective_date,
             'debit': self.amount,
             'credit': 0,
@@ -730,7 +803,7 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': journal.default_account_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+             'name': self.ref,
             'date_maturity': self.effective_date,
             'debit': 0,
             'credit': self.amount,
@@ -744,7 +817,7 @@ class AccountPayment(models.Model):
         second_journal_line = {
             'account_id': debit_account.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+             'name': self.ref,
             'date_maturity': self.effective_date,
             'debit': self.amount,
             'credit': 0,
@@ -753,7 +826,7 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': journal.default_account_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+             'name': self.ref,
             'date_maturity': self.effective_date,
             'debit': 0,
             'credit': self.amount,
@@ -764,13 +837,21 @@ class AccountPayment(models.Model):
 
     def create_journal_lines(self, journal, credit_account):
         lines = []
+        if self.is_cheque==False:
+            self.name = self._get_payment_name(self.journal_id,self.date)
+        else:
+            self.name = ''
+
+
+
 
         if self.state_cheque == 'payment_vendor' and self.vendor_id:
 
             second_journal_line = {
                 'account_id': credit_account.id,
                 'partner_id': self.vendor_id.id,
-                'name': self.name,
+                'name': self.ref,
+
                 'date_maturity': self.effective_date,
                 'debit': 0,
                 'credit': self.amount,
@@ -779,7 +860,8 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': credit_account.id,
                 'partner_id': self.partner_id.id,
-                'name': self.name,
+                 'name': self.ref,
+
                 'date_maturity': self.effective_date,
                 'debit': 0,
                 'credit': self.amount,
@@ -789,7 +871,8 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': journal.default_account_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+             'name': self.ref,
+
             'date_maturity': self.effective_date,
             'debit': self.amount,
             'credit': 0,
@@ -806,7 +889,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': credit_account.id,
                 'partner_id': self.vendor_id.id,
-                'name': self.name,
+                'name': self.ref,
                 'date_maturity': self.effective_date,
                 'debit': 0,
                 'credit': self.amount,
@@ -815,7 +898,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': credit_account.id,
                 'partner_id': self.partner_id.id,
-                'name': self.name,
+                'name': self.ref,
                 'date_maturity': self.effective_date,
                 'debit': 0,
                 'credit': self.amount,
@@ -824,7 +907,7 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': journal.default_account_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+            'name': self.ref,
             'date_maturity': self.effective_date,
             'debit': self.amount,
             'credit': 0,
@@ -838,7 +921,7 @@ class AccountPayment(models.Model):
         second_journal_line = {
             'account_id': credit_account.id,
             'partner_id': self.vendor_id.id,
-            'name': self.name,
+            'name': self.ref,
             'date_maturity': self.effective_date,
             'credit': 0,
             'debit': self.amount,
@@ -847,7 +930,7 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': journal.default_account_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+            'name': self.ref,
             'date_maturity': self.effective_date,
             'credit': self.amount,
             'debit': 0,
@@ -1080,7 +1163,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': self.account_med.id,
                 'partner_id': self.partner_id.id,
-                'name': self.name,
+                'name': self.ref,
                 'date_maturity': self.effective_date,
                 'debit': self.amount,
                 'credit': 0,
@@ -1090,7 +1173,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': self.partner_id.property_account_receivable_id.id,
                 'partner_id': self.partner_id.id,
-                'name': self.name,
+                'name': self.ref,
                 'date_maturity': self.effective_date,
                 'debit': self.amount,
                 'credit': 0,
@@ -1105,7 +1188,7 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': account_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+            'name': self.ref,
             'debit': 0,
             'date_maturity': self.effective_date,
             'credit': self.amount,
@@ -1142,7 +1225,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': self.account_med_send.id,
                 'partner_id': self.partner_id.id,
-                'name': self.name,
+                'name': self.ref,
                 'date_maturity': self.effective_date,
                 'debit': 0,
                 'credit': self.amount,
@@ -1152,7 +1235,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': self.partner_id.property_account_payable_id.id,
                 'partner_id': self.partner_id.id,
-                'name': self.name,
+                'name': self.ref,
                 'date_maturity': self.effective_date,
                 'debit': 0,
                 'credit': self.amount,
@@ -1160,7 +1243,7 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': self.journal_id.default_account_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+            'name': self.ref,
             'date_maturity': self.effective_date,
             'debit': self.amount,
             'credit': 0,
@@ -1194,7 +1277,7 @@ class AccountPayment(models.Model):
         second_journal_line = {
             'account_id': self.partner_id.property_account_receivable_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+            'name': self.ref,
             'debit': 0,
             'date_maturity': self.effective_date,
             'credit': self.amount,
@@ -1203,7 +1286,7 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': self.account_med.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+            'name': self.ref,
             'debit': self.amount,
             'credit': 0,
             'date_maturity': self.effective_date,
@@ -1236,7 +1319,7 @@ class AccountPayment(models.Model):
         second_journal_line = {
             'account_id': self.partner_id.property_account_payable_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+            'name': self.ref,
             'debit': self.amount,
             'date_maturity': self.effective_date,
             'credit': 0,
@@ -1245,7 +1328,7 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': self.account_med_send.id,
             'partner_id': self.partner_id.id,
-            'name': self.name,
+            'name': self.ref,
             'debit': 0,
             'credit': self.amount,
             'date_maturity': self.effective_date,
@@ -1389,7 +1472,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': self.account_med.id,
                 'partner_id': self.partner_id.id,
-                'name': self.name,
+                'name': self.ref,
                 'date_maturity': self.effective_date,
                 'debit': self.amount,
                 'credit': 0,
@@ -1399,7 +1482,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': self.partner_id.property_account_receivable_id.id,
                 'partner_id': self.partner_id.id,
-                'name': self.name,
+                'name': self.ref,
                 'date_maturity': self.effective_date,
                 'debit': self.amount,
                 'credit': 0,
@@ -1410,7 +1493,7 @@ class AccountPayment(models.Model):
             first = {
                 'account_id': self.journal_reject.default_account_id.id,
                 'partner_id': self.partner_id.id,
-                'name': self.name,
+                'name': self.ref,
                 'date_maturity': self.effective_date,
                 'debit': 0,
                 'credit': self.amount,
@@ -1420,7 +1503,7 @@ class AccountPayment(models.Model):
             first = {
                 'account_id': self.journal_id.default_account_id.id,
                 'partner_id': self.partner_id.id,
-                'name': self.name,
+                'name': self.ref,
                 'date_maturity': self.effective_date,
                 'debit': 0,
                 'credit': self.amount,

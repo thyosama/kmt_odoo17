@@ -23,6 +23,7 @@
                 <field name="date" position="before">
 
                     <field name="cheque_ref_id" invisible="1"/>
+<!--                    <field name="available_partner_bank_ids" invisible="1"/>-->
                     <field name="state_cheque2" invisible="1"/>
                     <field name="middle_account_company_id" invisible="1"/>
 
@@ -58,6 +59,7 @@
                 <xpath expr="//header" position="replace">
                     <header>
                         <field name="state" invisible="1"/>
+<!--                        <field name="available_partner_bank_ids" invisible="1"/>-->
                         <field name="type_cheq" invisible="1"/>
                         <field name="is_cash" invisible="1"/>
                         <field name="ks_payment_cash" invisible="1"/>

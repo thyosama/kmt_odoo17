@@ -15,8 +15,11 @@
             <xpath expr="//header" position="replace">
                 <header>
                     <field name="state" invisible="1"/>
+<!--                    <field name="available_partner_bank_ids" invisible="1"/>-->
                     <field name="type_cheq" invisible="1"/>
                     <field name="state_cheque" invisible="1"/>
+                    <field name="is_cash" invisible="1"/>
+                        <field name="ks_payment_cash_send" invisible="1"/>
 
                     <button class="oe_stat_button" name="open_payment" string="Payments" type="object"
                             icon="fa-university" attrs="{'invisible': [('state_cheque', '=','draft')]}"/>
@@ -28,7 +31,7 @@
 
                     <button name="collect_form_bank" class="oe_highlight"
                             string="Collect" type="object"
-                            attrs="{'invisible': [('state_cheque','!=', 'sent')]}"/>
+                            attrs="{'invisible': ['|',('is_cash','=',True),('state_cheque','!=', 'sent')]}"/>
 
                     <button name="cancel_send" class="oe_highlight" string="Cancel" type="object"
                             attrs="{'invisible': [('state_cheque','not in', ['sent'])]}"/>
@@ -37,6 +40,17 @@
                     />
                      <button name="mass_editing" class="oe_highlight" attrs="{'invisible': [('state_cheque', '=','draft')]}" string="Set Draft" type="object"
                             groups="check_management.group_draft_cheque"/>
+                     <button name="payment_cach" class="oe_highlight" string="Pay Cash " type="object"
+                                attrs="{'invisible': ['|','|',('ks_payment_cash_send','=',False),
+                                    ('state_cheque','not in', ('sent')),('is_cash','!=',False)]}"
+                        />
+                     <button name="create_payment_cash" class="oe_highlight" string="Create Payment " type="object"
+                                attrs="{'invisible': ['|',('state_cheque','not in', ('sent')),('is_cash','=',False)]}"
+                        />
+                     <button name="return_send_cheque_cash" class="oe_highlight" string="Return To Customer"
+                                type="object"
+                                attrs="{'invisible': ['|',('state_cheque','!=','sent'),('is_cash','=',False)]}"
+                        />
 
 
                 </header>

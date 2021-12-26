@@ -36,6 +36,7 @@
         <field name="arch" type="xml">
             <field name="move_id" position="after">
                 <field name="journal_id" optional='hide'/>
+                <field name="cheque_number" optional='hide'/>
             </field>
         </field>
     </record>

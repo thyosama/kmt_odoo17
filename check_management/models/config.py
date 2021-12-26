@@ -12,7 +12,7 @@ class Company(models.Model):
     ks_payment_return_cash = fields.Boolean(string="Return Cheque if pay cash")
     middle_account = fields.Boolean("Middle Account")
     ks_payment_return_cash_send = fields.Boolean(string="Return Cheque if pay cash Send")
-    ks_payment_cash = fields.Boolean(string="Payment Cash Send")
+    x_ks_payment_cash_send = fields.Boolean(string="Payment Cash Send")
 
 
 class KSResConfigSettings(models.TransientModel):
@@ -27,3 +27,5 @@ class KSResConfigSettings(models.TransientModel):
     ks_payment_return_cash = fields.Boolean(related='company_id.ks_payment_return_cash', readonly=False,
                                             string="Return Cheque if pay cash")
     middle_account = fields.Boolean(string="Middle Account", related='company_id.middle_account', readonly=False)
+    ks_payment_return_cash_send = fields.Boolean(string="Return Cheque if pay cash Send",related='company_id.ks_payment_return_cash_send', readonly=False)
+    ks_payment_cash_send = fields.Boolean(string="Payment Cash Send",related='company_id.x_ks_payment_cash_send', readonly=False)
