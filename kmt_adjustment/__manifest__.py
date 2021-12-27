@@ -11,9 +11,10 @@
     'data': [
         'security/ir.model.access.csv',
         'views/stock.xml',
-        'views/invoice.xml',
+        # 'views/invoice.xml',
         'views/sale.xml',
         'views/purchase.xml',
         'report/purchase.xml',
+        'report/sale.xml',
     ],
 }

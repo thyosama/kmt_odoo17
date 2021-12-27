@@ -28,8 +28,13 @@ class SaleOrderLine(models.Model):
             rec.product_availability = '2'
             qunat_ids = self.env['stock.quant'].search([
                 ('product_id', '=', rec.product_id.id),
-                ('location_id.warehouse_id', '=', rec.warehouse_id.id),
+                ('location_id', '=', rec.warehouse_id.lot_stock_id.id),
+                ('location_id.usage', 'in', ['internal', 'transit'])
             ])
+            print(qunat_ids)
+            for l in qunat_ids:
+                print(">>>>>>>>>>>", l.quantity)
             x_quantity = sum(line.quantity for line in qunat_ids)
+            print("ZZZZZZZZZZZZZZZZZZZZZZZZZZz ",x_quantity)
             if x_quantity>0:
                 rec.product_availability = '1'
