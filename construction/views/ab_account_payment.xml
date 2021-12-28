@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-       <record id="payment_inherited_form_invoice" model="ir.ui.view">
+        <record id="payment_inherited_form_invoice" model="ir.ui.view">
             <field name="name">payment_inherited_form_installment</field>
             <field name="model">account.payment</field>
             <field name="priority">1000</field>
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,posted" />
+                        <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
                     </header>
                     <sheet>
                         <group>
@@ -22,37 +22,37 @@
                                 <field name="company_id" invisible="1"/>
 
 
-
                             </group>
                             <group>
-                                 <field name="journal_id"  attrs="{'readonly':[('state','=','posted')],'required':True}"
-                                        domain="[('type','in',('cash','bank'))]"/>
-                                        <field name="payment_method_id"  attrs="{'readonly':[('state','=','posted')],'required':True}"/>
+                                <field name="journal_id" attrs="{'readonly':[('state','=','posted')],'required':True}"
+                                       domain="[('type','in',('cash','bank'))]"/>
+                                <field name="payment_method_id"
+                                       attrs="{'readonly':[('state','=','posted')],'required':True}"/>
                             </group>
                         </group>
                     </sheet>
                     <footer>
 
-                         <button name="action_post" string="Valdiate" type="object"/>
+                        <button name="action_post" string="Valdiate" type="object"/>
                         <button string="Cancel" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>
 
             </field>
-     </record>
-        <!-- Inherit Form View to Modify it -->
-        <record id="construction_view_account_payment_form" model="ir.ui.view">
-            <field name="name">construction_view_account_payment_form</field>
-            <field name="model">account.payment</field>
-            <field name="inherit_id" ref="account.view_account_payment_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='partner_bank_id']" position="after">
-                    <field name="type_contract" invisible="1"/>
-                    <field name="contract_id"/>
-
-                </xpath>
-            </field>
         </record>
+        <!-- Abdulrhman -->
+<!--        <record id="construction_view_account_payment_form" model="ir.ui.view">-->
+<!--            <field name="name">construction_view_account_payment_form</field>-->
+<!--            <field name="model">account.payment</field>-->
+<!--            <field name="inherit_id" ref="account.view_account_payment_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='ref']" position="after">-->
+<!--                    <field name="paired_internal_transfer_payment_id" invisible="1"/>-->
+<!--                    <field name="type_contract" invisible="1"/>-->
+<!--                    <field name="contract_id"/>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
 
         <!-- Inherit Form View to Modify it -->
 
