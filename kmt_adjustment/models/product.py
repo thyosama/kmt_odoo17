@@ -8,7 +8,7 @@ class ProductTemplate(models.Model):
     _inherit = "product.template"
 
     @api.constrains('default_code')
-    def constrains_default_code(self):
+    def constrains_product_default_code(self):
         for rec in self:
             product_id = self.env['product.template'].search([
                 ('default_code', '=', rec.default_code),
@@ -23,7 +23,7 @@ class ProductProduct(models.Model):
     _inherit = "product.product"
 
     @api.constrains('default_code')
-    def constrains_default_code(self):
+    def constrains_template_default_code(self):
         for rec in self:
             product_id = self.env['product.product'].search([
                 ('default_code', '=', rec.default_code),

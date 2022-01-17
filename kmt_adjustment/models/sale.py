@@ -22,7 +22,7 @@ class SaleOrderLine(models.Model):
         selection=[('1', 'Stock'),
                    ('2', 'Not Stock')], compute='compute_product_availability')
 
-    @api.depends('name', 'product_id')
+    @api.depends('name', 'product_id', 'product_uom_qty')
     def compute_product_availability(self):
         for rec in self:
             rec.product_availability = '2'
@@ -31,10 +31,6 @@ class SaleOrderLine(models.Model):
                 ('location_id', '=', rec.warehouse_id.lot_stock_id.id),
                 ('location_id.usage', 'in', ['internal', 'transit'])
             ])
-            print(qunat_ids)
-            for l in qunat_ids:
-                print(">>>>>>>>>>>", l.quantity)
             x_quantity = sum(line.quantity for line in qunat_ids)
-            print("ZZZZZZZZZZZZZZZZZZZZZZZZZZz ",x_quantity)
-            if x_quantity>0:
+            if x_quantity - rec.product_uom_qty>0:
                 rec.product_availability = '1'
