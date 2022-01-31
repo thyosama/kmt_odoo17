@@ -32,5 +32,5 @@ class SaleOrderLine(models.Model):
                 ('location_id.usage', 'in', ['internal', 'transit'])
             ])
             x_quantity = sum(line.quantity for line in qunat_ids)
-            if x_quantity - rec.product_uom_qty>=0:
+            if x_quantity - rec.product_uom_qty >= 0:
                 rec.product_availability = '1'
