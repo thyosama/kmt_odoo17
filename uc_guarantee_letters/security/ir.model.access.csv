@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_letter_guarantee,letter_guarantee.letter_guarantee,model_guarantee_letter,account.group_account_invoice,1,1,1,0
+access_raise_guarantee,raise_guarantee.raise_guarantee,model_guarantee_increase,account.group_account_invoice,1,1,1,0
+access_extend_guarantee,extend_guarantee.extend_guarantee,model_guarantee_extension,account.group_account_invoice,1,1,1,0
+access_down_guarantee,down_guarantee.down_guarantee,model_guarantee_reduction,account.group_account_invoice,1,1,1,0
+access_finish_guarantee,finish_guarantee.closing_guarantee,model_guarantee_closing,account.group_account_invoice,1,1,1,0
+access_send_guarantee,send_guarantee.send_guarantee,model_guarantee_send,account.group_account_invoice,1,1,1,0
+access_recieve_guarantee,recieve_guarantee.recieve_guarantee,model_guarantee_recieve,account.group_account_invoice,1,1,1,0
+access_letter_guarantee_setting,letter_guarantee_setting.letter_guarantee_setting,model_guarantee_letter_setting,account.group_account_invoice,1,1,1,0

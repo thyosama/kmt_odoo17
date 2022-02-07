@@ -1,0 +1,41 @@
+<odoo>
+    <data>
+        <record id="letter_guarantee_setting_tree_view" model="ir.ui.view">
+            <field name="name">guarantee.letter.setting</field>
+            <field name="model">guarantee.letter.setting</field>
+            <field name="arch" type="xml">
+                <tree string="guarantee.letter.setting">
+                    <field name="name"/>
+                    <field name="account_id"/>
+                    <field name="bank_expense_account_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="letter_guarantee_setting_form_view" model="ir.ui.view">
+            <field name="name">guarantee.letter.setting</field>
+            <field name="model">guarantee.letter.setting</field>
+            <field name="arch" type="xml">
+                <form string="guarantee.letter.setting">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="account_id"/>
+                            <field name="letter_type"/>
+                            <field name="bank_expense_account_id"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="letter_guarantee_setting_action_view" model="ir.actions.act_window">
+            <field name="name">Gurantee Letter Setting</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">guarantee.letter.setting</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="letter_guarantee_config_menu" name="Gurantee Letter Config" parent="letter_guarantee_root_menu"
+                  action="letter_guarantee_setting_action_view" sequence="1"/>
+
+    </data>
+</odoo>

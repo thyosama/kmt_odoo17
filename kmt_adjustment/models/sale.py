@@ -8,6 +8,8 @@ class SaleOrder(models.Model):
 
     client_po_number = fields.Char('Client P.O Number ')
 
+    vendor_code = fields.Char(string="Vendor Code", related='partner_id.vendor_code',store=True)
+
     def _prepare_invoice(self):
         invoice_vals = super(SaleOrder, self)._prepare_invoice()
         invoice_vals['client_po_number'] = self.client_po_number
@@ -15,7 +17,7 @@ class SaleOrder(models.Model):
 
 
 class SaleOrderLine(models.Model):
-    _inherit="sale.order.line"
+    _inherit = "sale.order.line"
 
     product_availability = fields.Selection(
         string='Product Availability',
@@ -34,3 +36,9 @@ class SaleOrderLine(models.Model):
             x_quantity = sum(line.quantity for line in qunat_ids)
             if x_quantity - rec.product_uom_qty >= 0:
                 rec.product_availability = '1'
+
+
+class ResPartnerCode(models.Model):
+    _inherit = 'res.partner'
+
+    vendor_code = fields.Char(string="Vendor Code", )

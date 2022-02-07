@@ -1,0 +1,85 @@
+<odoo>
+    <data>
+        <record id="send_guarantee_tree_view" model="ir.ui.view">
+            <field name="name">send Gurantee</field>
+            <field name="model">guarantee.send</field>
+            <field name="arch" type="xml">
+                <tree string="send Gurantee">
+                    <field name="number"/>
+                    <field name="partner_id"/>
+                    <field name="journal_id"/>
+                    <field name="letter_type"/>
+                    <field name="letter_amount"/>
+                    <field name="transaction_date"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="letter_number"/>
+                    <field name="cheque_no"/>
+                    <field name="cheque_amount"/>
+                </tree>
+            </field>
+        </record>
+        <record id="send_guarantee_form_view" model="ir.ui.view">
+            <field name="name">send Gurantee</field>
+            <field name="model">guarantee.send</field>
+            <field name="arch" type="xml">
+                <form string="send Gurantee">
+
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="number" readonly="1"/>
+                                <field name="letter_guarantee_id" required="1"/>
+                                <field name="transaction_date" readonly="1"/>
+                                <field name="start_date" readonly="1"/>
+                                <field name="bank_expense_account_id" invisible="1"/>
+                                <field name="cheque_no"/>
+
+
+
+
+                            </group>
+                            <group>
+                                <field name="partner_id" readonly="1"/>
+                                <field name="journal_id" readonly="1"/>
+                                <field name="letter_amount" readonly="1"/>
+                                <field name="end_date" readonly="1"/>
+                                <field name="letter_type" readonly="1"/>
+                                <field name="letter_number" readonly="1"/>
+                                <field name="cheque_amount"/>
+
+                            </group>
+                        </group>
+                        <group>
+                            <field name="note"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="send_guarantee_action_view" model="ir.actions.act_window">
+            <field name="name">Send Gurantee</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">guarantee.send</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="send_guarantee_sequence" model="ir.sequence">
+            <field name="name">send guarantee</field>
+            <field name="code">guarantee.send</field>
+            <field name="prefix">GS</field>
+            <field name="padding">0</field>
+        </record>
+
+        <record id="send_guarantee_action_view" model="ir.actions.act_window">
+            <field name="name">Send Gurantee</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">guarantee.send</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="send_guarantee_act_menu" name="Send Gurantee" parent="letter_guarantee_categ_menu"
+                  action="send_guarantee_action_view"/>
+
+
+    </data>
+</odoo>

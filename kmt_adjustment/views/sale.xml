@@ -6,12 +6,38 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='payment_term_id']" position="after">
-                    <field name="client_po_number"  />
+                    <field name="client_po_number"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="vendor_code"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
-                    <field name="product_availability" />
+                    <field name="product_availability"/>
                 </xpath>
             </field>
         </record>
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="res_partner_vendors" model="ir.ui.view">
+            <field name="name">res.partner.vendors</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='vat']" position="before">
+                    <field name="vendor_code"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <template id="vendor_code_sale_order_report_document" inherit_id="sale.report_saleorder_document">
+            <xpath expr="//div[@id='informations']" position="inside">
+                <div t-if="doc.vendor_code" class="col-auto col-3 mw-100 mb-2">
+                    <strong>Vendor Code:</strong>
+                    <p class="m-0" t-field="doc.vendor_code"/>
+                </div>
+            </xpath>
+        </template>
     </data>
 </odoo>

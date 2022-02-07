@@ -1,0 +1,89 @@
+<odoo>
+    <data>
+        <record id="finish_guarantee_tree_view" model="ir.ui.view">
+            <field name="name">finish Gurantee</field>
+            <field name="model">guarantee.closing</field>
+            <field name="arch" type="xml">
+                <tree string="finish Gurantee">
+                     <field name="number"/>
+                     <field name="letter_guarantee_id"/>
+                    <field name="partner_id"/>
+                    <field name="journal_id"/>
+                    <field name="letter_type"/>
+                    <field name="letter_amount"/>
+                    <field name="transaction_date"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="down_amount"/>
+                    <field name="extend_start_date"/>
+                    <field name="extend_end_date"/>
+                </tree>
+            </field>
+        </record>
+        <record id="finish_guarantee_form_view" model="ir.ui.view">
+            <field name="name">finish Gurantee</field>
+            <field name="model">guarantee.closing</field>
+            <field name="arch" type="xml">
+                <form string="down Gurantee">
+                    <header>
+                        <button name="confirm_button" string="Confirm" type="object"
+                                class="oe_highlight" attrs="{'invisible':[('state','=', 'confirm')]} "/>
+                        <button name="cancel_button" string="Cancel" type="object"
+                                class="oe_highlight"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_colors='{"confirm":"blue"}'/>
+
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="number" readonly="1"/>
+                                <field name="letter_guarantee_id" required="1"/>
+                                <field name="transaction_date" readonly="1"/>
+                                <field name="start_date" readonly="1"/>
+                                <field name="end_date" readonly="1"/>
+                                <field name="move_id" readonly="1"/>
+                                <field name="extend_end_date" invisible="0"/>
+                                <field name="is_close"  invisible="0"/>
+
+
+                            </group>
+                            <group>
+                                <field name="partner_id" readonly="1"/>
+                                <field name="journal_id" readonly="1"/>
+                                <field name="letter_amount" readonly="1"/>
+                                <field name="raise_amount" required="1" />
+                                <field name="down_amount" required="1"/>
+                                <field name="net_letter_amount" />
+                                <field name="cov_letter_amount" />
+                                <field name="letter_type" readonly="1"/>
+                                <field name="config_id" readonly="1"/>
+
+                            </group>
+                        </group>
+                        <group>
+                            <field name="note"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="close_guarantee_action_view" model="ir.actions.act_window">
+            <field name="name">Close Gurantee</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">guarantee.closing</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="close_guarantee_act_menu" name="Close Gurantee" parent="letter_guarantee_categ_menu"
+                  action="close_guarantee_action_view" />
+
+        <record id="close_guarantee_sequence" model="ir.sequence">
+            <field name="name">close guarantee</field>
+            <field name="code">guarantee.closing</field>
+            <field name="prefix">GC</field>
+            <field name="padding">0</field>
+        </record>
+
+
+    </data>
+</odoo>
