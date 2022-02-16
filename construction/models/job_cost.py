@@ -24,15 +24,15 @@ class Tender(models.Model):
     partner_id = fields.Many2one("res.partner","Customer")
 
     material_ids = fields.One2many('construction.material',"job_id")
-    total_material = fields.Float(compute='_compute_total_material',string="Total Material",store=True,index=True)
+    total_material = fields.Float(compute='_compute_total_material',string="Material",store=True,index=True)
     labour_ids = fields.One2many('construction.labour',"job_id")
-    total_labour = fields.Float(compute='_compute_total_labour',string="Total Labours",store=True,index=True)
+    total_labour = fields.Float(compute='_compute_total_labour',string="Labours",store=True,index=True)
     expense_ids = fields.One2many('construction.expense',"job_id")
-    total_expense = fields.Float(compute='_compute_total_expense',string="Total Expenses",store=True,index=True)
+    total_expense = fields.Float(compute='_compute_total_expense',string="Expenses",store=True,index=True)
     subconstractor_ids = fields.One2many('construction.subconstractor',"job_id")
-    total_subconstractor = fields.Float(compute='_compute_total_subconstractor',string="Total Subconstractors",store=True,index=True)
+    total_subconstractor = fields.Float(compute='_compute_total_subconstractor',string="Subcontractor",store=True,index=True)
     equipment_ids = fields.One2many('construction.equipment',"job_id")
-    total_equipment = fields.Float(compute='_compute_total_equipment',string="Total Equipment",store=True,index=True)
+    total_equipment = fields.Float(compute='_compute_total_equipment',string="Equipment",store=True,index=True)
     total_value_all = fields.Float(compute='_compute_all_values',string="Total",store=True,index=True)
     is_template = fields.Boolean(default=False)
     job_template = fields.Many2one('construction.job.cost',string="Break Down Template",domain="[('is_template','=',True)]")
@@ -46,11 +46,40 @@ class Tender(models.Model):
     profit_amount = fields.Float("Profit Amount",compute="_get_profit_amount_prectage",store=True,index=True)
     value_indirect = fields.Float("Value",compute='_get_total_indirect_value',store=True,index=True)
     gross_profit = fields.Float("Gross Value",compute='_get_total_gross_value',store=True,index=True)
+    gross_profit_total = fields.Float("Total Gross Value",compute='_get_total_gross_value',store=True,index=True)
     sales_price = fields.Float("Sales Price",compute='_get_total_sale_price',store=True,index=True)
+    total_sales_price = fields.Float("Total Sales Price",compute='_get_total_sale_price',store=True,index=True)
     state = fields.Selection([('draft','draft'),('confirm','Confirm'),('approve','Approve'),
                               ('quotation','Financial Offer')],string="State",default="draft")
     sales_price_update = fields.Float("Sales Price")
     name2 = fields.Char("Name")
+    total_material_with_qty = fields.Float(string='Material', compute="compute_total_with_qty", store=True, index=True)
+    total_labour_with_qty = fields.Float(string='Labour', compute="compute_total_with_qty", store=True, index=True)
+    total_expenses_with_qty = fields.Float(string='Expense', compute="compute_total_with_qty", store=True, index=True)
+    total_subcontractor_with_qty = fields.Float(string='Subcontractor', compute="compute_total_with_qty", store=True, index=True)
+    total_equipment_with_qty = fields.Float(string='Equipment', compute="compute_total_with_qty", store=True, index=True)
+    total_value_all_with_qty  = fields.Float(string='Total', compute="compute_total_with_qty", store=True, index=True)
+
+    @api.depends('equipment_ids', 'labour_ids', 'expense_ids', 'subconstractor_ids', 'equipment_ids', 'qty')
+    def compute_total_with_qty(self):
+        for record in self:
+            record.total_material_with_qty = sum(line.cost_subtotal for line in record.material_ids) * record.qty
+            record.total_labour_with_qty = sum(line.cost_subtotal for line in record.labour_ids)* record.qty
+            record.total_expenses_with_qty = sum(line.cost_subtotal for line in record.expense_ids)* record.qty
+            record.total_subcontractor_with_qty = sum(line.cost_subtotal for line in record.subconstractor_ids)* record.qty
+            record.total_equipment_with_qty = sum(line.cost_subtotal for line in record.equipment_ids)* record.qty
+            record.total_value_all_with_qty = record.total_material_with_qty + record.total_labour_with_qty + record.total_expenses_with_qty + record.total_subcontractor_with_qty + record.total_equipment_with_qty
+            # for line in record.material_ids:
+            #     material += line.cost_subtotal
+            # for line in record.labour_ids:
+            #     labour += line.cost_subtotal
+            # for line in record.expense_ids:
+            #     expenses += line.cost_subtotal
+            # for line in record.subconstractor_ids:
+            #     subcontractor += line.cost_subtotal
+            # for line in record.equipment_ids:
+            #     equipment += line.cost_subtotal
+            #
 
 
     @api.depends('code','project_id','name2')
@@ -81,15 +110,16 @@ class Tender(models.Model):
         self.state = 'quotation'
         #self.project_id.create_quotation()
 
-    @api.depends("gross_profit","tax_amount")
+    @api.depends("gross_profit","tax_amount", 'qty')
     def _get_total_sale_price(self):
         self.sales_price =0
         for rec in self:
             rec.sales_price = rec.gross_profit+rec.tax_amount
+            rec.total_sales_price = (rec.gross_profit+rec.tax_amount)* rec.qty
             rec.tender_id.price_unit = rec.sales_price
 
 
-    @api.depends("profit_amount", "value_indirect")
+    @api.depends("profit_amount", "value_indirect", 'qty')
     def _get_total_gross_value(self):
         self.gross_profit = 0
         for rec in self:
@@ -98,6 +128,7 @@ class Tender(models.Model):
             elif rec.profit_type == 'amount' :
                 rec.profit_percentage = (rec.profit_amount * 100) / rec.value_indirect
             rec.gross_profit = rec.value_indirect + rec.profit_amount
+            rec.gross_profit_total = rec.value_indirect + rec.profit_amount * rec.qty
 
 
     @api.depends("tax_percentage","gross_profit")
@@ -236,6 +267,7 @@ class Tender(models.Model):
             dif =''
             if rec.start_date and rec.end_date:
                 self.dif = rec.end_date - rec.start_date
+
     @api.depends('total_material','total_labour','total_expense','total_subconstractor','total_equipment')
     def _compute_all_values(self):
         for rec in self:
@@ -248,8 +280,6 @@ class Tender(models.Model):
         for record in self:
             for rec in record.equipment_ids:
                 record.total_equipment += rec.cost_subtotal
-
-
 
     @api.depends('subconstractor_ids')
     def _compute_total_subconstractor(self):

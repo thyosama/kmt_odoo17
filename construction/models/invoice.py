@@ -7,12 +7,14 @@ import json
 
 
 
-class Move(models.Model):
+
+class AccountMove(models.Model):
     _inherit = 'account.move'
     invoice_id = fields.Many2one('account.invoice', string="Invoice")
-class account_move_line(models.Model):
-    _inherit = 'account.move.line'
 
+
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
     type_invoice = fields.Selection(related='move_id.invoice_id.type',store=True,index=True)
 
 
@@ -23,6 +25,7 @@ class Invoice(models.Model):
     type_move = fields.Selection([('process', 'Process'), ('final', 'Final')], string="Type")
     contract_id = fields.Many2one("construction.contract", string="Contract")
     contract_value = fields.Float(related='contract_id.total_value',store=True,index=True)
+    contract_date = fields.Date(related='contract_id.date', string="Contract Date", store=True, index=True)
     contract_date = fields.Date(related='contract_id.date', string="Contract Date", store=True, index=True)
     number_manual = fields.Char("Manual number")
     project_id = fields.Many2one(related='contract_id.project_id', string="Project",store=True,index=True)
@@ -44,8 +47,8 @@ class Invoice(models.Model):
     current_total_value = fields.Float("Total Current Value", compute='_calculate_total_value',store=True,index=True)
     current_total_value_deduction = fields.Float("current deduction", compute='_calculate_total_deduction_addition',store=True,index=True)
     current_total_value_addition = fields.Float("Current Additional", compute='_calculate_total_deduction_addition',store=True,index=True)
-    payment_amount = fields.Float("payment Amount")
-    payment_count = fields.Integer("payment Count")
+    payment_amount = fields.Float("payment Amount", compute="compute_payment_amount")
+    payment_count = fields.Integer("payment Count", compute='compute_payment_count')
     payment_state = fields.Selection([('not_paid', 'Not paid'), ('in_payment', 'Partially Paid'), ('paid', 'Paid')]
                                      , compute='_get_payment_state',store=True,index=True)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
@@ -54,6 +57,37 @@ class Invoice(models.Model):
     is_last = fields.Boolean(compute='_get_last_invoice')
     payment_ids_line = fields.Many2many("account.payment","p_id","invoice_id",string="Payment",compute='get_payment_ids')
     is_payment_visible = fields.Boolean(compute='get_payment_ids')
+
+    def register_payment(self):
+        view_form = self.env.ref('construction.invoice_payment_view_form')
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Payments',
+            'view_mode': 'form',
+            'views': [(view_form.id, 'form')],
+            'res_model': 'construction.payment.wizard',
+            'target': 'new',
+            'domain': [('invoice_id', '=', self.id)],
+            'context': {
+                'default_invoice_id': self.id,
+                'default_partner_id': self.sub_contactor.id,
+                'default_contract_id': self.contract_id.id,
+                'default_project_id': self.project_id.id,
+            }
+        }
+
+    @api.depends('payment_ids_line')
+    def compute_payment_amount(self):
+        for rec in self:
+            payment_ids = self.env['account.payment'].search([('invoice_ids', '=', rec.id)])
+            print()
+            rec.payment_amount = sum(l.amount for l in payment_ids)
+
+    @api.depends('payment_ids_line')
+    def compute_payment_count(self):
+        for rec in self:
+            payment_ids = self.env['account.payment'].search([('invoice_ids', '=', self.id)])
+            rec.payment_count = len(payment_ids.ids)
 
     @api.depends('state','payment_state','remaining_value')
     def get_payment_ids(self):
@@ -303,7 +337,7 @@ class Invoice(models.Model):
             self.get_supconstractor_contract_line()
 
 
-    @api.depends('payment_amount','state')
+    @api.depends('state')
     def _get_payment_state(self):
         for rec in self:
             rec.payment_state='not_paid'
@@ -358,8 +392,7 @@ class Invoice(models.Model):
 
     def create_journal_enteries(self):
         lines = self._get_move_line()
-
-
+        print(">>>>>>>>>xxxx>>>>>>>>>> ", lines)
 
         journal = ''
         partner_id=''
@@ -374,17 +407,14 @@ class Invoice(models.Model):
                 raise ValidationError("Please Select journal")
             journal = self.company_id.ks_middle_account_sup.id
             partner_id = self.sub_contactor.id
-
         move2 = self.env['account.move'].create({'date': datetime.today(),
                                                  'partner_id': partner_id,
-
                                                  'company_id': self.company_id.id,
                                                  'journal_id': journal,
                                                  'name': self._get_payment_name(journal),
                                                  'project_id':self.project_id.id,
                                                  'line_ids': lines,
                                                  'invoice_id': self.id
-
                                                  })
 
     def _get_payment_name(self, journal):
@@ -404,7 +434,6 @@ class Invoice(models.Model):
                     'credit': round(rec.current_value,2),
                     'debit': 0,
                     'partner_id': self.sub_contactor.id,
-
                 }))
             for rec in self.allowance_ids:
                 debit += round(rec.current_value,2)
@@ -413,7 +442,6 @@ class Invoice(models.Model):
                     'debit': round(rec.current_value,2),
                     'credit': 0,
                     'partner_id': self.sub_contactor.id,
-
                 }))
         else:
             for rec in self.deduction_ids:
@@ -434,8 +462,6 @@ class Invoice(models.Model):
                     'partner_id': self.partner_id.id,
 
                 }))
-
-
         if self.type!='supconstractor':
             credit += round(self.current_total_value,2)
             lines.append((0, 0, {
@@ -450,24 +476,23 @@ class Invoice(models.Model):
                 'credit': 0,
                 'debit': round(credit - debit,2),
                 'partner_id': self.partner_id.id,
-
             }))
         elif self.type=='supconstractor':
+            print(">>>>>>>>>>>XXX ",self.current_total_value)
             debit += round(self.current_total_value,2)
-
             lines.append((0, 0, {
-                'account_id': self.contract_id.account_id.id,
+                'account_id': self.contract_id.revenue_account_id.id,
                 'credit': 0,
                 'debit': round(self.current_total_value,2),
                 'partner_id': self.sub_contactor.id,
-
             }))
+            print(debit, ">>>>>>>>>>>XXX ", credit)
+            print(debit-credit, ">>>>>>>>>>>XXX ", round(debit-credit,2))
             lines.append((0, 0, {
-                'account_id': self.contract_id.revenue_account_id.id,
+                'account_id': self.contract_id.account_id.id,
                 'credit': round(debit-credit,2),
                 'debit':  0,
                 'partner_id': self.sub_contactor.id,
-
             }))
 
 
@@ -516,18 +541,22 @@ class Invoice(models.Model):
         amount = 0
         for rec in payment_id:
             amount += rec.amount
-        journal,partner_id = '',''
+        journal,partner_id,payment_type,partner_type = '','','',''
         if self.type == 'owner':
             if not self.company_id.ks_middle_journal_owner:
                 raise ValidationError("Please Select journal")
             journal = self.company_id.ks_middle_journal_owner.id
             partner_id = self.partner_id.id
+            payment_type='inbound'
+            partner_type='customer'
 
         elif self.type == 'supconstractor':
             if not self.company_id.ks_middle_account_sup:
                 raise ValidationError("Please Select journal")
             journal = self.company_id.ks_middle_account_sup.id
             partner_id = self.contract_id.sub_contactor.id
+            payment_type = 'outbound'
+            partner_type='supplier'
 
 
 
@@ -539,6 +568,8 @@ class Invoice(models.Model):
             'res_model': 'account.payment',
             'target': 'new',
             'context': {'default_invoice_ids': self.id, 'default_journal_id': journal,
+                        'default_payment_type':payment_type,
+                        'default_partner_type':partner_type,
                         'default_partner_id': partner_id, 'default_amount': self.remaining_value}
 
         }
@@ -562,7 +593,6 @@ class Invoice(models.Model):
             'res_model': 'account.payment',
             'target': 'current',
             'domain': [('invoice_ids', '=', self.id)]
-
         }
     def unlink(self):
         for rec in self:
@@ -585,7 +615,13 @@ class InvoiceLine(models.Model):
 
     project_id = fields.Many2one(related='invoice_id.project_id',store=True,index=True)
     tender_id = fields.Many2one('construction.tender', string="Tender ID")
-    name = fields.Char(related='tender_id.description', string="Description")
+    # name = fields.Text(related='tender_id.description', string="Description")  #Abdulrhman comment
+    name = fields.Text(string="Description")
+
+    @api.onchange('tender_id')
+    def change_tender_id(self):
+        self.name = self.tender_id.description
+
     code = fields.Char(related='tender_id.code', string="Code")
     item = fields.Many2one(related='tender_id.item', string='Item',store=True,index=True)
     uom_id = fields.Many2one(related='item.uom_id', string="Unit of Measure",store=True,index=True)
@@ -710,7 +746,7 @@ class InvoiceLine(models.Model):
     @api.onchange('current_qty')
     def _onchange_current_qty(self):
         if self.current_qty > self.contract_qty:
-            raise ValidationError("Current Qty must be less than or equal Contarct Qty")
+            raise ValidationError("Current Qty must be less than or equal Contarct Qty ...!")
     @api.onchange('quantity')
     def _onchange_q(self):
         if self.quantity:

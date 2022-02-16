@@ -29,7 +29,8 @@
 <!--                    </div>-->
                     </group>
                     <group>
-                        <field name="counterpart_account_id" string="Revenue Account" required="1"/>
+                        <field name="counterpart_account_id" string="Revenue Account" attrs="{'invisible':[('type', '!=', 'owner')]}" required="1"/>
+                        <field name="counterpart_account_id" string="Cost Account" attrs="{'invisible':[('type', '=', 'owner')]}" required="1"/>
                         <field name="type" readonly="1"/>
 
 

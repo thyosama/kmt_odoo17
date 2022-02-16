@@ -5,15 +5,17 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header attrs="{'invisible':[('is_template','=',True)]}">
-                      <button name="action_confirm" string="Confim" states="draft" type="object" class="btn-primary"/>
-                      <button name="action_approve" string="Approve" states="confirm" type="object" class="btn-primary"/>
-                      <button name="action_quotation" string="Create Financial Offer" states="approve" type="object" class="btn-primary"/>
-                      <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approve,quotation"/>
+                    <button name="action_confirm" string="Confim" states="draft" type="object" class="btn-primary"/>
+                    <button name="action_approve" string="Approve" states="confirm" type="object" class="btn-primary"/>
+                    <button name="action_quotation" string="Create Financial Offer" states="approve" type="object"
+                            class="btn-primary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approve,quotation"/>
                 </header>
-                <sheet >
+                <sheet>
                     <h2>
                         <field name="is_template" invisible="1"/>
-                        <field name="name" attrs="{'invisible':[('is_template','=',True)],'readonly':[('is_template','=',False)]}"/>
+                        <field name="name"
+                               attrs="{'invisible':[('is_template','=',True)],'readonly':[('is_template','=',False)]}"/>
                         <field name="name2" attrs="{'invisible':[('is_template','=',False)]}"/>
                     </h2>
                     <group>
@@ -94,7 +96,7 @@
                                     <field name="description"/>
                                     <field name="uom_id"/>
 
-                                    <field name="planned_qty"  readonly="1" sum="Total Planned Qty"/>
+                                    <field name="planned_qty" readonly="1" sum="Total Planned Qty"/>
                                     <field name="cost_unit" sum="Total Unit cost"/>
                                     <field name="cost_subtotal" sum="Total SubTotal"/>
                                     <field name="total_qty" sum="Total SubTotal"/>
@@ -228,51 +230,58 @@
                             </field>
                         </page>
                         <page string="Break Down Estimation">
-                             <group>
                             <group>
-                                <br></br>
-                                <field name="indirect_type"/>
-                                <br></br>
-                                <br></br>
-                                <br></br>
-                                <br></br>
-                                <br></br>
-                                <field name="profit_type"/>
-                                <br></br>
-                                <br></br>
-                                <br></br>
-                                <br></br>
-                                <br></br>
-                                <br></br>
-                                <field name="tax_percentage"/>
-                                <field name="tax_amount"/>
-                                <br></br>
-                                <p>---------</p>
-                                 <div>
-                                     <label for="sales_price" name="Sales Price"/>
-                                <field name='sales_price'/>
-                                     <button type="object" string="Update" name="update_sales_price"
-                                             attrs="{'invisible':[('state','=','quotation')]}"/>
-                                </div>
-                            </group>
-                            <group>
-                                <field name="total_value_all"/>
-                                <field name="indirect_percentage"
-                                       attrs="{'readonly':[('indirect_type','=','amount')]}"/>
-                                <field name="indirect_amount"
-                                       attrs="{'readonly':[('indirect_type','=','percentage')]}"/>
-                                <field name='value_indirect'/>
-                                <field name="profit_percentage" attrs="{'readonly':[('profit_type','=','amount')]}"/>
-                                <field name="profit_amount" attrs="{'readonly':[('profit_type','=','percentage')]}"/>
-                                <field name='gross_profit'/>
-                            </group>
+                                <group>
+                                    <br></br>
+                                    <field name="indirect_type"/>
+                                    <br></br>
+                                    <br></br>
+                                    <br></br>
+                                    <br></br>
+                                    <br></br>
+                                    <field name="profit_type"/>
+                                    <br></br>
+                                    <br></br>
+                                    <br></br>
+                                    <br></br>
+                                    <br></br>
+                                    <br></br>
+                                    <field name="tax_percentage"/>
+                                    <field name="tax_amount"/>
+                                    <br></br>
+                                    <p>---------</p>
+                                    <div>
+                                        <label for="sales_price" name="Sales Price: "/>
+                                        <field name='sales_price'/>
+                                        <button type="object" string="Update" name="update_sales_price"
+                                                attrs="{'invisible':[('state','=','quotation')]}"/>
+
+                                        <br />
+                                        <label for="total_sales_price" name="Sales Price: "/>
+                                        <field name="total_sales_price"/>
+                                    </div>
+                                </group>
+                                <group>
+                                    <field name="total_value_all"/>
+                                    <field name="indirect_percentage"
+                                           attrs="{'readonly':[('indirect_type','=','amount')]}"/>
+                                    <field name="indirect_amount"
+                                           attrs="{'readonly':[('indirect_type','=','percentage')]}"/>
+                                    <field name='value_indirect'/>
+                                    <field name="profit_percentage"
+                                           attrs="{'readonly':[('profit_type','=','amount')]}"/>
+                                    <field name="profit_amount"
+                                           attrs="{'readonly':[('profit_type','=','percentage')]}"/>
+                                    <field name='gross_profit'/>
+                                    <field name='gross_profit_total'/>
+                                </group>
 
 
-                        </group>
+                            </group>
                         </page>
                     </notebook>
-                    <group>
-                        <group class="oe_subtotal_footer oe_right">
+                    <group class="oe_subtotal_footer oe_right">
+                        <group string="Total Per Unit" class="oe_inline">
                             <field name="total_material"/>
                             <field name="total_labour"/>
                             <field name="total_expense"/>
@@ -284,8 +293,18 @@
                             <field name="total_value_all" nolabel="1" class="oe_subtotal_footer_separator"
                                    widget="monetary" options="{'currency_field': 'currency_id'}"/>
                         </group>
-
-
+                        <group string="Total With Quantity" class="oe_inline">
+                            <field name="total_material_with_qty"/>
+                            <field name="total_labour_with_qty"/>
+                            <field name="total_expenses_with_qty"/>
+                            <field name="total_subcontractor_with_qty"/>
+                            <field name="total_equipment_with_qty"/>
+                            <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                <label for="total_value_all_with_qty"/>
+                            </div>
+                            <field name="total_value_all_with_qty" nolabel="1" class="oe_subtotal_footer_separator"
+                                   widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
                     </group>
                 </sheet>
 
@@ -309,12 +328,8 @@
                 <field name="status" required="1"/>
                 <field name="state"/>
                 <field name="sales_price"/>
-
                 <field name="notes"/>
-
             </tree>
-
-
         </field>
     </record>
 
@@ -336,20 +351,19 @@
     <record id="view_job_cost_fromm_update" model="ir.ui.view">
         <field name="name">view_job_cost_fromm_update</field>
         <field name="model">construction.job.cost</field>
-     <field name="priority">1004</field>
+        <field name="priority">1004</field>
         <field name="arch" type="xml">
             <form>
                 <group>
-
                     <field name="sales_price"/>
                     <field name="sales_price_update" required="1"/>
                 </group>
-                 <footer>
+                <footer>
                     <button name="update_price" class="oe_highlight" string="save" type="object"
 
-                            />
+                    />
                     or
-                    <button string="Cancel" class="oe_link" special="cancel" />
+                    <button string="Cancel" class="oe_link" special="cancel"/>
                 </footer>
             </form>
         </field>

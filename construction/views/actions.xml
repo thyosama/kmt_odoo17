@@ -34,21 +34,60 @@
     </record>
 
 
-    <record id="action_job_estimation" model="ir.actions.server">
-        <field name="name">Job Estimation</field>
+    <record id="action_job_estimation_indirect_type" model="ir.actions.server">
+        <field name="name">Job Estimation Indirect Type</field>
         <field name="model_id" ref="model_construction_job_cost"/>
         <field name="binding_model_id" ref="construction.model_construction_job_cost"/>
         <field name="binding_view_types">form,list</field>
         <field name="state">code</field>
         <field name="code">
             action = {
-
             'view_mode': 'form',
             'name': 'Job Estimaion',
             'res_model': 'construction.job.estimate',
             'type': 'ir.actions.act_window','target': 'new',
-            'context': {'default_job_cost_ids': [(4,rec.id )for rec in records]},
-
+            'context': {
+            'default_job_cost_ids': [(4,rec.id )for rec in records],
+            'default_wiz_type' : 'indirect_type'
+            },
+            }
+        </field>
+    </record>
+    <record id="action_job_estimation_profit_type" model="ir.actions.server">
+        <field name="name">Job Estimation Profit Type</field>
+        <field name="model_id" ref="model_construction_job_cost"/>
+        <field name="binding_model_id" ref="construction.model_construction_job_cost"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = {
+            'view_mode': 'form',
+            'name': 'Job Estimaion',
+            'res_model': 'construction.job.estimate',
+            'type': 'ir.actions.act_window','target': 'new',
+            'context': {
+                'default_job_cost_ids': [(4,rec.id )for rec in records],
+                'default_wiz_type' : 'profit_type'
+                },
+            }
+        </field>
+    </record>
+    <record id="action_job_estimation_tax_percent" model="ir.actions.server">
+        <field name="name">Job Estimation Tax Percentage</field>
+        <field name="model_id" ref="model_construction_job_cost"/>
+        <field name="binding_model_id" ref="construction.model_construction_job_cost"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = {
+            'view_mode': 'form',
+            'name': 'Job Estimaion',
+            'res_model': 'construction.job.estimate',
+            'type': 'ir.actions.act_window','target': 'new',
+            'context': {
+                'default_job_cost_ids': [(4,rec.id )for rec in records],
+                'default_wiz_type' : 'tax_percentage'
+                },
             }
         </field>
     </record>

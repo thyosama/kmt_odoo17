@@ -153,7 +153,7 @@
                                 <field name="tender_id" required="1" width="100px"/>
                                 <field name="code" readonly="1" width="100px"/>
                                 <field name="item" readonly="1" width="50px"/>
-                                <field name="name" readonly="1" width="100px"/>
+                                <field name="name" readonly="1" width="100px" force_save="1"/>
                                 <field name="sub_type" readonly="1"/>
                                 <field name="uom_id" readonly="1"/>
                                 <field name="type" invisible="1"/>
@@ -343,7 +343,7 @@
                                 <field name="tender_id" required="1" width="100px"/>
                                 <field name="code" readonly="1" width="100px"/>
                                 <field name="item" readonly="1" width="50px"/>
-                                <field name="name" readonly="1" width="100px"/>
+                                <field name="name" readonly="1" width="100px" force_save="1"/>
                                 <field name="sub_type" readonly="1"/>
                                 <field name="uom_id" readonly="1"/>
                                 <field name="type" invisible="1"/>

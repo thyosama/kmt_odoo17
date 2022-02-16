@@ -16,8 +16,8 @@
                 <field name="state" readonly="1"/>
                 <field name="status" required="1"/>
                 <field name="type" required="1"/>
-<!--                <field name="price_unit"/>-->
-<!--                <field name="total_value"/>-->
+                <!--                <field name="price_unit"/>-->
+                <!--                <field name="total_value"/>-->
 
             </tree>
         </field>
@@ -51,9 +51,8 @@
                 <group>
                     <group>
                         <field name="name"/>
+                        <!--    <field name="parent_id" />-->
                         <field name="partner_id" required="1"/>
-
-
                     </group>
                     <group>
                         <field name="created_date"/>
@@ -67,14 +66,14 @@
             <xpath expr="//notebook/page[1]" position="before">
                 <page string="Tender">
                     <field name="tender_ids">
-                        <tree editable="bottom" decoration-info="type=='main'" decoration-bf="type=='main'">
-
+                        <tree decoration-info="type=='main'" decoration-bf="type=='main'">
                             <field name="code" required="1"/>
                             <field name="parent_item"/>
                             <field name="item" required="1"/>
                             <field name="description" required="1"/>
                             <field name="uom_id"/>
-                            <field name="qty" attrs="{'readonly':[('type','=','main')],'required':True}"/>
+                            <field name="qty" attrs="{'readonly':[('type','=','main')],
+                            'required':[('type','!=','main')]}"/>
 
                             <field name="state" readonly="1"/>
                             <field name="status" required="1"/>
@@ -85,28 +84,31 @@
 
                             <field name="notes"/>
                             <button type="object" string="Create Child" name="create_child_tender"
-                                    attrs="{'invisible':[('type','!=','main')]}"/>
+                                    class="oe_edit_only" attrs="{'invisible':[('type','!=','main')]}"/>
 
 
                         </tree>
                         <form>
-
                             <group>
                                 <group>
                                     <field name="code" required="1"/>
+                                    <field name="parent_item"/>
                                     <field name="item" required="1"/>
                                     <field name="description" required="1"/>
-                                    <field name="uom_id" required="1"/>
-                                    <field name="state" readonly="1"/>
-                                    <!--                                            <field name="price_unit"/>-->
-                                    <!--                                            <field name="total_value"/>-->
-
+                                    <field name="uom_id"/>
                                 </group>
                                 <group>
-                                    <field name="qty" required="1"/>
-                                    <field name="type" required="1"/>
+                                    <field name="state" readonly="1"/>
                                     <field name="status" required="1"/>
+                                    <field name="type" required="1"/>
+                                    <field name="qty"
+                                           attrs="{'readonly':[('type','=','main')], 'required':[('type','!=','main')]}"/>
+                                    <field name="price_unit" readonly="1"/>
+                                    <field name="total_value"/>
+                                    <!--                                    <field name="parent_item" required="1"/>-->
                                     <field name="notes"/>
+                                    <button type="object" string="Create Child" name="create_child_tender"
+                                            class="oe_edit_only" attrs="{'invisible':[('type','!=','main')]}"/>
                                 </group>
                             </group>
                         </form>
@@ -141,7 +143,7 @@
             <form>
                 <sheet>
                     <field name="lines_id">
-                        <tree editable="bottom">
+                        <tree > <!-- editable="bottom" -->
                             <field name="code" required="1"/>
                             <field name="item" required="1"/>
                             <field name="description" required="1"/>

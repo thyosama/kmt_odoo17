@@ -1,16 +1,20 @@
-from odoo import models, fields, api,_
+from odoo import models, fields, api, _
 
 from datetime import datetime
 from odoo.exceptions import ValidationError
+
+
 class Project(models.Model):
     _inherit = "project.project"
 
+    # parent_id = fields.Many2one("project.project", string="Parent")
+    # child_ids = fields.One2many(comodel_name='project.project', inverse_name='parent_id', string='Children')
     partner_id = fields.Many2one("res.partner", string="Customer")
-    created_date = fields.Date("Created Date",default=datetime.today())
+    created_date = fields.Date("Created Date", default=datetime.today())
     consultant = fields.Many2one("res.partner", string="Consultant")
     tender_ids = fields.One2many("construction.tender", "project_id", string="Tenders")
     job_cost_count = fields.Integer()
-    manager_id  =fields.Many2one("res.partner",string="Manager")
+    manager_id = fields.Many2one("res.partner", string="Manager")
     is_quotation = fields.Boolean()
 
     # @api.constrains('tender_ids')
@@ -31,7 +35,7 @@ class Project(models.Model):
         job_cost_count = 0
 
         for rec in self.tender_ids:
-            if rec.type=='transcation':
+            if rec.type == 'transcation':
 
                 job_id = self.env['construction.job.cost'].search([('tender_id', '=', rec.id)])
 
@@ -100,8 +104,6 @@ class Project(models.Model):
 
         }
 
-
-
     def create_quotation(self):
         sales_order = self.env['construction.sale.order'].search([('project_id', '=', self.id)])
         self.is_quotation = True
@@ -111,32 +113,31 @@ class Project(models.Model):
         lines = []
         for rec in self.tender_ids:
             job_cost_ids = self.env['construction.job.cost'].search(
-                [('project_id', '=', self.id), ('tender_id', '=', rec.id),('state','=','quotation')])
-            if rec.type=='main' or job_cost_ids:
-                    lines.append((0, 0, {
-                        'code': rec.code,
-                        'description': rec.description,
-                        'item': rec.item.id,
-                        'qty': rec.qty,
-                        'uom_id': rec.uom_id.id,
-                        'price_unit': rec.price_unit,
-                        'type':rec.type,
-                        'tender_id':rec.id,
+                [('project_id', '=', self.id), ('tender_id', '=', rec.id), ('state', '=', 'quotation')])
+            if rec.type == 'main' or job_cost_ids:
+                lines.append((0, 0, {
+                    'code': rec.code,
+                    'description': rec.description,
+                    'item': rec.item.id,
+                    'qty': rec.qty,
+                    'uom_id': rec.uom_id.id,
+                    'price_unit': rec.price_unit,
+                    'type': rec.type,
+                    'tender_id': rec.id,
 
-
-                    }))
+                }))
         if sales_order:
             for rec in sales_order.order_lines:
                 rec.unlink()
             sales_order.write({
-                    'partner_id': self.partner_id.id,
+                'partner_id': self.partner_id.id,
                 'project_id': self.id,
-                'order_lines': lines,'created_date':self.created_date,
-                  })
+                'order_lines': lines, 'created_date': self.created_date,
+            })
         else:
-             sales = self.env['construction.sale.order'].create({
-                    'partner_id': self.partner_id.id,
+            sales = self.env['construction.sale.order'].create({
+                'partner_id': self.partner_id.id,
                 'project_id': self.id,
-                'order_lines': lines,'created_date':self.created_date,
-                  })
-             sales.name = "QUT/"+str(sales.id).zfill(6)
+                'order_lines': lines, 'created_date': self.created_date,
+            })
+            sales.name = "QUT/" + str(sales.id).zfill(6)

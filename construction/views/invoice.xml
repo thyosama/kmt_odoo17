@@ -67,11 +67,10 @@
                     <field name="payment_amount" invisible="1"/>
                     <button name="view_payment" type="object" icon="fa-file-text-o"
                             attrs="{'invisible':['|',('payment_amount','=','paid'),('payment_count','=',0)]}">
-                        <field string="Payments" name="payment_count" widget="statinfo"/>
+                        <field string="Payments" force_save="1" name="payment_count" widget="statinfo"/>
                     </button>
                     <button name="view_journal" type="object" icon="fa-file-text-o" string="Journal"
                             attrs="{'invisible':[('state','!=','posted')]}">
-
                     </button>
                 </div>
                 <!--                                 <field string="Quotations" name="quotation_count" widget="statinfo"/>-->
@@ -105,10 +104,10 @@
                         <field name="invoice_line"
                                attrs="{'readonly':[('state','=','posted')]}">
                             <tree editable="bottom" decoration-info="sub_type=='main'" decoration-bf="sub_type=='main'">
-                                <field name="tender_id" required="1" width="100px"/>
+                                <field name="tender_id" force_save="1" required="1" width="100px"/>
                                 <field name="code" readonly="1" width="100px"/>
                                 <field name="item" readonly="1" width="50px"/>
-                                <field name="name" readonly="1" width="200px"/>
+                                <field name="name" force_save="1" readonly="1" width="200px"/>
                                 <field name="sub_type" readonly="1"/>
                                 <field name="uom_id" readonly="1"/>
                                 <field name="type" invisible="1"/>
@@ -213,7 +212,7 @@
                         <label string="Remaining Amount " for="remaining_value"/>
                     </div>
                     <field name="remaining_value" nolabel="1" class="oe_subtotal_footer_separator"/>
-
+                    <br/>
                 </group>
                 <group>
                     <group></group>
@@ -306,10 +305,10 @@
                         <field name="invoice_line"
                                attrs="{'readonly':[('state','=','posted')]}">
                             <tree editable="bottom" decoration-info="sub_type=='main'" decoration-bf="sub_type=='main'">
-                                <field name="tender_id" invisible="1" width="100px"/>
+                                <field name="tender_id" force_save="1" invisible="1" width="100px"/>
                                 <field name="code" readonly="1" width="100px"/>
                                 <field name="item" readonly="1" width="50px"/>
-                                <field name="name" readonly="1" width="100px"/>
+                                <field name="name" force_save="1" readonly="1" width="100px"/>
                                 <field name="sub_type" readonly="1"/>
                                 <field name="uom_id" readonly="1"/>
                                 <field name="type" invisible="1"/>
@@ -419,10 +418,9 @@
                         <label string="Remaining Amount " for="remaining_value"/>
                     </div>
                     <field name="remaining_value" nolabel="1" class="oe_subtotal_footer_separator"/>
-
+                    <br/>
+                    <button name="register_payment" type="object" class="oe_highlight" string="Payments"/>
                 </group>
-
-
             </form>
 
 

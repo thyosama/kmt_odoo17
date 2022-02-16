@@ -162,7 +162,8 @@ class QuantitySurveyLine(models.Model):
     def get_last_qty(self):
         for rec in self:
             last_qs_id = self.env['quantity.survey.line'].search([
-                ('project_id', '=', rec.project_id.id),('tender_line','=',rec.tender_line.id),
+                ('project_id', '=', rec.project_id.id),
+                ('tender_line','=',rec.tender_line.id),
                 ('quantity_survey_id', '<', rec._origin.quantity_survey_id.id),('state','!=','cancel')
             ], limit=1, order='id desc')
             rec.last_qty=0

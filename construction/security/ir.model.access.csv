@@ -38,3 +38,4 @@ access_project_profit_report,access_project_profit_report,model_project_profit_r
 access_cost_analysis_report,access_cost_analysis_report,model_cost_analysis_report,,1,1,1,1
 access_cost_comparison_report,access_cost_comparison_report,model_cost_comparison,,1,1,1,1
 access_cost_analysis_wizard,access_cost_analysis_wizard,model_cost_analysis_wizard,,1,1,1,1
+access_construction_payment_wizard,construction_payment_wizard,model_construction_payment_wizard,,1,1,1,1

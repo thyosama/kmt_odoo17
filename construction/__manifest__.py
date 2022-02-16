@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'project', 'product', 'stock', 'sale', 'account', 'purchase', 'account_accountant'],
+    'depends': ['base', 'project', 'product', 'stock', 'sale', 'account', 'purchase'],
 
     # always loaded
     'data': [
@@ -48,6 +48,7 @@
         'wizard/wizard_invoice.xml',
         'wizard/time_variance.xml',
         'wizard/cost_comparison.xml',
+        'wizard/invoice_payment.xml',
         'wizard/cost_analysis.xml',
         #
         'views/project_stock.xml',

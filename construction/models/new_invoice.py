@@ -336,22 +336,18 @@ class Invoice(models.Model):
 
             lines.append((0, 0, {
                 'account_id': self.contract_id.revenue_account_id.id,
-                'credit': round(self.current_total_value,2),
-                'debit': 0,
+                'debit': round(self.current_total_value,2),
+                'credit': 0,
                 'partner_id': self.partner_id.id,
 
             }))
             lines.append((0, 0, {
                 'account_id': self.contract_id.account_id.id,
-                'credit': 0,
-                'debit':  round(debit-credit,2),
+                'debit': 0,
+                'credit':  round(debit-credit,2),
                 'partner_id': self.partner_id.id,
 
             }))
-
-
-
-
         return lines
     def select_tender_ids(self):
         view_form = self.env.ref('construction.view_move_construction_pop_wizard_pop')
@@ -375,6 +371,7 @@ class Invoice(models.Model):
         view_form = self.env.ref('construction.payment_inherited_form_invoice')
         payment_id = self.env['account.payment'].search([('invoice_ids', '=', self.id)])
         amount = 0
+
         for rec in payment_id:
             amount += rec.amount
         journal,partner_id = '',''
@@ -442,7 +439,12 @@ class InvoiceLine(models.Model):
 
     project_id = fields.Many2one(related='invoice_id.project_id',store=True,index=True)
     tender_id = fields.Many2one('construction.tender', string="Tender ID")
-    name = fields.Char(related='tender_id.description', string="Description")
+    # name = fields.Text(related='tender_id.description', string="Description")  #Abdulrhman comment
+    name = fields.Text(string="Description")
+
+    @api.onchange('tender_id')
+    def change_tender_id(self):
+        self.name = self.tender_id.description
     code = fields.Char(related='tender_id.code', string="Code")
     item = fields.Many2one(related='tender_id.item', string='Item')
     uom_id = fields.Many2one(related='item.uom_id', string="Unit of Measure")
@@ -576,4 +578,4 @@ class InvoiceLine(models.Model):
     @api.onchange('current_qty')
     def _onchange_current_qty(self):
         if self.current_qty > self.contract_qty:
-            raise ValidationError("Current Qty must be less than or equal Contarct Qty")
+            raise ValidationError("Current Qty must be less than or equal Contract Qty..!!")

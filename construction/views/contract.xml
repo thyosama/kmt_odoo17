@@ -146,8 +146,7 @@
                 <group>
                     <group>
                         <field name="type" invisible="1"/>
-                        <field name="sub_contactor"
-                               attrs="{'invisible':[('type','=','owner')],'required':[('type','=','supconstractor')]}"/>
+                        <field name="sub_contactor" attrs="{'invisible':[('type','=','owner')],'required':[('type','=','supconstractor')]}"/>
                         <field name="project_id" required="1"/>
                         <field name="parner_id"/>
                         <field name="contract_id" required="1"/>
@@ -159,7 +158,8 @@
                         <field name="account_id" string="Partner Account"/>
                         <field name="down_payment_prectenge"/>
                         <field name="down_payment_value"/>
-                        <field name="revenue_account_id"/>
+                        <field name="revenue_account_id" string="Revenue Account" attrs="{'invisible':[('type', '!=','owner' )]}"/>
+                        <field name="revenue_account_id" string="Cost Account" attrs="{'invisible':[('type', '=','owner' )]}"/>
                         <field name="number_of_invoice"/>
                     </group>
                 </group>

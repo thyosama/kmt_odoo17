@@ -8,30 +8,22 @@
             <form>
                 <sheet>
                     <group>
-                        <group>
+                        <group attrs="{'invisible':[('wiz_type','!=','indirect_type')]}">
                             <field name="indirect_type"/>
-                            <field name="job_cost_ids" invisible="1"/>
-                            <br></br>
-                            <br></br>
-                            <br></br>
-
-                            <field name="profit_type"/>
-                            <br></br>
-                            <br></br>
-                            <br></br>
-
-
-                            <field name="tax_percentage"/>
+                            <field name="indirect_percentage"  attrs="{'invisible':[('indirect_type','!=','percentage')]}"/>
+                            <field name="indirect_amount" attrs="{'invisible':[('indirect_type','!=','amount')]}"/>
                         </group>
                         <group>
-                            <field name="indirect_percentage"
-                                   attrs="{'invisible':[('indirect_type','!=','percentage')]}"/>
-                            <field name="indirect_amount"
-                                   attrs="{'invisible':[('indirect_type','!=','amount')]}"/>
-
+                            <field name="wiz_type" invisible="1"/>
+                        </group>
+                        <group  attrs="{'invisible':[('wiz_type','!=','profit_type')]}">
+                            <field name="profit_type"/>
                             <field name="profit_percentage" attrs="{'invisible':[('profit_type','!=','percentage')]}"/>
                             <field name="profit_amount" attrs="{'invisible':[('profit_type','!=','amount')]}"/>
-
+                        </group>
+                        <group></group>
+                        <group attrs="{'invisible':[('profit_type','!=','tax_percentage')]}">
+                            <field name="tax_percentage"/>
                         </group>
 
 

@@ -97,14 +97,12 @@ class wizard(models.Model):
         if self.invoice_id.type=='owner':
             lines = list(dict.fromkeys(lines))
             for rec in lines:
-
-                lst.append((0, 0, {
-                     'tender_id': rec,
-                 }))
+                lst.append((0, 0, {'tender_id': rec}))
         else:
             for rec in self.contract_lines_ids_ids:
                 lst.append((0, 0, {
                     'tender_id': rec.tender_id.id,
+                    'name': rec.description,
                     'sub_contarctor_item':rec.sub_contarctor_item.id if rec.sub_contarctor_item else '',
                     'wbs_item':rec.wbs_item.id if rec.wbs_item else ''
                 }))

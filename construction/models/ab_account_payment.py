@@ -1,14 +1,16 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 
+
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
+
     type_contract = fields.Selection([('owner', 'Owner'), ('supconstractor', 'sub contractor')], string="Contract Type",compute='get_type_contract')
 
     contract_id = fields.Many2one('construction.contract', string="contract",
                                               domain="[('state','=','confirm'),('type', '=', type_contract)]")
 
-    invoice_ids = fields.Many2one('account.invoice')
+    invoice_ids = fields.Many2one('account.invoice', string="Invoice rel")
     x = fields.Char()
     @api.depends('payment_type')
     def get_type_contract(self):
@@ -36,8 +38,8 @@ class AccountPayment(models.Model):
                 invoice_id=self.env['account.invoice'].search([('id','=',vals.get('invoice_ids'))])
 
 
-                if invoice_id.payment_amount+res.amount > round(invoice_id.amount_price_total,2):
-                    raise ValidationError("Amount must be less Current Amount")
+                # if invoice_id.payment_amount+res.amount > round(invoice_id.amount_price_total,2):
+                #     raise ValidationError("Amount must be less Current Amount")
 
                 invoice_id.payment_amount+= res.amount
                 invoice_id.payment_count+=1
@@ -48,8 +50,8 @@ class AccountPayment(models.Model):
             invoice_id=self.env['account.invoice'].search([('id','=',vals.get('invoice_ids'))])
 
 
-            if invoice_id.payment_amount+self.amount > invoice_id.amount_price_total:
-                raise ValidationError("Amount must be less Current Amount")
+            # if invoice_id.payment_amount+self.amount > invoice_id.amount_price_total:
+            #     raise ValidationError("Amount must be less Current Amount")
 
             invoice_id.payment_amount+= self.amount
             invoice_id.payment_count+=1

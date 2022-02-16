@@ -11,7 +11,7 @@ class Tender(models.Model):
     type = fields.Selection([('main', 'View'), ('transcation', 'Transcation')], string='Type', default='main')
     item = fields.Many2one('product.item', string='Item')
     parent_item = fields.Many2one('construction.tender', string='Parent Item')
-    description = fields.Char("Description")
+    description = fields.Text("Description")
     uom_id = fields.Many2one(related='item.uom_id', string="Unit of Measure")
     qty = fields.Float("Quantity")
     status = fields.Selection([('main', 'Main'), ('renew', 'Renewal')], string="Status", default='main')
@@ -21,6 +21,11 @@ class Tender(models.Model):
     price_unit = fields.Float("Price Unit ")
     total_value = fields.Float("Total value ", compute='_get_total_value', store=True, index=True)
     lines_id = fields.One2many("construction.tender.line", 'parent_item')
+
+    @api.onchange('item')
+    def onchange_method(self):
+        self.description = self.item.name
+
     @api.model
     def create(self,vals):
         res = super(Tender, self).create(vals)
@@ -106,7 +111,7 @@ class Child(models.Model):
     item = fields.Many2one('product.item', string='Item')
     parent_item = fields.Many2one('construction.tender', string='Parent Item')
     tender_id = fields.Many2one('construction.tender', string='Tender')
-    description = fields.Char("Description")
+    description = fields.Text("Description")
     uom_id = fields.Many2one(related='item.uom_id', string="Unit of Measure")
     qty = fields.Float("Quantity")
 
