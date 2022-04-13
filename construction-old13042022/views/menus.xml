@@ -1,0 +1,41 @@
+<odoo>
+    <menuitem name="Construction" id="construction_root" sequence="1003"/>
+    <menuitem name="Project" id="construction_project" parent="construction_root" sequence="1" action="action_window_project"/>
+    <menuitem name="Configuration" id="construction_configuration" parent="construction_root"/>
+    <menuitem name="Setting" id="construction_configuration_setting" parent="construction_configuration"
+              action="account.action_account_config" sequence="0"/>
+    <menuitem name="Item" id="construction_items" parent="construction_configuration" action="action_window_item_product"/>
+    <menuitem name="Products" id="construction_product" parent="construction_configuration" action="action_window_all_products"/>
+    <menuitem name="Break Down Template" id="construction_job_template" parent="construction_configuration" action="action_job_cost_template"/>
+
+
+
+
+    <menuitem name="WBS" id="construction_wbs" parent="construction_root" />
+
+    <menuitem name="WBS - Item" id="construction_wbs_item" parent="construction_wbs" action="action_wbs_item"/>
+    <menuitem name="WBS - Distribution" id="construction_wbs_distribution" parent="construction_wbs" action="action_wbs_distribution"/>
+    <menuitem name="WBS - Distribution Auto" id="construction_wbs_distribution_auto" parent="construction_wbs" action="action_wbs_distribution_auto"/>
+
+     <menuitem name="Owner Contract" id="construction_contract_owner_user" parent="construction_configuration"
+                action="action_owner_contract_user"/>
+    <menuitem name="Sub-contractors" id="construction_contract_sub_sub" parent="construction_configuration"
+               action="action_sub_contract_user"/>
+
+
+    <menuitem name="Contracts" id="construction_contract" parent="construction_root" sequence="3"/>
+<!--    <menuitem name="Contracts Owner" id="construction_contract_owner" parent="construction_contract" sequence="3"/>-->
+
+    <menuitem name="Contracts Owner" id="construction_contract_owner" parent="construction_contract" sequence="1"
+              action="action_contract_owner"/>
+    <menuitem name="SubContractors" id="construction_contract_subcontractor" parent="construction_contract" sequence="2"
+              action="action_contract_subcontratcor"/>
+
+
+    <menuitem name="Deduction" id="construction_deduction" parent="construction_configuration" sequence="7"
+              action="action_contract_deduction"/>
+
+    <menuitem name="Additional" id="construction_allowance" parent="construction_configuration" sequence="8"
+              action="action_contract_allowance"/>
+
+</odoo>

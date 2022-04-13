@@ -13,7 +13,7 @@
 				report_type="qweb-pdf"
 				file="construction.sale_order_report_template_id"
 				name="construction.sale_order_report_template_id"/>
-	<report id="job_report_id"
+	<report id="job_report_id_7"
 				string="Break Down"
 				model="construction.job.cost"
 				report_type="qweb-pdf"

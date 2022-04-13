@@ -1,0 +1,95 @@
+<odoo>
+    <template id="sale_order_report_template_id_print">
+    <t t-call="web.external_layout">
+
+        <div class="page">
+               <div class="oe_structure"/>
+            <h2 class="text-center">  عرض سعر </h2>
+            <h2 class="text-center">  <span t-field="doc.name"/> </h2>
+            <br></br>
+            <br></br>
+            <div class="row mt32 mb32" id="informations">
+                <div  class="col-auto mw-100 mb-2">
+                    <strong>Project:</strong>
+                    <p class="m-0" t-field="doc.project_id.name"/>
+                </div>
+                 <div  class="col-auto mw-100 mb-2">
+                    <strong>Customer:</strong>
+                    <p class="m-0" t-field="doc.partner_id.name"/>
+                </div>
+                 <div  class="col-auto mw-100 mb-2">
+                    <strong>Creation Date:</strong>
+                    <p class="m-0" t-field="doc.created_date"/>
+                </div>
+                <div  class="col-auto mw-100 mb-2">
+                    <strong>Discount:</strong>
+                    <p class="m-0" t-field="doc.discount_lines"/>
+                </div>
+            </div>
+
+            <br></br>
+            <br></br>
+            <br></br>
+
+            <table class="table table-sm o_main_table">
+                <!-- In case we want to repeat the header, remove "display: table-row-group" -->
+                <thead style="display: table-row-group">
+                    <tr>
+                        <th  class="text-left">Code</th>
+
+                        <th class="text-center">item</th>
+                        <th class="text-center">Desc</th>
+                        <th class="text-center">Unit of Measure</th>
+                        <th class="text-center">Quantity</th>
+                        <th   class="text-center">Unit Price</th>
+                        <th   class="text-center">Discount</th>
+
+                        <th class="text-center">Total Value</th>
+                        <th  class="text-center">
+                               Notes
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="sale_tbody">
+
+                    <t t-set="current_subtotal" t-value="0"/>
+
+                    <tr t-foreach="doc.order_lines" t-as="line">
+                        <t t-set="current_subtotal" t-value="current_subtotal+line.total_value"/>
+                        <td class="text-center"><span t-field="line.code"/></td>
+
+                        <td class="text-center"><span t-field="line.item.name"/></td>
+                        <td class="text-center"><span t-field="line.description"/></td>
+                        <td class="text-center"><span t-field="line.uom_id.name"/></td>
+                        <td class="text-center"><span t-field="line.qty"/></td>
+                        <td class="text-center"><span t-field="line.discount"/></td>
+                        <td class="text-center"><span t-field="line.price_unit"/></td>
+                        <td class="text-center"><span t-field="line.total_value"/></td>
+                        <td class="text-center"><span t-field="line.notes"/></td>
+                    </tr>
+                    <tr>
+
+                        <td> </td>
+                        <td> </td>
+                        <td> </td>
+                        <td> </td>
+                        <td> </td>
+                        <td> </td>
+
+                        <td> </td>
+                        <td class="text-center"><span t-esc="current_subtotal"/></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </t>
+    </template>
+    <template id="sale_order_report_template_id">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="construction.sale_order_report_template_id_print"/>
+        </t>
+    </t>
+</template>
+</odoo>

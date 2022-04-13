@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <!-- This Menu Item must have a parent and an action -->
+        <record id="project_type_tax_action" model="ir.actions.act_window">
+            <field name="name">حاله الضريبه علي المشروع</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">project.type.tax</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    <menuitem id="menu_project_type_tax" name="حاله الضريبه علي المشروع"
+              parent="construction.construction_configuration" action="project_type_tax_action" sequence="10"/>
+
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="project_type_taxes_1" model="ir.ui.view">
+            <field name="name">project_type_taxes_1</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//notebook/page[last()]" position="after">
+                    <page string="cost">
+                        <field name="cost_line_ids" >
+                            <tree editable="top">
+                                <field name="product_id" required="1"/>
+                                <field name="name"  />
+                                <field name="qty" required="1" sum="total"/>
+                                <field name="price_unit" required="1" sum="total"/>
+                                <field name="total"  sum="total"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="product_id" required="1"/>
+                                <field name="name"  />
+                                <field name="qty" required="1" sum="total"/>
+                                <field name="price_unit" required="1" sum="total"/>
+                                <field name="total"  sum="total"/>
+
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+                <xpath expr="//notebook" position="before">
+                    <group>
+                        <field name="type_tax_id"/>
+                    </group>
+                    <!-- Add your fields or attributes here -->
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="parent_edit_project1" model="ir.ui.view">
+            <field name="name">project.project</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='analytic_account_id']" position="after">
+                    <field name="parent_project_id"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record id="project_parent_view_tree" model="ir.ui.view">
+            <field name="name">Project Parent</field>
+            <field name="model">parent.project</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="project_parent_action" model="ir.actions.act_window">
+            <field name="name">Parent Of Project </field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">parent.project</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <menuitem id="project_parent_menu" name="Project Parent" parent="project.menu_project_config" action="project_parent_action"/>
+    </data>
+</odoo>

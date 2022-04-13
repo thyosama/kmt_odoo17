@@ -1,0 +1,166 @@
+<odoo>
+
+
+    <record model="ir.actions.act_window" id="action_window_project">
+        <field name="name">Projects</field>
+        <field name="res_model">project.project</field>
+        <field name="view_mode">tree,form</field>
+<!--        <field name="view_ids" eval="[(5, 0, 0),-->
+<!--                (0, 0, {'view_mode': 'tree', 'view_id': ref('construction.view_construction_project_tree')}),-->
+<!--                (0, 0, {'view_mode': 'form', 'view_id': ref('construction.view_project_form')})]"/>-->
+    </record>
+    <record model="ir.actions.act_window" id="action_window_item_product">
+        <field name="name">Items</field>
+        <field name="res_model">product.item</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_job_cost_template">
+        <field name="name">Break Down Template</field>
+        <field name="res_model">construction.job.cost</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'default_is_template':True}</field>
+        <field name="domain">[('is_template','=','True')]</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('construction.view_job_cost_tree_2')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('construction.view_job_cost_fromm')})]"/>
+    </record>
+
+
+    <record model="ir.actions.act_window" id="action_window_all_products">
+        <field name="name">Product</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+
+
+    <record id="action_job_estimation_indirect_type" model="ir.actions.server">
+        <field name="name">Job Estimation Indirect Type</field>
+        <field name="model_id" ref="model_construction_job_cost"/>
+        <field name="binding_model_id" ref="construction.model_construction_job_cost"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = {
+            'view_mode': 'form',
+            'name': 'Job Estimaion',
+            'res_model': 'construction.job.estimate',
+            'type': 'ir.actions.act_window','target': 'new',
+            'context': {
+            'default_job_cost_ids': [(4,rec.id )for rec in records],
+            'default_wiz_type' : 'indirect_type'
+            },
+            }
+        </field>
+    </record>
+    <record id="action_job_estimation_profit_type" model="ir.actions.server">
+        <field name="name">Job Estimation Profit Type</field>
+        <field name="model_id" ref="model_construction_job_cost"/>
+        <field name="binding_model_id" ref="construction.model_construction_job_cost"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = {
+            'view_mode': 'form',
+            'name': 'Job Estimaion',
+            'res_model': 'construction.job.estimate',
+            'type': 'ir.actions.act_window','target': 'new',
+            'context': {
+                'default_job_cost_ids': [(4,rec.id )for rec in records],
+                'default_wiz_type' : 'profit_type'
+                },
+            }
+        </field>
+    </record>
+    <record id="action_job_estimation_tax_percent" model="ir.actions.server">
+        <field name="name">Job Estimation Tax Percentage</field>
+        <field name="model_id" ref="model_construction_job_cost"/>
+        <field name="binding_model_id" ref="construction.model_construction_job_cost"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = {
+            'view_mode': 'form',
+            'name': 'Job Estimaion',
+            'res_model': 'construction.job.estimate',
+            'type': 'ir.actions.act_window','target': 'new',
+            'context': {
+                'default_job_cost_ids': [(4,rec.id )for rec in records],
+                'default_wiz_type' : 'tax_percentage'
+                },
+            }
+        </field>
+    </record>
+
+
+
+     <record model="ir.actions.act_window" id="action_wbs_item">
+        <field name="name">WBS Item</field>
+        <field name="res_model">wbs.item</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="action_wbs_distribution">
+        <field name="name">WBS Distribution</field>
+        <field name="res_model">wbs.distribution</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+      <record model="ir.actions.act_window" id="action_owner_contract_user">
+        <field name="name">Owner</field>
+        <field name="res_model">construction.contract.user</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('type','=','owner')]</field>
+        <field name="context">{'default_type':'owner'}</field>
+    </record>
+    <record model="ir.actions.act_window" id="action_sub_contract_user">
+        <field name="name">Sub-Contractors</field>
+        <field name="res_model">construction.contract.user</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('type','=','supconstractor')]</field>
+        <field name="context">{'default_type':'supconstractor'}</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_contract_owner">
+        <field name="name">Owner Contractors</field>
+        <field name="res_model">construction.contract</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'default_type':'owner'}</field>
+        <field name="domain">[('type','=','owner')]</field>
+         <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('construction.view_contract_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('construction.view_contract_form')})]"/>
+
+    </record>
+    <record model="ir.actions.act_window" id="action_contract_subcontratcor">
+        <field name="name">SubContractors</field>
+        <field name="res_model">construction.contract</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'default_type':'supconstractor'}</field>
+        <field name="domain">[('type','=','supconstractor')]</field>
+         <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('construction.view_contract_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('construction.view_contract_form_sub')})]"/>
+
+    </record>
+
+    <record model="ir.actions.act_window" id="action_contract_deduction">
+        <field name="name">Deductions</field>
+        <field name="res_model">contract.deduction.allowance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('type','=','deduction')]</field>
+        <field name="context">{'default_type':'deduction'}</field>
+    </record>
+
+     <record model="ir.actions.act_window" id="action_contract_allowance">
+        <field name="name">Additional</field>
+        <field name="res_model">contract.deduction.allowance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('type','=','addition')]</field>
+        <field name="context">{'default_type':'addition'}</field>
+    </record>
+    <record model="ir.actions.act_window" id="action_wbs_distribution_auto">
+        <field name="name">WBS Distribution</field>
+        <field name="res_model">wbs.distribution.automatic</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

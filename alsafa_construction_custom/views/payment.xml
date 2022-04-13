@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <!-- Inherit Form View to Modify it -->
+        <!-- Inherit Form View to Modify it -->
+        <record id="payment_inherited_form_invoice_custom" model="ir.ui.view">
+            <field name="name">payment_inherited_form_invoice_custom</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="construction.payment_inherited_form_invoice"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="project_id" readonly="1"/>
+                    <!-- Add your fields or attributes here -->
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="view_account_payment_form_close_type" model="ir.ui.view">
+            <field name="name">view_account_payment_form_close_type</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_type']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+<!--                <xpath expr="//field[@name='contract_id']" position="attributes">-->
+<!--                    <attribute name="attrs">{'readonly':[('state','=','posted')]}</attribute>-->
+<!--                </xpath>-->
+                <xpath expr="//field[@name='partner_type']" position="after">
+                    <field name="project_id" attrs="{'readonly':[('state','=','posted')]}"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="construction_view_account_payment_form2" model="ir.ui.view">
+            <field name="name">view_account_payment_form_close_type</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="construction.construction_view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='contract_id']" position="attributes">
+                    <attribute name="attrs">{'readonly':[('state','=','posted')]}</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
