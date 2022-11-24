@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_construction_engineer" model="ir.sequence">
+        <field name="name">construction.engineer</field>
+        <field name="code">construction.engineer</field>
+        <field name="prefix">ENG/</field>
+
+    </record>
+
+    <record id="engineer_view_tree" model="ir.ui.view">
+        <field name="name">engineer_view_tree</field>
+        <field name="model">construction.engineer</field>
+        <field name="arch" type="xml">
+            <tree string="_tree" duplicate="0">
+                <field name="name" optional="show"/>
+                <field name="contract_id" optional="show"/>
+                <field name="project_id" optional="show"/>
+                <field name="type_move" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="engineer_view_form" model="ir.ui.view">
+        <field name="name">engineer_view_form</field>
+        <field name="model">construction.engineer</field>
+        <field name="arch" type="xml">
+            <form string="engineer_form" duplicate="0">
+                <header>
+                    <button name="action_confirm" string="Confim" states="draft" type="object" class="btn-primary"/>
+                    <button name="action_cancel" string="Cancel" states="confirm" type="object" class="btn-primary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approve,quotation"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="contract_id" attrs="{'required':True,'readonly':[('state','!=','draft')]}"/>
+                        <field name="project_id" attrs="{'required':True,'readonly':[('state','!=','draft')]}"/>
+                        <field name="type_move" attrs="{'required':True,'readonly':[('state','!=','draft')]}"/>
+                        <field name="referance" attrs="{'readonly':[('state','!=','draft')]}"/>
+
+                    </group>
+                    <button name="action_select_items" type="object" string="Select Items"/>
+                    <notebook>
+                        <page string="Lines">
+                            <field name="lines" widget="section_and_note_one2many"
+                                   attrs="{'readonly':[('state','!=','draft')]}">
+                                <tree editable="bottom">
+                                    <control>
+                                        <create name="add_product_control" string="Add a product"/>
+                                        <create name="add_section_control" string="Add a section"
+                                                context="{'default_display_type': 'line_section'}"/>
+                                        <create name="add_note_control" string="Add a note"
+                                                context="{'default_display_type': 'line_note'}"/>
+                                    </control>
+                                    <!--                                     <field name="display_type" attrs="{'invisible':True}" optional="show"/>-->
+                                   <field name="display_type"   optional="hide"/>
+                                    <field name="sequence" widget="handle" optional="show"/>
+                                      <field name="name" attrs="{'required': [('display_type', '=', False)]}" widget="section_and_note_text"/>
+                                    <field name="stage_id" attrs="{'required': [('display_type', '=', False)]}" optional="show"/>
+<!--                                    <field name="tender_id" optional="show"/>-->
+                                    <field name="item" attrs="{'required': [('display_type', '=', False)]}" optional="show"/>
+
+                                    <field name="uom_id" attrs="{'required': [('display_type', '=', False)]}"   optional="show"/>
+                                    <field name="related_job" attrs="{'required': [('display_type', '=', False)]}" optional="show"/>
+                                    <field name="tender_qty" attrs="{'required': [('display_type', '=', False)]}" optional="show"/>
+                                    <!--                                    <field name="remind_qty" attrs="{'readonly':True}"/>-->
+                                    <field name="previous_qty" attrs="{'required': [('display_type', '=', False)]}" optional="show"/>
+                                    <field name="qty" attrs="{'required': [('display_type', '=', False)]}" optional="show"/>
+                                    <field name="percentage" optional="show" attrs="{'required': [('display_type', '=', False)]}"/>
+
+                                    <field name="amount" optional="show"/>
+                                    <field name="prec_price" optional="show"/>
+                                    <!--                                    <field name="other_prec" optional="show" attrs="{'invisible':True}"/>-->
+                                    <field name="notes" optional="show"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="stage_id"/>
+                                        <field name="tender_id"/>
+                                        <field name="item"/>
+                                        <field name="name" widget="section_and_note_text"/>
+                                        <field name="uom_id"/>
+                                        <field name="related_job"/>
+                                        <field name="tender_qty"/>
+                                        <field name="qty"/>
+                                        <field name="percentage"/>
+                                        <field name="notes"/>
+
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Deduction"
+                              attrs="{ 'readonly':[('state','!=','draft')]}">
+                            <field name="deduction_ids"
+                                   context="{'default_type':'deduction' }">
+                                <tree editable="top">
+                                    <field name="type" invisible="1" optional="show"/>
+                                    <field name="sub_type" invisible="1" optional="show"/>
+                                    <field name="name" attrs="{'required':True}" optional="show"/>
+                                    <field name="account_id" optional="show"/>
+                                    <field name="is_precentage" optional="show"/>
+                                    <field name="precentage"
+                                           attrs="{'readonly':[('is_precentage','=',False)]}" optional="show"/>
+                                    <field name="is_down_payment" string="Value" optional="show"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Additional"
+                              attrs="{ 'readonly':[('state','!=','draft')]}">
+                            <field name="allowance_ids"
+                                   context="{'default_type':'addition' }">
+                                <tree editable="top">
+                                    <field name="type" invisible="1" optional="show"/>
+                                    <field name="sub_type" invisible="1" optional="show"/>
+                                    <field name="name" attrs="{'required':True}" optional="show"/>
+                                    <field name="account_id" optional="show"/>
+                                    <field name="is_precentage" optional="show"/>
+                                    <field name="precentage"
+                                           attrs="{'readonly':[('is_precentage','=',False)]}" optional="show"/>
+                                    <field name="is_down_payment" string="Value" optional="show"/>
+
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" options="{'post_refresh':True}"
+                           help="Follow this project to automatically track the events associated to tasks and issues of this project."
+                           groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="top_sheet_view_tree" model="ir.ui.view">
+            <field name="name">top_sheet_view_tree</field>
+            <field name="model">top.sheet</field>
+            <field name="arch" type="xml">
+                <tree string="_tree">
+                    <field name="project_id"/>
+                    <field name="split_method"/>
+                </tree>
+            </field>
+        </record>
+        <record id="top_sheet_view_form" model="ir.ui.view">
+            <field name="name">_view_form</field>
+            <field name="model">top.sheet</field>
+            <field name="arch" type="xml">
+                <form string="_form">
+                    <header>
+                        <button name="action_confirm" type="object" string="Confirm" states="draft"/>
+                        <button name="action_cancel" type="object" string="Cancel" states="confirm"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,cancel"/>
+                        <field name="is_direct" invisible="1"/>
+<!--                        <button name="create_indirect_cost"-->
+<!--                                type="object" string="Create Cost "-->
+<!--                                attrs="{'invisible':['|',('state','!=','confirm'),('is_direct','=',True)]}"/>-->
+                    </header>
+                    <sheet>
+<!--                        <div class="oe_button_box" name="button_box">-->
+
+<!--                            <button type="object" name="action_view_indirect_cost" class="oe_stat_button"-->
+<!--                                    icon="fa-puzzle-piece" string="Indirect Cost"/>-->
+<!--                        </div>-->
+                        <group>
+                            <field name="project_id" attrs="{'readonly':[('state','=','confirm')]}"/>
+                            <field name="total_direct_indirect" />
+                            <field name="split_method" attrs="{'readonly':[('state','=','confirm')]}"/>
+                            <field name="lines_ids" attrs="{'readonly':[('state','=','confirm')]}">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                      <field name="prec"  />
+                                    <field name="price" sum="total"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                            <field name="total_value"  colspan="2"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

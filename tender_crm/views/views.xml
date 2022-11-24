@@ -1,0 +1,25 @@
+<odoo>
+  <!-- Inherit Form View to Modify it -->
+  <record id="crm_lead_view_form_tender" model="ir.ui.view">
+      <field name="name">crm_lead_view_form_tender</field>
+      <field name="model">crm.lead</field>
+      <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+      <field name="arch" type="xml">
+
+          <xpath expr="//button[last()]" position="after">
+              <field name="is_project" invisible="1"/>
+            <button name="create_project" type="object" string="Create Project">
+
+            </button>
+              <!-- Add your fields or attributes here -->
+          </xpath>
+           <xpath expr="//sheet/div[@name='button_box']" position="inside">
+               <button name="action_view_project" type="object"
+                       class="oe_stat_button"   icon="fa-pencil-square-o">
+                        <field name="is_count_project"/> Project
+               </button>
+           </xpath>
+
+      </field>
+  </record>
+</odoo>
