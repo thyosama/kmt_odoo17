@@ -2,14 +2,18 @@
 <odoo>
     <data>
 
-  <record id="group_related_job" model="res.groups">
-      <field name="name">Related Job</field>
-  </record>
+        <record id="group_related_job" model="res.groups">
+            <field name="name">Related Job</field>
+        </record>
+        <record id="group_sub_customer" model="res.groups">
+            <field name="name">Show Sub-Customer</field>
+        </record>
 
         <record id="rule_related_jods_tender" model="ir.rule">
             <field name="name">Rule Related Tender</field>
             <field ref="master_data_construction.model_construction_tender" name="model_id"/>
-            <field name="domain_force">['|',('related_job', '=',False ),('related_job', 'in',user.related_ids.ids )]</field>
+            <field name="domain_force">['|', ('related_job', '=', False),
+                                        ('related_job', 'in', user.related_ids.ids)]</field>
             <field name="perm_write" eval="1"/>
             <field name="perm_create" eval="1"/>
             <field name="perm_read" eval="1"/>
@@ -21,7 +25,8 @@
         <record id="rule_related_jods_Cost" model="ir.rule">
             <field name="name">Rule Related Cost</field>
             <field ref="master_data_construction.model_construction_job_cost" name="model_id"/>
-            <field name="domain_force">['|',('related_job', '=',False ),('related_job', 'in',user.related_ids.ids )]</field>
+            <field name="domain_force">['|', ('related_job', '=', False),
+                                        ('related_job', 'in', user.related_ids.ids)]</field>
             <field name="perm_write" eval="1"/>
             <field name="perm_create" eval="1"/>
             <field name="perm_read" eval="1"/>

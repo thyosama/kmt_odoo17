@@ -2,7 +2,7 @@ from odoo import models, fields, api
 
 
 class DeductionLines(models.Model):
-    _name = 'contract.deduction.lines.invoice'
+    _name = "contract.deduction.lines.invoice"
     type = fields.Selection([('deduction', 'Deduction'), ('addition', 'Additional')], string="Type",default='deduction')
     sub_type = fields.Selection([('owner', 'Owner'), ('supconstractor', 'supconstractor')], string="Type")
     name = fields.Many2one("contract.deduction.allowance",string="Name" ,domain="[('type','=',type) ]")
@@ -60,11 +60,11 @@ class DeductionLines(models.Model):
 
 
 
-    @api.depends('precentage','invoice_id.total_value')
+    @api.depends('precentage','invoice_id.current_total_value')
     def _calculate_down_payment(self):
         for rec in self:
             if rec.is_precentage==True:
-                rec.value = (rec.precentage/100)*rec.invoice_id.total_value
+                rec.value = (rec.precentage/100)*rec.invoice_id.current_total_value
             else:
                 rec.value = rec.precentage
 
@@ -74,7 +74,7 @@ class DeductionLines(models.Model):
         self.precentage = self.name.precentage
 
 class AdditionLines(models.Model):
-    _name = 'contract.addition.lines.invoice'
+    _name = "contract.addition.lines.invoice"
     type = fields.Selection([('deduction', 'Deduction'), ('addition', 'Additional')], string="Type")
     sub_type = fields.Selection([('owner', 'Owner'), ('supconstractor', 'supconstractor')], string="Type")
     name = fields.Many2one("contract.deduction.allowance",string="Name" ,domain="[('type','=',type) ]")
@@ -131,11 +131,11 @@ class AdditionLines(models.Model):
 
 
 
-    @api.depends('precentage','invoice_id.total_value')
+    @api.depends('precentage','invoice_id.current_total_value')
     def _calculate_down_payment(self):
         for rec in self:
             if rec.is_precentage==True:
-                rec.value = (rec.precentage/100)*rec.invoice_id.total_value
+                rec.value = (rec.precentage/100)*rec.invoice_id.current_total_value
             else:
                 rec.value = rec.precentage
 

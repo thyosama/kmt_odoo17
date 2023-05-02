@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_construction_engineer">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-foreach="docs" t-as="doc">
+                        <div class="page" dir="rtl">
+
+                            <style>
+                                .tb table,.tb th,.tb td {
+                                border: 1px solid black;
+                                border-collapse: collapse;
+                                text-align:center;
+                                }
+                                table{
+                                width: 100%;
+                                }
+                                .nowrap{
+                                white-space:nowrap;
+                                }
+                            </style>
+                            <div class="text-right">المالك:
+                                <span t-esc="doc.project_id.name"/>
+                            </div>
+                            <div class="text-right">الإستشاري العام:
+                                <span t-esc="doc.project_id.consultant.name"/>
+                            </div>
+                            <div class="text-center">
+                                مذكرة تجاوز عن مستخلص رقم
+                            </div>
+                            <div class="text-center">
+                                <span t-esc="doc.project_id.name"/>
+                            </div>
+
+                            <table class="tb">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">رقم البند</th>
+                                        <th rowspan="2">بيان الأعمال</th>
+                                        <th rowspan="2">الوحدة</th>
+                                        <th rowspan="2">الفئة</th>
+                                        <th rowspan="2">الكمية بالمقايسة</th>
+                                        <th rowspan="2">الكمية المنفذة</th>
+                                        <th rowspan="2">القيمة المنفذة</th>
+                                        <th rowspan="2">كمية التجاوز</th>
+                                        <th colspan="2">قيمة التجاوز</th>
+                                        <th rowspan="2">ملاحظات</th>
+                                    </tr>
+                                    <tr>
+                                        <th>الموجب</th>
+                                        <th>السالب</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="seq" t-value="0"/>
+                                    <t t-set="total_value" t-value="0"/>
+                                    <t t-foreach="doc.lines" t-as="line">
+                                        <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
+                                            <t t-if="line.display_type == 'line_section'">
+                                                <td colspan="99" id="section" class="text-right">
+                                                    <span t-field="line.name"/>
+                                                </td>
+                                            </t>
+                                            <t t-if="not line.display_type">
+                                                <t t-set="seq" t-value="seq +1"/>
+                                                <t t-set="total_value"
+                                                   t-value="total_value+(line.total_qty - line.tender_qty)"/>
+                                                <td id="code">
+                                                    <span t-esc="seq"/>
+                                                </td>
+                                                <td id="name">
+                                                    <span t-field="line.name"/>
+                                                </td>
+                                                <td id="uom_id">
+                                                    <span t-field="line.uom_id.name"/>
+                                                </td>
+                                                <td id="prec_price">
+                                                    <span t-field="line.prec_price"/>
+                                                </td>
+                                                <td id="tender_qty">
+                                                    <span t-field="line.tender_qty"/>
+                                                </td>
+                                                <td id="total_qty">
+                                                    <span t-field="line.total_qty"/>
+                                                </td>
+                                                <td id="total_value">
+                                                    <span t-esc="line.total_qty * line.prec_price"/>
+                                                </td>
+                                                <td class="nowrap" id="total_qty">
+                                                    <span t-esc="line.total_qty - line.tender_qty"/>
+                                                </td>
+                                                <td class="nowrap" id="dif_qty_positive">
+                                                    <t t-if="line.prec_price * line.tender_qty &lt; 0">
+                                                        <span t-esc="line.prec_price * (line.total_qty - line.tender_qty)"/>
+                                                    </t>
+                                                </td>
+                                                <td id="dif_qty_negative" class="nowrap">
+                                                    <t t-if="line.prec_price * line.total_qty >= 0">
+                                                        <span t-esc="line.prec_price * (line.total_qty - line.tender_qty)"/>
+                                                    </t>
+                                                </td>
+                                                <td id="note">
+
+                                                </td>
+
+                                            </t>
+                                            <t t-if="line.display_type == 'line_note'">
+                                                <td colspan="99" id="note">
+                                                    <span t-field="line.name"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <td colspan="8">الاجمالي</td>
+                                        <td colspan="2">
+                                            <span t-esc="total_value"/>
+                                        </td>
+                                        <td/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

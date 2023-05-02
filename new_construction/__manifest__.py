@@ -17,7 +17,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'mail', 'purchase', 'purchase_request', 'stock','project','master_data_construction'],
+    'depends': ['base','account', 'account_accountant', 'mail', 'purchase', 'purchase_request', 'stock', 'project', 'master_data_construction'],
 
     # always loaded
     'data': [
@@ -38,11 +38,17 @@
         'views/actions.xml',
         'views/menus.xml',
         'views/views.xml',
+        'views/move_journal.xml',
         # 'views/product_template.xml',
         # 'views/ab_stock_picking.xml',
         # 'views/job_cost.xml',
         # 'views/item.xml',
         'wizard/item_wizard.xml',
+        'reports/manu_action.xml',
+        'reports/contraction_report.xml',
+        'reports/report_subcontractors.xml',
+        'reports/report_owner_contractors.xml',
+        'reports/report_construction_engineer.xml',
 
     ],
     # only loaded in demonstration mode

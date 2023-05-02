@@ -17,7 +17,8 @@
     'version': '15',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'project', 'product', 'stock', 'sale', 'account', 'purchase', 'account_accountant','web','master_data_construction'],
+    'depends': ['base', 'project', 'product', 'stock', 'sale', 'account', 'purchase', 'account_accountant', 'web',
+                'master_data_construction'],
 
     # always loaded
     'data': [
@@ -37,11 +38,14 @@
         'views/project_stock.xml',
         'views/top_sheet.xml',
         'views/indirect_cost.xml',
+        'reports/report_tender_financial.xml',
+        'reports/report_tender_technical.xml',
+        'reports/report_tender_cover.xml',
+        'reports/report_estimation.xml',
+        'reports/tender_quotation_report.xml',
+        'views/template_print.xml',
+        'wizard/upload.xml',
         # 'views/product_template.xml',
-
-
-
-
 
     ],
     # only loaded in demonstration mode

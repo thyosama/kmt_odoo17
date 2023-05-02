@@ -21,25 +21,32 @@
             </tree>
         </field>
     </record>
-    <record id="view_project_form" model="ir.ui.view">
+
+    <record id="view_project_form_construction" model="ir.ui.view">
         <field name="name">constaction_project_form</field>
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.edit_project"/>
         <!--        <field name="priority">1000</field>-->
         <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="type" invisible="1"/>
+                <field name="is_quotation" invisible="1"/>
+            </field>
 
             <xpath expr="//header/button[last()]" position="after">
-                <field name="type" invisible="1"/>
+
                 <button string="Create Break Down" name="create_job_ct" type="object"/>
                 <button string="Create Financial Offer" name="create_quotation" type="object"/>
                 <button string="Confirm as Project" name="confirm_as_project" type="object"
                         attrs="{'invisible':[('type','=','project')]}"/>
-
+                <button string="Reset To Draft" name="reset_to_draft" type="object"
+                        attrs="{'invisible':[('type','=','draft')]}"/>
+                <button name="export_xls" string="Export Tenders" type="object"/>
             </xpath>
 
 
             <xpath expr="//div[@name='button_box']" position="inside">
-                <field name="is_quotation" invisible="1"/>
+
 
                 <button class="oe_stat_button" name="view_quotation" type="object" icon="fa-file-text-o"
                         attrs="{'invisible':[('is_quotation','=',False)]}">
@@ -58,12 +65,13 @@
                         <field name="name"/>
                         <field name="project_number"/>
                         <field name="project_reference"/>
+                        <field name="sub_customer" groups="tender.group_sub_customer"/>
                         <!--    <field name="parent_id" />-->
                         <!--                        <field name="partner_id" required="1"/>-->
                     </group>
                     <group>
 
-                        <button name="update_ratio_currancy" type="object" string="Update Currancy"/>
+                        <button name="update_ratio_currancy" type="object" string="Update Currency"/>
 
                     </group>
                 </group>
@@ -85,6 +93,7 @@
                                     <field name="state" readonly="1"/>
                                     <field name="qty"/>
                                     <field name="price_unit" readonly="1"/>
+                                    <field name="unit_price" readonly="1"/>
                                     <field name="total_value"/>
                                     <field name="sale_price"/>
                                     <!--                                    <field name="parent_item" required="1"/>-->
@@ -105,27 +114,25 @@
                             <field name="sequence" widget="handle" optional="show"/>
 
 
-
-
-
-                            <field name="code"  attrs="{'required': [('display_type', '=', False)]}" optional="show"/>
+                            <field name="code" attrs="{'required': [('display_type', '=', False)]}" optional="show"/>
                             <!--                            <field name="parent_item"/>-->
-                            <field name="item"  attrs="{'required': [('display_type', '=', False)]}" optional="show"/>
-                            <field name="name"  attrs="{'required': [('display_type', '=', False)]}"
+                            <field name="item" attrs="{'required': [('display_type', '=', False)]}" optional="show"/>
+                            <field name="name" attrs="{'required': [('display_type', '=', False)]}"
                                    widget="section_and_note_text"
-                                   optional="show" />
+                                   optional="show"/>
                             <field name="related_job" optional="show"/>
                             <field name="uom_id" optional="show"/>
                             <field name="qty" optional="show" sum="total"/>
-                            <field name="tax_id" optional="show"/>
+                            <field name="unit_price" readonly="1"/>
+                            <!--                            <field name="tax_id" optional="show"/>-->
 
                             <field name="state" readonly="1"/>
 
                             <field name="price_unit" readonly="1" sum="total"/>
                             <field name="total_value" optional="show" sum="total"/>
-                            <field name="indirect_cost"  optional="show" sum="total"/>
-                            <field name="profit"   optional="show" sum="total"/>
-                            <field name="sale_price"  optional="show" sum="total"/>
+                            <field name="indirect_cost" optional="show" sum="total"/>
+                            <field name="profit" optional="show" sum="total"/>
+                            <field name="sale_price" optional="show" sum="total"/>
                             <!--                                    <field name="parent_item" required="1"/>-->
 
                             <field name="notes"/>
@@ -134,22 +141,22 @@
 
                     </field>
                 </page>
-                <page string="Currancy">
-                    <group>
+                <page string="Currency">
+
                         <field name="currancy_ids">
                             <tree editable="top">
-                                <field name="currancy_id"/>
+                                <field name="currancy_id" string="Currency"/>
                                 <field name="ratio" string="Rate"/>
 
                             </tree>
                         </field>
-                    </group>
+
                 </page>
                 <page name="other_info" string="Other info">
                     <group>
                         <group>
                             <field name="created_date"/>
-                            <field name="consultant"/>
+                            <field name="consultant" widget="many2many_tags"/>
                             <field name="manager_id"/>
                             <field name="company_id" invisible="1"/>
                             <field name="date_from"/>
@@ -167,6 +174,11 @@
                     </group>
                 </page>
             </xpath>
+            <xpath expr="//notebook" position="after">
+                <group>
+                    <field name="conditions"/>
+                </group>
+            </xpath>
 
 
             <!--            <xpath expr="//div[@name='button_box']" position="attributes">-->
@@ -177,6 +189,5 @@
 
         </field>
     </record>
-
 
 </odoo>

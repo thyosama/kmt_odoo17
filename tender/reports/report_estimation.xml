@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_estimation">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-foreach="docs" t-as="doc">
+                        <div class="page">
+                            <style>
+                                .tb table,.tb th,.tb td {
+                                border: 1px solid black;
+                                border-collapse: collapse;
+                                text-align:center;
+                                }
+                                table{
+                                width: 100%;
+                                }
+                            </style>
+                            <div>
+                                <div class="col-12 text-left">
+                                    <h4><span t-esc="doc.name"/></h4>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">Code: <span t-esc="doc.code"/></div>
+                                    <div class="col-6">Status: <span t-esc="doc.status"/></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">Item: <span t-esc="doc.item.name"/></div>
+                                    <div class="col-6">Notes: <span t-esc="doc.notes"/></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">Description: <span t-esc="doc.description"/></div>
+                                    <div class="col-6">Start Date: <span t-esc="doc.start_date"/></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">Unit of Measure: <span t-esc="doc.uom_id.name"/></div>
+                                    <div class="col-6">Date: <span t-esc="doc.date"/></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">Quantity: <span t-esc="doc.qty"/></div>
+                                    <div class="col-6">End Date: <span t-esc="doc.end_date"/></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">Project: <span t-esc="doc.project_id.name"/></div>
+                                    <div class="col-6">Differance Date: <span t-esc="doc.dif"/></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">Customer: <span t-esc="doc.partner_id.name"/></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">Unit Type: <span t-esc="doc.unit_type"/></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">Break Down Template: <span t-esc="doc.job_template.name"/></div>
+                                </div>
+                            </div>
+                            <div t-if="doc.material_ids">
+                                <h4>Material</h4>
+                                <table class="tb">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Description</th>
+                                            <th>UOM</th>
+                                            <th>QTY</th>
+                                            <th>Waste%</th>
+                                            <th>Planned QTY</th>
+                                            <th>Currency</th>
+                                            <th>Rate</th>
+                                            <th>Cost/Unit</th>
+                                            <th>price Cost subtotal %</th>
+                                            <th>Total QTY</th>
+                                            <th>Total Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="doc.material_ids" t-as="line">
+                                            <td><t t-esc="line.product_id.name"/></td>
+                                            <td><t t-esc="line.description"/></td>
+                                            <td><t t-esc="line.uom_id.name"/></td>
+                                            <td><t t-esc="line.qty"/></td>
+                                            <td><t t-esc="line.waste"/></td>
+                                            <td><t t-esc="line.planned_qty"/></td>
+                                            <td><t t-esc="line.currancy_id.name"/></td>
+                                            <td><t t-esc="line.ratio"/></td>
+                                            <td><t t-esc="line.cost_unit"/></td>
+                                            <td><t t-esc="line.cost_subtotal_before_discount"/></td>
+                                            <td><t t-esc="line.total_qty"/></td>
+                                            <td><t t-esc="line.total_value"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div t-if="doc.labour_ids">
+                                <h4>Labours</h4>
+                                <table class="tb">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Description</th>
+                                            <th>UOM</th>
+                                            <th>Planned QTy</th>
+                                            <th>Cost/Unit</th>
+                                            <th>Price Cost Sub Total</th>
+                                            <th>Total Quantity</th>
+                                            <th>Total Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="doc.labour_ids" t-as="line">
+                                            <td><t t-esc="line.product_id.name"/></td>
+                                            <td><t t-esc="line.description"/></td>
+                                            <td><t t-esc="line.uom_id.name"/></td>
+                                            <td><t t-esc="line.planned_qty"/></td>
+                                            <td><t t-esc="line.cost_unit"/></td>
+                                            <td><t t-esc="line.cost_subtotal"/></td>
+                                            <td><t t-esc="line.total_qty"/></td>
+                                            <td><t t-esc="line.total_value"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div t-if="doc.expense_ids">
+                                <h4>Expenses</h4>
+                                <table class="tb">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Description</th>
+                                            <th>UOM</th>
+                                            <th>Planned QTy</th>
+                                            <th>Cost/Unit</th>
+                                            <th>Price Cost Sub Total</th>
+                                            <th>Total Quantity</th>
+                                            <th>Total Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="doc.expense_ids" t-as="line">
+                                            <td><t t-esc="line.product_id.name"/></td>
+                                            <td><t t-esc="line.description"/></td>
+                                            <td><t t-esc="line.uom_id.name"/></td>
+                                            <td><t t-esc="line.planned_qty"/></td>
+                                            <td><t t-esc="line.cost_unit"/></td>
+                                            <td><t t-esc="line.cost_subtotal"/></td>
+                                            <td><t t-esc="line.total_qty"/></td>
+                                            <td><t t-esc="line.total_value"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div t-if="doc.subconstractor_ids">
+                                <h4>SubContractor</h4>
+                                <table class="tb">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Description</th>
+                                            <th>UOM</th>
+                                            <th>Planned QTy</th>
+                                            <th>Cost/Unit</th>
+                                            <th>Price Cost Sub Total</th>
+                                            <th>Total Quantity</th>
+                                            <th>Total Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="doc.subconstractor_ids" t-as="line">
+                                            <td><t t-esc="line.product_id.name"/></td>
+                                            <td><t t-esc="line.description"/></td>
+                                            <td><t t-esc="line.uom_id.name"/></td>
+                                            <td><t t-esc="line.planned_qty"/></td>
+                                            <td><t t-esc="line.cost_unit"/></td>
+                                            <td><t t-esc="line.cost_subtotal"/></td>
+                                            <td><t t-esc="line.total_qty"/></td>
+                                            <td><t t-esc="line.total_value"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div t-if="doc.equipment_ids">
+                                <h4>Equipment</h4>
+                                <table class="tb">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Description</th>
+                                            <th>UOM</th>
+                                            <th>Planned QTy</th>
+                                            <th>Cost/Unit</th>
+                                            <th>Price Cost Sub Total</th>
+                                            <th>Total Quantity</th>
+                                            <th>Total Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="doc.equipment_ids" t-as="line">
+                                            <td><t t-esc="line.product_id.name"/></td>
+                                            <td><t t-esc="line.description"/></td>
+                                            <td><t t-esc="line.uom_id.name"/></td>
+                                            <td><t t-esc="line.planned_qty"/></td>
+                                            <td><t t-esc="line.cost_unit"/></td>
+                                            <td><t t-esc="line.cost_subtotal"/></td>
+                                            <td><t t-esc="line.total_qty"/></td>
+                                            <td><t t-esc="line.total_value"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div><br/>
+                            <div>
+                                <table class="tb" style="width:50%;page-break-inside: avoid;">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">Total Per Unit</th>
+                                            <th colspan="2">Total With Quantity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Material</td>
+                                            <td><t t-esc="'{0:,.2f}'.format(doc.total_material)"/></td>
+                                            <td>Material</td>
+                                            <td><t t-esc="'{0:,.2f}'.format(doc.total_material_with_qty)"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Labours</td>
+                                            <td><t t-esc="'{0:,.2f}'.format(doc.total_labour)"/></td>
+                                            <td>Labour</td>
+                                            <td><t t-esc="'{0:,.2f}'.format(doc.total_labour_with_qty)"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Expenses</td>
+                                            <td><t t-esc="'{0:,.2f}'.format(doc.total_expense)"/></td>
+                                            <td>Expense</td>
+                                            <td><t t-esc="'{0:,.2f}'.format(doc.total_expenses_with_qty)"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SubContractor</td>
+                                            <td><t t-esc="'{0:,.2f}'.format(doc.total_subconstractor)"/></td>
+                                            <td>Subcontractor</td>
+                                            <td><t t-esc="'{0:,.2f}'.format(doc.total_subcontractor_with_qty)"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Equipment</td>
+                                            <td><t t-esc="'{0:,.2f}'.format(doc.total_equipment)"/></td>
+                                            <td>Equipment</td>
+                                            <td><t t-esc="'{0:,.2f}'.format(doc.total_equipment_with_qty)"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total</td>
+                                            <td><t t-esc="'{0:,.2f}'.format(doc.total_value_all)"/></td>
+                                            <td>Total</td>
+                                            <td><t t-esc="'{0:,.2f}'.format(doc.total_value_all_with_qty)"/></td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

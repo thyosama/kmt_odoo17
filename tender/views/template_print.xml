@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_tender_project">
+            <t t-call="web.html_container">
+
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.internal_layout">
+                        <div class="page">
+                            <style>
+                                table,tr,th,td{
+                                border:1px solid black
+
+                                }
+                            </style>
+
+
+                            <t t-foreach="o.get_job_ids()" t-as="job">
+                                <table class="table table-condensed border">
+                                    <tr>
+                                        <td>Customer</td>
+                                        <td>
+                                            <span t-esc="o.partner_id.name"/>
+                                        </td>
+                                        <td>Project</td>
+                                        <td>
+                                            <span t-esc="o.name"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <br></br>
+                                <br></br>
+                                <table class="table table-condensed border">
+                                    <thead>
+                                        <tr class="border">
+                                            <th class="text-center">Code</th>
+                                            <th class="text-center">Item</th>
+                                            <th class="text-center">Description</th>
+                                            <th class="text-center">unit Of measure</th>
+                                            <th class="text-center">Quantity</th>
+                                            <th class="text-center">Unit Price</th>
+                                            <!--                                        <th class="text-center">State</th>-->
+                                            <th class="text-center">Cost Price</th>
+                                            <th class="text-center">Total Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                          <t t-set="total1" t-value="0"/>
+                                            <t t-set="total2" t-value="0"/>
+                                            <t t-set="total3" t-value="0"/>
+                                            <t t-set="total4" t-value="0"/>
+                                        <tr>
+                                            <td class="text-left" colspan="9" style="background-color:grey">
+                                                <span t-esc="job.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr t-foreach="o.tender_ids" t-as="tend">
+
+                                            <t t-if="tend.related_job.id==job.id">
+                                            <t t-if="tend.code">
+                                                <t t-set="total1" t-value="total1+tend.qty"/>
+                                                <t t-set="total2" t-value="total2+tend.unit_price"/>
+                                                <t t-set="total3" t-value="total3+tend.price_unit"/>
+                                                <t t-set="total4" t-value="total4+tend.total_value"/>
+                                                <td class="text-center">
+                                                    <span t-esc="tend.code"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-esc="tend.item.name"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-esc="tend.name"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-esc="tend.uom_id.name"/>
+                                                </td>
+
+                                                <td class="text-center">
+                                                    <span t-esc="tend.qty"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-esc="tend.unit_price"/>
+                                                </td>
+                                                <!--                                                <td class="text-center">-->
+                                                <!--                                                    <span t-esc="tend.state"/>-->
+                                                <!--                                                </td>-->
+                                                <td class="text-center">
+                                                    <span t-esc="tend.price_unit"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-esc="tend.total_value"/>
+                                                </td>
+                                            </t>
+                                            </t>
+
+
+                                        </tr>
+
+                                        <tr>
+                                            <td class="text-center" colspan="4">Total</td>
+                                            <td class="text-center">
+                                                <span t-esc="total1"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="total2"/>
+                                            </td>
+                                            <!--                                            <td class="text-center" ></td>-->
+                                            <td class="text-center">
+                                                <span t-esc="total3"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="total4"/>
+                                            </td>
+
+
+                                        </tr>
+
+
+                                    </tbody>
+                                </table>
+                                <p style="page-break-before:always;"></p>
+                            </t>
+
+                        </div>
+                    </t>
+                </t>
+
+            </t>
+        </template>
+
+
+        <!-- QWeb Reports -->
+        <!-- NAME & FILE_NAME should be the same -->
+        <report
+                id="action_print_tender"
+                model="project.project"
+                report_type="qweb-pdf"
+                string="Print"
+                name="tender.report_tender_project"
+                file="tender.report_tender_project"
+        />
+    </data>
+</odoo>

@@ -25,8 +25,9 @@
                     <button name="create_partial_contract" string="Create SUBCONTRACT"
                             attrs="{'invisible':['|',('state','=','draft'),('is_sub_contract','=',True)]}"
                             type="object" class="btn-primary"/>
-                    <button name="create_engineer_template" type="object" string="create Engineer Template"
-                            attrs="{'invisible':[('is_sub_contract','=',True)]}"/>
+                    <button name="action_draft" type="object" string="Set To Draft" states="confirm"/>
+<!--                    <button name="create_engineer_template" type="object" string="create Engineer Template"-->
+<!--                            attrs="{'invisible':[('is_sub_contract','=',True)]}"/>-->
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approve,quotation"/>
                 </header>
                 <sheet>
@@ -126,6 +127,7 @@
                                            optional="show"/>
 
                                     <field name="discount" sum="Total" optional="show"/>
+<!--                                    <field name="tax_ids"  widget="many2many_tags" optional="show"/>-->
                                     <field name="total_value" sum="Total" optional="show"/>
                                     <field name="notes" optional="show"/>
                                     <button name="add_stage_line_ids" type="object" string="Add stage"/>
@@ -143,43 +145,50 @@
                                 </tree>
                             </field>
                         </page>
-<!--                        <page string="Deduction"-->
-<!--                              attrs="{'invisible':[('type','!=','owner')],'readonly':[('state','!=','draft')]}">-->
-<!--                            <field name="deduction_ids"-->
-<!--                                   context="{'default_type':'deduction','default_sub_type':'owner'}">-->
-<!--                                <tree editable="top">-->
-<!--                                    <field name="type" invisible="1" optional="show"/>-->
-<!--                                    <field name="sub_type" invisible="1" optional="show"/>-->
-<!--                                    <field name="name" attrs="{'required':True}" optional="show"/>-->
-<!--                                    <field name="account_id" optional="show"/>-->
-<!--                                    <field name="is_precentage" optional="show"/>-->
-<!--                                    <field name="precentage" optional="show"-->
-<!--                                           attrs="{'readonly':[('is_precentage','=',False)]}"/>-->
-<!--                                    <field name="is_down_payment" string="Value" optional="show"/>-->
-<!--                                </tree>-->
-<!--                            </field>-->
-<!--                        </page>-->
+                        <page string="Deduction"
+                              attrs="{'invisible':[('type','!=','owner')],'readonly':[('state','!=','draft')]}">
+                            <field name="deduction_ids"
+                                   context="{'default_type':'deduction','default_sub_type':'owner'}">
+                                <tree editable="top">
+                                    <field name="type" invisible="1" optional="show"/>
+                                    <field name="sub_type" invisible="1" optional="show"/>
+                                    <field name="name" attrs="{'required':True}" optional="show"/>
+                                    <field name="account_id" optional="show"/>
+                                    <field name="is_precentage" optional="show"/>
+                                    <field name="precentage" optional="show"
+                                           attrs="{'readonly':[('is_precentage','=',False)]}"/>
+                                   <field name="is_down_payment" optional="show"  attrs="{'readonly':[('is_precentage','=',True)]}" string ="Value"/>
+                                </tree>
+                            </field>
+                        </page>
 
-<!--                        <page string="Additional"-->
-<!--                              attrs="{'invisible':[('type','!=','owner')],'readonly':[('state','!=','draft')]}">-->
-<!--                            <field name="allowance_ids"-->
-<!--                                   context="{'default_type':'addition','default_sub_type':'owner'}">-->
-<!--                                <tree editable="top">-->
-<!--                                    <field name="type" invisible="1" optional="show"/>-->
-<!--                                    <field name="sub_type" invisible="1" optional="show"/>-->
-<!--                                    <field name="name" attrs="{'required':True}" optional="show"/>-->
-<!--                                    <field name="account_id" optional="show"/>-->
-<!--                                    <field name="is_precentage" optional="show"/>-->
-<!--                                    <field name="precentage"-->
-<!--                                           attrs="{'readonly':[('is_precentage','=',False)]}" optional="show"/>-->
-<!--                                    <field name="is_down_payment" string="Value" optional="show"/>-->
+                        <page string="Additional"
+                              attrs="{'invisible':[('type','!=','owner')],'readonly':[('state','!=','draft')]}">
+                            <field name="allowance_ids"
+                                   context="{'default_type':'addition','default_sub_type':'owner'}">
+                                <tree editable="top">
+                                    <field name="type" invisible="1" optional="show"/>
+                                    <field name="sub_type" invisible="1" optional="show"/>
+                                    <field name="name" attrs="{'required':True}" optional="show"/>
+                                    <field name="account_id" optional="show"/>
+                                    <field name="is_precentage" optional="show"/>
+                                    <field name="precentage"
+                                           attrs="{'readonly':[('is_precentage','=',False)]}" optional="show"/>
+                                   <field name="is_down_payment" optional="show"  attrs="{'readonly':[('is_precentage','=',True)]}" string ="Value"/>
 
-<!--                                </tree>-->
-<!--                            </field>-->
-<!--                        </page>-->
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
 
                     <group class="oe_subtotal_footer oe_right">
+
+
+<!--                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">-->
+<!--                            <label for="amount_tax"/>-->
+<!--                        </div>-->
+<!--                        <field name="amount_tax" nolabel="1" class="oe_subtotal_footer_separator"-->
+<!--                               widget="monetary"/>-->
 
                         <div class="oe_subtotal_footer_separator oe_inline o_td_label">
                             <label for="total_value"/>
@@ -213,8 +222,9 @@
                     <button name="create_partial_contract" string="Create SUBCONTRACT"
                             attrs="{'invisible':['|',('state','=','draft'),('is_sub_contract','=',True)]}"
                             type="object" class="btn-primary"/>
-                    <button name="create_engineer_template" type="object" string="create Engineer Template"
-                            attrs="{'invisible':[('is_sub_contract','=',True)]}"/>
+                     <button name="action_draft" type="object" string="Set To Draft" states="confirm"/>
+<!--                    <button name="create_engineer_template" type="object" string="create Engineer Template"-->
+<!--                            attrs="{'invisible':[('is_sub_contract','=',True)]}"/>-->
                 </header>
                 <sheet>
                      <div class="oe_button_box" name="button_box">
@@ -262,15 +272,17 @@
                         <page string="Lines"
                               attrs="{'readonly':[('state','!=','draft')]}">
                             <field name="lines_id" attrs="{'readonly':[('state','!=','draft')]}"
-                                   widget="section_and_note_one2many">
+                                   widget="section_and_note_one2many"  context="{'default_type': 'supconstractor','default_project_id':project_id}">
                                 <form>
 
                                     <group>
                                         <field name="code" attrs="{'required':True}"/>
                                         <field name="is_sub_contract" invisible="1"/>
 
-                                        <field name="item" attrs="{'required':True}"/>
-                                        <field name="name" attrs="{'required':True}"/>
+                                        <field name="item" attrs="{'required':True}" string="بند المقايسه"/>
+                                        <field name="name" attrs="{'required':True}" string="وصف بند المقايسه"/>
+                                        <field name="item_sub" attrs="{'required':True}" string="بند المقاول  "/>
+                                        <field name="item_sub_name"  string="وصف بند المقاول"/>
                                         <field name="related_job"/>
                                         <field name="uom_id" attrs="{'required':True}"/>
                                         <field name="qty"
@@ -295,19 +307,18 @@
                                     <field name="sequence" widget="handle" optional="show"/>
                                     <field name="display_type" optional="hide"/>
 
-                                    <field name="code" attrs="{'required': [('display_type', '=', False)]}"
-                                           optional="show"/>
+
                                     <field name="item" attrs="{'required': [('display_type', '=', False)]}"
-                                           optional="show"/>
+                                           optional="show" string="بند المقايسه"/>
                                     <field name="name" attrs="{'required': [('display_type', '=', False)]}"
                                            optional="show"
-                                           widget="section_and_note_text"/>
-                                    <field name="related_job" optional="show"/>
-                                    <field name="sub_contarctor_item" attrs="{'required':True}" optional="show"/>
+                                           widget="section_and_note_text"  string="وصف بند المقايسه"/>
+
+                                        <field name="item_sub" attrs="{'required':True}" string="بند المقاول  "/>
+                                        <field name="item_sub_name"  string="وصف بند المقاول"/>
                                     <field name="uom_id" attrs="{'required': [('display_type', '=', False)]}"
                                            optional="show"/>
-                                    <!--                                    <field name="stages_id" widget="many2many_tags" optional="show"/>-->
-                                    <!--                                    <field name="is_sub_contract" attrs="{'invisible':True}" optional="show"/>-->
+
                                     <field name="qty" attrs="{'required': [('display_type', '=', False)]}"
                                            sum="Total" optional="show"/>
                                     <field name="price_unit"
@@ -315,6 +326,7 @@
                                            optional="show"/>
 
                                     <field name="discount" sum="Total" optional="show"/>
+<!--                                      <field name="tax_ids"  widget="many2many_tags" optional="show"/>-->
                                     <field name="total_value" sum="Total" optional="show"/>
                                     <field name="notes" optional="show"/>
                                     <button name="add_stage_line_ids" type="object" string="Add stage"/>
@@ -332,45 +344,50 @@
                                 </tree>
                             </field>
                         </page>
-<!--                        <page string="Deduction"-->
-<!--                              attrs="{'invisible':[('type','=','owner')],'readonly':[('state','!=','draft')]}">-->
-<!--                            <field name="deduction_ids"-->
-<!--                                   context="{'default_type':'deduction','default_sub_type':'supconstractor'}">-->
-<!--                                <tree editable="top">-->
-<!--                                    <field name="type" invisible="1" optional="show"/>-->
-<!--                                    <field name="sub_type" invisible="1" optional="show"/>-->
-<!--                                    <field name="name" attrs="{'required':True}" optional="show"/>-->
-<!--                                    <field name="account_id" optional="show"/>-->
-<!--                                    <field name="is_precentage" optional="show"/>-->
-<!--                                    <field name="precentage"-->
-<!--                                           attrs="{'readonly':[('is_precentage','=',False)]}" optional="show"/>-->
-<!--                                    <field name="is_down_payment" string="Value" optional="show"/>-->
-<!--                                </tree>-->
-<!--                            </field>-->
-<!--                        </page>-->
-<!--                        <page string="Additional"-->
-<!--                              attrs="{'invisible':[('type','=','owner')],'readonly':[('state','!=','draft')]}">-->
-<!--                            <field name="allowance_ids"-->
-<!--                                   context="{'default_type':'addition','default_sub_type':'supconstractor'}">-->
-<!--                                <tree editable="top">-->
-<!--                                    <field name="type" invisible="1" optional="show"/>-->
-<!--                                    <field name="sub_type" invisible="1" optional="show"/>-->
-<!--                                    <field name="name" attrs="{'required':True}" optional="show"/>-->
-<!--                                    <field name="account_id" optional="show"/>-->
-<!--                                    <field name="is_precentage" optional="show"/>-->
-<!--                                    <field name="precentage"-->
-<!--                                           attrs="{'readonly':[('is_precentage','=',False)]}" optional="show"/>-->
-<!--                                    <field name="is_down_payment" string="Value" optional="show"/>-->
+                        <page string="Deduction"
+                              attrs="{'invisible':[('type','=','owner')],'readonly':[('state','!=','draft')]}">
+                            <field name="deduction_ids"
+                                   context="{'default_type':'deduction','default_sub_type':'supconstractor'}">
+                                <tree editable="top">
+                                    <field name="type" invisible="1" optional="show"/>
+                                    <field name="sub_type" invisible="1" optional="show"/>
+                                    <field name="name" attrs="{'required':True}" optional="show"/>
+                                    <field name="account_id" optional="show"/>
+                                    <field name="is_precentage" optional="show"/>
+                                    <field name="precentage"
+                                           attrs="{'readonly':[('is_precentage','=',False)]}" optional="show"/>
+                                   <field name="is_down_payment" optional="show"  attrs="{'readonly':[('is_precentage','=',True)]}" string ="Value"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Additional"
+                              attrs="{'invisible':[('type','=','owner')],'readonly':[('state','!=','draft')]}">
+                            <field name="allowance_ids"
+                                   context="{'default_type':'addition','default_sub_type':'supconstractor'}">
+                                <tree editable="top">
+                                    <field name="type" invisible="1" optional="show"/>
+                                    <field name="sub_type" invisible="1" optional="show"/>
+                                    <field name="name" attrs="{'required':True}" optional="show"/>
+                                    <field name="account_id" optional="show"/>
+                                    <field name="is_precentage" optional="show"/>
+                                    <field name="precentage"
+                                           attrs="{'readonly':[('is_precentage','=',False)]}" optional="show"/>
+                                   <field name="is_down_payment" optional="show"  attrs="{'readonly':[('is_precentage','=',True)]}" string ="Value"/>
 
-<!--                                </tree>-->
-<!--                            </field>-->
-<!--                        </page>-->
+                                </tree>
+                            </field>
+                        </page>
 
 
                     </notebook>
 
                     <group class="oe_subtotal_footer oe_right">
 
+<!--                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">-->
+<!--                            <label for="amount_tax"/>-->
+<!--                        </div>-->
+<!--                        <field name="amount_tax" nolabel="1" class="oe_subtotal_footer_separator"-->
+<!--                               widget="monetary"/>-->
                         <div class="oe_subtotal_footer_separator oe_inline o_td_label">
                             <label for="total_value"/>
                         </div>
@@ -401,12 +418,12 @@
             <tree>
 
                 <field name="tender_id" attrs="{'required':True}" optional="show"/>
-                <field name="sub_contarctor_item" attrs="{'required':True}" optional="show"/>
 
                 <field name="qty" attrs="{'required':True}" sum="Total" optional="show"/>
                 <field name="price_unit" attrs="{'required':True}" optional="show"/>
                 <field name="total_value" attrs="{'required':True}" sum="Total" optional="show"/>
             </tree>
+
 
         </field>
     </record>

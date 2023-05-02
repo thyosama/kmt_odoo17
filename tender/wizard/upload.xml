@@ -1,0 +1,38 @@
+<odoo>
+    <data>
+
+        <record id="view_dms_sheet_wizard" model="ir.ui.view">
+            <field name="name">add.tender.sheet.upload.wizard.view</field>
+            <field name="model">tender.sheet.upload</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form>
+                     <group>
+                        <group>
+                              <field name="file_name" required="1"/>
+                              <field name="project_id" required="1"/>
+
+                        </group>
+
+                    </group>
+                    <footer>
+                        <button name="import_dms_file" string="Import" type="object" class="oe_highlight"/>
+                        <button string="الغاء" class="btn btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="trender_sheet_action" model="ir.actions.act_window">
+        <field name="name">Import  sheet</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tender.sheet.upload</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        </record>
+
+        <menuitem id="trender_sheet_action_menu"  name="Import  sheet"
+                   parent="construction_root" action="trender_sheet_action"/>
+
+    </data>
+</odoo>

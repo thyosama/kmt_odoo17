@@ -4,7 +4,7 @@ from odoo.exceptions import ValidationError
 
 
 class contract(models.Model):
-    _name = 'construction.contract'
+    _name = "construction.contract"
     _inherit = ['mail.thread', 'mail.activity.mixin', 'utm.mixin']
     name = fields.Char("Name", compute='_get_name')
     type = fields.Selection([('owner', 'Owner'), ('supconstractor', 'sub contractor')], string="Type", default='owner')
@@ -47,6 +47,30 @@ class contract(models.Model):
 
     count_sub = fields.Integer(compute='get_count_sub')
     count_eng = fields.Integer(compute='get_count_sub')
+    amount_tax = fields.Float(compute="get_amount_tax")
+
+    @api.depends('lines_id.tax_ids')
+    def get_amount_tax(self):
+        for rec in self:
+            rec.amount_tax = 0
+            for line in rec.lines_id:
+                for tax in line.tax_ids:
+                    rec.amount_tax += line.total_value * (tax.amount / 100)
+
+    @api.constrains('project_id')
+    def check_unique_project(self):
+        contract_id = self.env['construction.contract'].search([('is_sub_contract','=',False),('id','!=',self.id),('project_id','=',self.project_id.id)])
+        if len(contract_id)>1 and self.type!='supconstractor':
+            raise ValidationError("Contract must be unique for each project")
+
+    def action_draft(self):
+        temp_id = self.env['construction.engineer'].search([('contract_id','=',self.id) ])
+        if temp_id:
+            raise ValidationError("You can't reset to draft because you contract have Templates ")
+        else :
+            self.state='draft'
+
+
 
     @api.onchange("project_id")
     def _onchnage_project_id(self):
@@ -93,12 +117,15 @@ class contract(models.Model):
         }
 
     def view_engineer_tem(self):
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>...",self.id)
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>...",self.contract_id)
         return {
             'name': ('Template'),
             'view_mode': 'tree,form',
             'res_model': 'construction.engineer',
             'domain': [('contract_id', '=', self.id)],
             'type': 'ir.actions.act_window',
+            'context':{'default_contract_id':self.id,'default_project_id':self.project_id.id,'default_type':self.type},
             'target': 'current'
         }
 
@@ -123,6 +150,7 @@ class contract(models.Model):
                 'default_account_id': self.account_id.id,
                 'default_revenue_account_id': self.revenue_account_id.id,
                 'default_partial_contract': self.id,
+                'default_type': self.type,
                 'default_is_sub_contract': True
             }
         }
@@ -136,12 +164,13 @@ class contract(models.Model):
             elif rec.type == 'supconstractor':
                 rec.name = str(rec.project_id.name) + "/" + rec.sub_contactor.name + " /" + str(rec.id).zfill(4)
 
-    @api.depends('lines_id')
+    @api.depends('lines_id','amount_tax')
     def _get_total_value(self):
         for rec in self:
             rec.total_value = 0
             for record in rec.lines_id:
                 rec.total_value += record.total_value
+            rec.total_value+=rec.amount_tax
             # if rec.type == 'owner':
             #     for record in rec.lines_id:
             #         rec.total_value += record.total_value
@@ -159,70 +188,17 @@ class contract(models.Model):
 
     def create_engineer_template(self):
 
+
         tem_id = self.env['construction.engineer'].create({
             'contract_id': self.id,
             'project_id': self.project_id.id,
         })
-        # for rec in self.stage_ids:
-        #     self.create_engineer_tem(self.project_id, rec.stage_id, tem_id, rec.prec)
-        # for rec in self.lines_id:
-        #     if rec.stage_line_ids:
-        #
-        #         for st in rec.stage_line_ids:
-        #
-        #             main_stage_id = self.env['contract.stage.line'].search(
-        #                 [('contract_id', '=', rec.contract_id.id), ('stage_id', '=', st.id)])
-        #             other_prec = 0
-        #             if main_stage_id:
-        #                 other_prec = main_stage_id.prec
-        #
-        #             m_qty = self.get_remind_qty(rec.id)
-        #             if m_qty == 0:
-        #                 m_qty = rec.qty
-        #             self.env['construction.engineer.lines'].create({
-        #                 'parent_id': tem_id.id,
-        #                 # 'tender_id': rec.tender_id if rec.tender_id else '',
-        #                 'stage_id': st.stage_id.id,
-        #                 'remind_qty': abs(m_qty - ((rec.qty * other_prec) / 100)),
-        #                 'qty': (rec.qty * st.prec) / 100,
-        #                 'tender_qty': rec.qty,
-        #                 'contract_line_id': rec.id,
-        #                 'item': rec.item.id,
-        #                 'uom_id': rec.uom_id.id,
-        #                 'other_prec':  st.prec,
-        #                 'related_job': rec.related_job.id if rec.related_job else '',
-        #                 'name': rec.name
-        #
-        #             })
-        # sub_contract_ids = self.env['construction.contract'].search([('partial_contract', '=', self.id)])
-        # for rec in sub_contract_ids.lines_id:
-        #     if rec.stage_line_ids:
-        #         for st in rec.stage_line_ids:
-        #
-        #             main_stage_id = self.env['contract.stage.line'].search(
-        #                 [('contract_id', '=', rec.contract_id.id), ('stage_id', '=', st.id)])
-        #             other_prec = 0
-        #             if main_stage_id:
-        #                 other_prec = main_stage_id.prec
-        #
-        #             m_qty = self.get_remind_qty(rec.id)
-        #             if m_qty == 0:
-        #                 m_qty = rec.qty
-        #             self.env['construction.engineer.lines'].create({
-        #                 'parent_id': tem_id.id,
-        #                 'tender_id': rec.tender_id if rec.tender_id else '',
-        #                 'stage_id': st.stage_id.id,
-        #                 'remind_qty': abs(m_qty - ((rec.qty * other_prec) / 100)),
-        #                 'qty': (rec.qty * st.prec) / 100,
-        #                 'tender_qty': rec.qty,
-        #                 'contract_line_id': rec.id,
-        #                 'item': rec.item.id,
-        #                 'uom_id': rec.uom_id.id,
-        #                 'other_prec':  st.prec,
-        #                 'related_job': rec.related_job.id if rec.related_job else '',
-        #                 'name': rec.name
-        #
-        #             })
+        for rec in self.deduction_ids:
+            new_id = rec.copy()
+            new_id.eng_template_id=tem_id.id
+        for rec in self.allowance_ids:
+            new_id = rec.copy()
+            new_id.eng_template_id=tem_id.id
 
     def create_engineer_tem(self, project_id, stage, tem_id, prec):
 
@@ -296,18 +272,28 @@ class contract(models.Model):
 
         qty = sum(lines.mapped('qty'))
         return qty
+    def unlink(self):
+        for rec in self:
+            temp_id = self.env['construction.engineer'].search([('contract_id', '=', rec.id)])
+            if temp_id:
+                raise ValidationError("You can't delete because you contract have Templates ")
+        res =super().unlink()
+        return res
 
 
 class ContractLine(models.Model):
-    _name = 'construction.contract.line'
+    _name = "construction.contract.line"
     display_type = fields.Selection([
         ('line_section', "Section"),
         ('line_note', "Note")], default=False, help="Technical field for UX purpose.")
     code = fields.Char("Code")
     contract_id = fields.Many2one("construction.contract")
+    project_id = fields.Many2one("project.project")
     sup_contract_id = fields.Many2one("construction.contract")
     item = fields.Many2one('product.item', string='Item')
+    item_sub = fields.Many2one('product.item', string='Item')
     name = fields.Text("Description")
+    item_sub_name = fields.Text("Description")
     sequence = fields.Integer(string='Sequence', default=10)
     uom_id = fields.Many2one(related='item.uom_id', string="Unit of Measure")
     qty = fields.Float("Quantity")
@@ -315,7 +301,6 @@ class ContractLine(models.Model):
     price_unit = fields.Float("Price Unit ", )
     discount = fields.Float("Discount % ", )
     total_value = fields.Float("Total value ", compute='_get_total_value', store=True, index=True)
-    sub_contarctor_item = fields.Many2one('construction.subconstractor', string="SubConstractor")
     tender_id = fields.Char(string="Tender ID")
 
     type = fields.Selection([('owner', 'Owner'), ('supconstractor', 'sub contractor')], string="Type", default='owner')
@@ -323,11 +308,12 @@ class ContractLine(models.Model):
     is_sub_contract = fields.Boolean(related='contract_id.is_sub_contract')
     related_job = fields.Many2one(related='item.related_job')
     state = fields.Selection(related="contract_id.state")
-    # stages_id = fields.Many2many(
-    #     comodel_name='contract.stage',
-    #     string='Stages')
+
 
     stage_line_ids = fields.One2many("contract.line.stage.line", "contract_line_id")
+    tax_ids = fields.Many2many(
+        comodel_name='account.tax',
+        string='taxes')
 
     @api.constrains('stage_line_ids')
     def constain_stage_ids(self):
@@ -373,15 +359,18 @@ class ContractLine(models.Model):
             'target': 'new'
         }
 
-    # @api.onchange('contract_id.stage_ids', 'stages_id')
-    # def get_states_line(self):
-    #     if self._origin.contract_id:
-    #         ids = []
-    #         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.")
-    #         for rec in self.contract_id.stage_ids:
-    #             ids.append(rec.id)
-    #         domain = {'stages_id': [('id', 'in', ids)]}
-    #         return {'domain': domain}
+    @api.onchange('item', 'contract_id')
+    def get_iteme(self):
+        if self.type=='supconstractor':
+
+            ids = []
+            job_id = self.env['construction.job.cost'].search([('project_id', '=', self.project_id.id)])
+            for l in job_id:
+                ids.append(l.item.id)
+
+
+            domain = {'item': [('id', 'in', ids)]}
+            return {'domain': domain}
 
     _sql_constraints = [
         ('code_uniq_contract', 'UNIQUE (code,contract_id)', 'You can not have  the same code !')
@@ -396,27 +385,4 @@ class ContractLine(models.Model):
     def action_save(self):
         return {'type': 'ir.actions.act_window_close'}
 
-    @api.onchange('sub_contarctor_item', 'code')
-    def _onchange_tender_id(self):
-
-        # if  self.sub_contarctor_item:
-
-        sub_contractors = []
-        job_cost_id = self.env['construction.job.cost'].search([
-            ('project_id', '=', self.contract_id.project_id.id),
-            ('code', '=', self.code),
-        ])
-
-        for job_cost in job_cost_id:
-            # print(job_cost, "Line", job_cost.subconstractor_ids)
-            for line in job_cost.subconstractor_ids:
-                sub_contractors.append(line.id)
-        job_id = self.env['construction.job.cost'].search([('code', '=', self.code)], limit=1)
-        if job_id and self.sub_contarctor_item:
-            sub_con = self.env['construction.subconstractor'].search(
-                [('job_id', '=', job_id.id), ('id', '=', self.sub_contarctor_item.id)], limit=1)
-            self.price_unit = sub_con.cost_unit
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>0",job_cost_id,sub_contractors)
-
-        return {'domain': {'sub_contarctor_item': [('id', 'in', sub_contractors)]}}
 

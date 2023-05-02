@@ -2,19 +2,24 @@ from odoo import fields, models, api, _
 import itertools
 
 from odoo.exceptions import ValidationError
+from num2words import num2words
 
 
 class Engineer(models.Model):
-    _name = 'construction.engineer'
+    _name = "construction.engineer"
     _inherit = ['mail.thread', 'mail.activity.mixin', 'utm.mixin']
 
     _description = 'engineer'
 
     name = fields.Char(default=_('New'))
-    contract_id = fields.Many2one("construction.contract")
+    project_id = fields.Many2one("project.project")
+    tag_ids = fields.Many2many('project.tags', relation='construction_engineer_project_tags_rel',
+                               related='project_id.tag_ids', string='Tags')
+    type = fields.Selection([('owner', 'Owner'), ('supconstractor', 'sub contractor')], string="Type", default='owner')
+    contract_id = fields.Many2one("construction.contract",domain="[('type','=',type),('project_id','=',project_id)]")
     type_move = fields.Selection([('process', 'Process'), ('final', 'Final')], string="Type", default='process')
 
-    project_id = fields.Many2one("project.project")
+
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('cancel', 'Cancel')], default='draft')
     lines = fields.One2many(
         comodel_name='construction.engineer.lines',
@@ -26,6 +31,45 @@ class Engineer(models.Model):
                                     string="Deductions", domain=[('type', '=', 'deduction')])
     allowance_ids = fields.One2many("contract.deduction.allowance.lines", "eng_template_id",
                                     string="Allowance", domain=[('type', '=', 'addition')])
+    total_value = fields.Float("Total value ", compute='_get_total_value', store=True, index=True)
+    tag_id_custom = fields.Char(string='Tags', compute='_get_tags', store=True)
+
+
+    def change_to_word(self, no):
+        return num2words(no, lang='ar')
+    @api.model
+    @api.depends('tag_ids')
+    def _get_tags(self):
+        tag_custom = ''
+        for rec in self:
+            if rec.tag_ids:
+                tag_custom = ','.join([p.name for p in rec.tag_ids])
+            else:
+                tag_custom = ''
+            rec.tag_id_custom = tag_custom
+
+    @api.depends('lines')
+    def _get_total_value(self):
+        for rec in self:
+            rec.total_value = 0
+            for record in rec.lines:
+                rec.total_value += record.amount
+
+
+    @api.onchange("project_id","type")
+    def _onchange_project(self):
+        if self.project_id and self.type:
+            contract_id = self.env['construction.contract'].search([('type','=',self.type),('project_id','=',self.project_id.id)],limit=1)
+            if contract_id:
+                self.contract_id=contract_id.id
+
+    def action_draft(self):
+        temp_id = self.env['account.invoice'].search([('eng_template_id','=',self.id),('state','!=','cancel') ])
+        if temp_id:
+            raise ValidationError("You can't reset to draft  ")
+        else :
+            self.state='draft'
+
 
     def action_select_items(self):
         return {
@@ -58,10 +102,11 @@ class Engineer(models.Model):
 
         invoice = self.env['account.invoice'].create(
             {
-                'type': 'owner',
+                'type': self.type,
                 'type_move': self.type_move,
                 'contract_id': self.contract_id.id,
                 'eng_template_id': self.id,
+                'type':self.type,
                 'invoice_line': self.get_lines(self.contract_id,check)
 
             }
@@ -123,35 +168,34 @@ class Engineer(models.Model):
                 # last_qty += item['last_qty']
 
                 id = item['id']
-            invoicelines = self.env['account.invoice.line'].search(
-                [('contract_line_id', '=', id), ('invoice_id', '=', invoice_previous.id), ])
-            for l in invoicelines:
-                print(">>>>>>>>>>>",l.quantity,l.percentage)
-                last_qty+=(l.quantity)
+            # invoicelines = self.env['account.invoice.line'].search(
+            #     [('contract_line_id', '=', id), ('invoice_id', '=', invoice_previous.id), ])
+            # for l in invoicelines:
+            #     print(">>>>>>>>>>>",l.quantity,l.percentage)
+            #     last_qty+=(l.quantity)
             contract_line_id = self.env['construction.contract.line'].search([('id','=',id)])
             percentage = (price/contract_line_id.total_value)*100 if contract_line_id.total_value>0 else 0
 
             # print(">>>>>>>>>>>>>>>>",percentage,contract_line_id.qty*(percentage/100))
             docs.append((0, 0, {
                 'contract_line_id': id,
-                'current_qty':contract_line_id.qty*(percentage/100),
-                'last_qty':last_qty,
+                'quantity':contract_line_id.qty*(percentage/100),
+
                 'code': contract_line_id.code,
                 'item': contract_line_id.item.id,
                 # 'price_unit':price,
                 'price_unit':contract_line_id.price_unit,
                 'percentage':percentage,
-                'contract_qty':contract_line_id.qty,
                 'name':contract_line_id.name,
             }))
         return docs
 
-    def unlink(self):
-        for rec in self:
-            if rec.state!='draft':
-                raise ValidationError("You  Cann't delete ")
-        res=super(Engineer, self).unlink()
-        return res
+    # def unlink(self):
+    #     for rec in self:
+    #         if rec.state!='draft':
+    #             raise ValidationError("You  Cann't delete ")
+    #     res=super(Engineer, self).unlink()
+    #     return res
 
     @api.model
     def create(self, vals):
@@ -159,11 +203,19 @@ class Engineer(models.Model):
         res = super(Engineer, self).create(vals)
         res.name = self.env['ir.sequence'].next_by_code(
             'construction.engineer')
+        for rec in res.contract_id.deduction_ids:
+            new_id = rec.copy()
+            new_id.eng_template_id=res.id
+            new_id.contract_id=False
+        for rec in res.contract_id.allowance_ids:
+            new_id = rec.copy()
+            new_id.eng_template_id=res.id
+            new_id.contract_id = False
         return res
 
 
 class Engineerlines(models.Model):
-    _name = 'construction.engineer.lines'
+    _name = "construction.engineer.lines"
     _description = 'engineer'
     _order = 'name,item'
     sequence = fields.Integer(string='Sequence', default=10)
@@ -181,19 +233,28 @@ class Engineerlines(models.Model):
         ('line_section', "Section"),
         ('line_note', "Note")], default=False)
     stage_id = fields.Many2one("contract.stage")
-    percentage = fields.Float(string="percentage %",compute='get_percentage')
+    percentage = fields.Float(string="percentage %")
     related_job = fields.Many2one(related='item.related_job')
     prec_price = fields.Float("Price",compute='get_price_cost')
     other_prec = fields.Float("Prectenge stage")
     amount = fields.Float("Amount",compute='get_price_cost')
+    amount_previous = fields.Float("Previuos Amount",compute='get_previous_qty')
     contract_line_id  =fields.Many2one("construction.contract.line")
     previous_qty = fields.Float(compute="get_previous_qty")
     contract_id = fields.Many2one(related='parent_id.contract_id')
+    total_qty = fields.Float(compute='get_total_qty')
+    differance = fields.Float(compute='get_differance')
+
+    @api.depends('previous_qty', 'qty')
+    def get_total_qty(self):
+        for rec in self:
+            rec.total_qty = 0
+            rec.total_qty = rec.previous_qty + rec.qty
 
     @api.depends( 'item','stage_id','contract_id','parent_id.state')
     def get_previous_qty(self):
         for rec in self:
-            rec.previous_qty=0
+            rec.previous_qty=rec.amount_previous=0
             if rec.id:
                 lines_pre_ids = self.env['construction.engineer.lines'].search([('contract_id','=',rec.contract_id.id),\
                                                                                 ('item','=',rec.item.id),
@@ -202,23 +263,53 @@ class Engineerlines(models.Model):
                                                                                 ('parent_id.state','=','confirm')
                                                                                 ])
                 rec.previous_qty = sum(lines_pre_ids.mapped('qty'))
+                for l in lines_pre_ids:
+                    amount = round((l.total_qty * (l.contract_line_id.price_unit * (l.other_prec / 100))), 2)
+
+                    prec_price = round((l.percentage / 100) * l.amount, 2)
+                    # print("==================",l.percentage,l.contract_line_id.price_unit,prec_price,amount,l.amount_previous)
+                rec.amount_previous = sum(lines_pre_ids.mapped('differance'))
+                # print(">>>>>>>..",)
 
 
 
-    @api.depends('qty','percentage','contract_line_id','other_prec')
+
+    @api.depends('qty','percentage','contract_line_id','other_prec','total_qty')
     def get_price_cost(self):
         for rec in self:
-            rec.amount=round(rec.other_prec/100,2)*(rec.contract_line_id.total_value)
+            rec.prec_price=rec.amount=0
+            rec.amount = round((rec.total_qty  * (rec.contract_line_id.price_unit*(rec.other_prec/100))), 2)
 
-            rec.prec_price=round((round(rec.percentage/100,2)*rec.amount),2)
-            print(">>>>>>>>>>>>>>>>>>>",rec.contract_line_id.total_value,rec.other_prec)
+            rec.prec_price = round((rec.percentage / 100) * rec.amount, 2)
+            # if rec.other_prec>0:
+            #     rec.amount=round(((rec.other_prec/100)*rec.contract_line_id.total_value),2)
+            #     if rec.percentage>0:
+            #        rec.prec_price=round((rec.percentage/100)*rec.amount,2)
+    @api.depends('prec_price','amount_previous')
+    def get_differance(self):
+        for rec in self:
+            rec.differance = abs(rec.prec_price-rec.amount_previous)
+
+
+
 
     @api.depends('qty','contract_line_id')
     def get_percentage(self):
         for rec in self:
             rec.percentage=0
             if rec.contract_line_id.qty>0:
-                rec.percentage=round((rec.qty/rec.contract_line_id.qty)*100,2)
+                p=round((rec.qty/rec.contract_line_id.qty)*100,2)
+
+                rec.percentage=p
+    @api.constrains('parent_id','qty')
+    def check_percentage(self):
+
+        for rec in self:
+            print(">>>>>>>>>>>>>>>>>>>................................", rec.parent_id.project_id.percentage)
+            p = round((rec.qty / rec.contract_line_id.qty) * 100, 2)
+            if rec.parent_id.project_id.percentage + 100 < p:
+                raise ValidationError("لقد تعديت نسبه الانجاز")
+
 
 
     @api.onchange('qty')

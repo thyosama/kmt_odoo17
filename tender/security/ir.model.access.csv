@@ -6,3 +6,5 @@ access_construction_top_sheet,access_construction_top_sheet,model_top_sheet,base
 access_construction_top_sheet_line,access_construction_top_sheet_lines,model_top_sheet_lines,base.group_user,1,1,1,1
 access_construction_inderict_cost,access_construction_inderict_cost,model_indirect_cost,base.group_user,1,1,1,1
 access_construction_inderict_cost_line,access_construction_inderict_cost,model_indirect_cost_line,base.group_user,1,1,1,1
+access_report_excel,access_report_excel,model_report_excel,base.group_user,1,1,1,1
+access_report_excel_upload,access_report_excel_upload,model_tender_sheet_upload,base.group_user,1,1,1,1

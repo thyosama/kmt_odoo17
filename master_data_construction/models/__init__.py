@@ -8,3 +8,4 @@ from . import product
 from . import project_currancy
 from . import project
 from . import tender
+from . import config

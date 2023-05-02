@@ -1,13 +1,13 @@
-from odoo import models, fields, api,_
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 
 class Tender(models.Model):
-    _name = 'construction.tender'
-    _rec_name = 'code'
+    _name = "construction.tender"
+    _rec_name = "code"
     _order = 'id asc'
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
-    name = fields.Text(required=True,string="description")
+    name = fields.Text(required=True, string="description")
     project_id = fields.Many2one("project.project", string="Project")
     code = fields.Char("Code")
     # type = fields.Selection([('main', 'View'), ('transcation', 'Transcation')], string='Type', default='main')
@@ -22,6 +22,7 @@ class Tender(models.Model):
                               ('job_estimate', 'Break Down Estimate')],
                              string="State", default="main")
     price_unit = fields.Float("Cost Unit ")
+
     total_value = fields.Float("Total value ", compute='_get_total_value', store=True, index=True)
     # lines_id = fields.One2many("construction.tender.line", 'parent_item')
     related_job = fields.Many2one("tender.related.job")
@@ -34,19 +35,31 @@ class Tender(models.Model):
     profit = fields.Float()
     sequence = fields.Integer(string='Sequence', default=10)
     sale_price = fields.Float(compute='calculate_sales_price')
+    unit_price = fields.Float(compute='calculate_sales_price')
+    profit_prec = fields.Float(related="related_job.profit")
+    indirect_prec = fields.Float(related="related_job.indirect_cost")
 
-
-    @api.depends('profit','indirect_cost','total_value')
+    @api.depends('profit', 'indirect_cost', 'total_value', 'qty', 'tax_id', 'project_id.profit_indirect', 'profit_prec',
+                 'indirect_prec')
     def calculate_sales_price(self):
         for rec in self:
-            rec.sale_price=rec.profit+rec.indirect_cost+rec.total_value
+            rec.unit_price = 0
+            rec.sale_price = rec.profit + rec.indirect_cost + rec.total_value
+            rec.sale_price += (rec.total_value * (rec.tax_id.amount / 100))
+
+            if rec.qty > 0:
+                rec.unit_price = rec.sale_price / rec.qty
+            if rec.project_id.profit_indirect == True:
+                rec.profit=rec.total_value*(rec.profit_prec/100)
+                rec.indirect_cost=rec.total_value*(rec.indirect_prec/100)
+
     @api.onchange('item')
     def onchange_method(self):
         self.name = self.item.name
         self.related_job = self.item.related_job.id if self.item.related_job.id else ''
 
     @api.model
-    def create(self,vals):
+    def create(self, vals):
         res = super(Tender, self).create(vals)
         if res.project_id:
             lines = self.env['construction.tender'].search([
@@ -58,8 +71,6 @@ class Tender(models.Model):
             if lines and res.code:
                 raise ValidationError(_("Code [ %s ] Already Exist") % (res.code))
         return res
-
-
 
     # def name_get(self):
     #     result = []
@@ -73,19 +84,17 @@ class Tender(models.Model):
         for rec in self:
             rec.total_value = rec.price_unit * rec.qty
 
-
-
     def save_lines(self):
         for rec in self.lines_id:
             if rec.tender_id:
                 rec.tender_id.write({
-                    'code':rec.code,
-                    'item' : rec.item.id,
-                    'description' : rec.description,
-                    'qty' : rec.qty,
+                    'code': rec.code,
+                    'item': rec.item.id,
+                    'description': rec.description,
+                    'qty': rec.qty,
                 })
             else:
-                tender_id =self.env['construction.tender'].create({
+                tender_id = self.env['construction.tender'].create({
                     'code': rec.code,
                     'item': rec.item.id,
                     'description': rec.description,
@@ -96,7 +105,7 @@ class Tender(models.Model):
 
 
 class Child(models.Model):
-    _name = 'construction.tender.line'
+    _name = "construction.tender.line"
     code = fields.Char("Code")
     item = fields.Many2one('product.item', string='Item')
     tender_id = fields.Many2one('construction.tender', string='Tender')
@@ -105,9 +114,6 @@ class Child(models.Model):
     qty = fields.Float("Quantity")
 
     notes = fields.Char("Notes")
-
-
-
 
     # _sql_constraints = [
     #     ('code_uniq', 'UNIQUE (code)', 'You can not have  the same code !')

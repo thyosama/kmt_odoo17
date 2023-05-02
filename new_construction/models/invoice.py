@@ -9,16 +9,17 @@ import json
 class AccountMove(models.Model):
     _inherit = 'account.move'
     invoice_id = fields.Many2one('account.invoice', string="Invoice")
-    project_id = fields.Many2one("project.project", string="Project",)
+    project_id = fields.Many2one("project.project", string="Project", )
 
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
     type_invoice = fields.Selection(related='move_id.invoice_id.type', store=True, index=True)
+    project_id = fields.Many2one(related='move_id.project_id', store=True, index=True)
 
 
 class Invoice(models.Model):
-    _name = 'account.invoice'
+    _name = "account.invoice"
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin', 'utm.mixin']
     name = fields.Char(compute="_get_invoice_name", string="Name")
     type = fields.Selection([('owner', 'Owner'), ('supconstractor', 'sub contractor')], string="Type")
@@ -29,6 +30,8 @@ class Invoice(models.Model):
     contract_date = fields.Date(related='contract_id.date', string="Contract Date", store=True, index=True)
     number_manual = fields.Char("Manual number")
     project_id = fields.Many2one(related='contract_id.project_id', string="Project", store=True, index=True)
+    tag_ids = fields.Many2many('project.tags', relation='account_invoice_project_tags_rel',
+                               related='project_id.tag_ids', string='Tags')
     partner_id = fields.Many2one(related="project_id.partner_id", string="Customer", store=True, index=True)
     sub_contactor = fields.Many2one(related='contract_id.sub_contactor', string="sub contractor Name")
     deduction_ids = fields.One2many("contract.deduction.lines.invoice", "invoice_id",
@@ -41,10 +44,9 @@ class Invoice(models.Model):
 
     due_date = fields.Date(string="Due Date", default=datetime.today())
 
-    state = fields.Selection([('draft', 'Draft'), ('posted', 'Posted')], string="State", default='draft')
-    total_value = fields.Float("Total Value", compute='_calculate_total_value')
-    last_total_value = fields.Float("Total Previous Value", compute='_calculate_total_value')
-    current_total_value = fields.Float("Total Current Value", compute='_calculate_total_value', store=True, index=True)
+    state = fields.Selection([('draft', 'Draft'), ('posted', 'Posted'),('cancel','Cancel')], string="State", default='draft')
+
+    current_total_value = fields.Float(compute='get_current_total_value')
     current_total_value_deduction = fields.Float("current deduction", compute='_calculate_total_deduction_addition',
                                                  store=True, index=True)
     current_total_value_addition = fields.Float("Current Additional", compute='_calculate_total_deduction_addition',
@@ -61,6 +63,25 @@ class Invoice(models.Model):
                                         compute='get_payment_ids')
     is_payment_visible = fields.Boolean(compute='get_payment_ids')
     eng_template_id = fields.Many2one("construction.engineer")
+    tag_id_custom = fields.Char(string='Tags', compute='_get_tags', store=True)
+
+    @api.model
+    @api.depends('tag_ids')
+    def _get_tags(self):
+        tag_custom = ''
+        for rec in self:
+            if rec.tag_ids:
+                tag_custom = ','.join([p.name for p in rec.tag_ids])
+            else:
+                tag_custom = ''
+            rec.tag_id_custom = tag_custom
+
+    @api.depends('invoice_line')
+    def get_current_total_value(self):
+        for rec in self:
+            rec.current_total_value = 0
+            if rec.invoice_line:
+                rec.current_total_value = sum(rec.invoice_line.mapped('value'))
 
     def register_payment(self):
         view_form = self.env.ref('construction.invoice_payment_view_form')
@@ -79,6 +100,12 @@ class Invoice(models.Model):
                 'default_project_id': self.project_id.id,
             }
         }
+
+    def action_cancel(self):
+        self.state='cancel'
+        move_ids = self.env['account.move'].search([('invoice_id', '=', self.id)])
+        for rec in move_ids:
+            rec.button_cancel()
 
     @api.depends('payment_ids_line')
     def compute_payment_amount(self):
@@ -156,173 +183,6 @@ class Invoice(models.Model):
         for rec in self:
             rec.name = 'INV/' + str(rec.id).zfill(5)
 
-    # def get_owner_contract_line(self):
-    #
-    #     if self.contract_id:
-    #         print("=================================================================")
-    #         lines = []
-    #         invoice_previous = self.env['account.invoice'].search([('contract_id', '=', self.contract_id.id)],
-    #                                                               order='id desc', limit=1)
-    #         last_d = last_a = 0
-    #
-    #         for rec in self.contract_id.deduction_ids:
-    #
-    #             last_d = last_a = 0
-    #             if invoice_previous:
-    #                 ded_lines = self.env['contract.deduction.lines.invoice'].search(
-    #                     [('invoice_id', '=', invoice_previous.id),
-    #                      ('name', '=', rec.name.id)])
-    #                 for rec in ded_lines:
-    #                     last_d += rec.value + rec.last_value
-    #
-    #             lines.append((0, 0, {
-    #                 'sub_type': self.type,
-    #                 'type': 'deduction',
-    #                 'name': rec.name,
-    #                 'account_id': rec.account_id,
-    #                 'is_precentage': rec.is_precentage,
-    #                 'precentage': rec.precentage,
-    #                 'last_value': last_d
-    #             }))
-    #
-    #         if lines:
-    #             self.deduction_ids = lines
-    #         lines = []
-    #         for record in self.contract_id.allowance_ids:
-    #
-    #             last_d = last_a = 0
-    #             if invoice_previous:
-    #                 ded_lines = self.env['contract.addition.lines.invoice'].search(
-    #                     [('invoice_id', '=', invoice_previous.id),
-    #                      ('account_id', '=', rec.account_id.id),
-    #                      ('name', '=', rec.name.id)])
-    #                 for rec in ded_lines:
-    #                     last_a += rec.value + rec.last_value
-    #             lines.append((0, 0, {
-    #
-    #                 'type': 'addition',
-    #                 'name': record.name,
-    #                 'account_id': record.account_id,
-    #                 'is_precentage': record.is_precentage,
-    #                 'precentage': record.precentage,
-    #                 'last_value': last_a
-    #             }))
-    #
-    #         if lines:
-    #             self.allowance_ids = lines
-    #         invoice_previous = self.env['account.invoice'].search([('contract_id', '=', self.contract_id.id)],
-    #                                                               order='id desc', limit=1)
-    #         if invoice_previous:
-    #             invoice_ids = []
-    #
-    #             for rec in invoice_previous.invoice_line:
-    #
-    #                 lines = self.env['account.invoice.line'].search(
-    #                     [('tender_id', '=', rec.tender_id.id), ('invoice_id', '=', invoice_previous.id), ])
-    #                 last_qty, last_total_value = 0, 0
-    #                 for rec in lines:
-    #                     last_qty += rec.quantity
-    #                     last_total_value += rec.total_value
-    #                     invoice_ids.append((0, 0,
-    #                                         {
-    #                                             'tender_id': rec.tender_id.id,
-    #                                             'type': rec.type,
-    #                                             'last_qty': last_qty,
-    #                                             'rate': rec.rate, 'last_total_value': last_total_value,
-    #                                             'quantity': rec.quantity, 'price_unit': rec.price_unit
-    #
-    #                                         }))
-    #
-    #             self.invoice_line = invoice_ids
-
-    # def get_supconstractor_contract_line(self):
-    #     if self.contract_id:
-    #         lines = []
-    #         invoice_previous = self.env['account.invoice'].search([('contract_id', '=', self.contract_id.id)],
-    #                                                               order='id desc', limit=1)
-    #         last_d = last_a = 0
-    #         print(">>>>>>>>>>>>>>>>.", invoice_previous)
-    #         for rec in invoice_previous.deduction_ids:
-    #             last_d = last_d + rec.value + rec.last_value
-    #         for rec in invoice_previous.allowance_ids:
-    #             last_a = last_a + rec.value + rec.last_value
-    #
-    #         for rec in self.contract_id.deduction_ids:
-    #
-    #             last_d = last_a = 0
-    #             if invoice_previous:
-    #                 ded_lines = self.env['contract.deduction.lines.invoice'].search(
-    #                     [('invoice_id', '=', invoice_previous.id),
-    #                      ('name', '=', rec.name.id)])
-    #                 for rec in ded_lines:
-    #                     last_d += rec.value + rec.last_value
-    #             lines.append((0, 0, {
-    #                 'sub_type': self.type,
-    #                 'type': 'deduction',
-    #                 'name': rec.name,
-    #                 'account_id': rec.account_id,
-    #                 'is_precentage': rec.is_precentage,
-    #                 'precentage': rec.precentage,
-    #                 'last_value': last_d
-    #             }))
-    #
-    #         if lines:
-    #             self.deduction_ids = lines
-    #         lines = []
-    #         for record in self.contract_id.allowance_ids:
-    #
-    #             last_d = last_a = 0
-    #             if invoice_previous:
-    #                 ded_lines = self.env['contract.addition.lines.invoice'].search(
-    #                     [('invoice_id', '=', invoice_previous.id),
-    #                      ('account_id', '=', rec.account_id.id),
-    #                      ('name', '=', rec.name.id)])
-    #                 for rec in ded_lines:
-    #                     last_a += rec.value + rec.last_value
-    #             lines.append((0, 0, {
-    #                 'sub_type': self.type,
-    #                 'type': 'addition',
-    #                 'name': record.name,
-    #                 'account_id': record.account_id,
-    #                 'is_precentage': record.is_precentage,
-    #                 'precentage': record.precentage,
-    #                 'last_value': last_a
-    #             }))
-    #
-    #         if lines:
-    #             self.allowance_ids = lines
-    #         invoice_previous = self.env['account.invoice'].search([('contract_id', '=', self.contract_id.id)],
-    #                                                               order='id desc', limit=1)
-    #
-    #         if invoice_previous:
-    #             invoice_ids, domain = [], []
-    #
-    #             for rec in invoice_previous.invoice_line:
-    #                 invoice_ids.append((0, 0,
-    #                                     {
-    #                                         'tender_id': rec.tender_id.id,
-    #                                         'type': rec.type,
-    #                                         'last_qty': rec.quantity,
-    #                                         'rate': rec.rate, 'last_total_value': rec.total_value,
-    #                                         'quantity': rec.quantity, 'price_unit': rec.price_unit,
-    #                                         'sub_contarctor_item': rec.sub_contarctor_item.id,
-    #                                         'wbs_item': rec.wbs_item,
-    #                                         'wbs_item_id': rec.wbs_item.id,
-    #                                         'sub_contarctor_item_id': rec.sub_contarctor_item.id,
-    #
-    #                                     }))
-    #
-    #             self.invoice_line = invoice_ids
-    #             return self.invoice_line
-
-    # @api.onchange("contract_id")
-    # def _get_deduction_allowance(self):
-    #
-    #     if self.contract_id.type == 'owner':
-    #         self.get_owner_contract_line()
-    #     if self.contract_id.type == 'supconstractor':
-    #         self.get_supconstractor_contract_line()
-
     @api.depends('state')
     def _get_payment_state(self):
         for rec in self:
@@ -355,18 +215,6 @@ class Invoice(models.Model):
             #             }))
             #
             #     rec.payment_ids = lines
-
-    @api.depends('invoice_line')
-    def _calculate_total_value(self):
-        for record in self:
-            total_value, last_total_value, current_total_value = 0, 0, 0
-            for rec in record.invoice_line:
-                total_value += rec.total_value
-                last_total_value += rec.last_total_value
-                current_total_value += rec.current_total_value
-            record.total_value = total_value
-            record.last_total_value = last_total_value
-            record.current_total_value = current_total_value
 
     def action_post(self):
         self.state = 'posted'
@@ -480,25 +328,6 @@ class Invoice(models.Model):
 
         return lines
 
-    # def select_contract_lines_ids(self):
-    #     view_form = self.env.ref('construction.view_move_construction_pop_wizard_pop_subcontractor')
-    #
-    #     self.is_tender = True
-    #
-    #     # self._get_tender_ids()
-    #     return {
-    #         'type': 'ir.actions.act_window',
-    #         'name': 'Tender',
-    #         'view_mode': 'form',
-    #         'views': [(view_form.id, 'form')],
-    #         'res_model': 'invoice.tender.wizard',
-    #         'target': 'new',
-    #         'domain': [('invoice_id', '=', self.id)],
-    #         'context': {'default_invoice_id': self.id, 'default_project_id': self.project_id.id,
-    #                     'default_contract_id': self.contract_id.id}
-    #
-    #     }
-
     def action_payment(self):
         view_form = self.env.ref('new_construction.payment_inherited_form_invoice')
         payment_id = self.env['account.payment'].search([('invoice_ids', '=', self.id)])
@@ -532,6 +361,7 @@ class Invoice(models.Model):
             'context': {'default_invoice_ids': self.id, 'default_journal_id': journal,
                         'default_payment_type': payment_type,
                         'default_partner_type': partner_type,
+                        'default_contract_id': self.contract_id.id if self.contract_id else '',
                         'default_partner_id': partner_id, 'default_amount': self.remaining_value}
 
         }
@@ -572,7 +402,7 @@ class Invoice(models.Model):
 
 
 class InvoiceLine(models.Model):
-    _name = 'account.invoice.line'
+    _name = "account.invoice.line"
     _order = 'tender_id'
 
     project_id = fields.Many2one(related='invoice_id.project_id', store=True, index=True)
@@ -581,24 +411,21 @@ class InvoiceLine(models.Model):
     # name = fields.Text(related='tender_id.description', string="Description")  #Abdulrhman comment
     name = fields.Text(string="Description")
 
-
-    code = fields.Char( string="Code")
+    code = fields.Char(string="Code")
     item = fields.Many2one("product.item", string='Item')
     uom_id = fields.Many2one(related='item.uom_id', string="Unit of Measure", store=True, index=True)
 
     type = fields.Selection([('owner', 'Owner'), ('supconstractor', 'sub contractor')], string="Type")
-    contract_qty = fields.Float( string="contract quantity")
-    last_qty = fields.Float(string="Previous quantity")
-    current_qty = fields.Float("Current Quantity")
-    value = fields.Float(compute="_get_value_line", striing="Value")
-    rate = fields.Integer("Rate", default='100')
-    total_value = fields.Float("Total Value", compute='_get_total_value', store=True, index=True)
-    last_total_value = fields.Float("Total Previous Value")
-    current_total_value = fields.Float("Total Current Value", compute='_get_total_current_value', store=True,
-                                       index=True)
+
     notes = fields.Char("Notes")
-    quantity = fields.Float("Quantity", compute='get_total_quantity')
+    quantity = fields.Float("Quantity")
     price_unit = fields.Float(string="Price Unit")
+    value = fields.Float(compute='get_value')
+
+    @api.depends('quantity','price_unit')
+    def get_value(self):
+        for rec in self:
+            rec.value=rec.quantity*rec.price_unit
     project_id = fields.Many2one(comodel_name='project.project', string='Project', related="invoice_id.project_id",
                                  store=True)
     invoice_id = fields.Many2one("account.invoice")
@@ -613,107 +440,7 @@ class InvoiceLine(models.Model):
     sub_contarctor_item = fields.Many2one('construction.subconstractor', domain="[('id','=',sub_contarctor_item_id)]")
     percentage = fields.Float("percentage %")
 
-
-
-    @api.depends('current_qty', 'last_qty')
-    def get_total_quantity(self):
-        for rec in self:
-            rec.quantity = rec.current_qty + rec.last_qty
-
-    # @api.depends('code')
-    # def get_contract_qty(self):
-    #     for rec in self:
-    #         qty = self.env['construction.contract.line'].search([('contract_id', '=', rec.invoice_id.contract_id.id)
-    #                                                                 , ('code', '=', rec.code)],
-    #                                                             limit=1)
-    #         if rec.invoice_id.type == 'supconstractor':
-    #             qty = self.env['construction.contract.line'].search(
-    #                 [('sup_contract_id', '=', rec.invoice_id.contract_id.id)
-    #                     , ('tender_id', '=', rec.tender_id.id)],
-    #                 limit=1)
-    #
-    #         if qty:
-    #
-    #             rec.contract_qty = qty.qty
-    #             rec.price_unit = qty.price_unit
-    #             # if rec.tender_id:
-    #             #      rec.name = rec.tender_id.description
-    #         else:
-    #             rec.contract_qty = 0
-    #             rec.price_unit = 0
-
-    # @api.model
-    # def create(self, vals):
-    #
-    #     res = super(InvoiceLine, self).create(vals)
-    #
-    #     move_ids = self.env['account.invoice'].search(
-    #         [('id', '!=', res.invoice_id.id), ('contract_id', '=', res.invoice_id.contract_id.id)],
-    #         order='id desc', limit=1)
-    #     domain = []
-    #
-    #     if res.invoice_id.contract_id.type == 'owner':
-    #         lines = self.env['account.invoice.line'].search(
-    #             [('tender_id', '=', res.tender_id.id), ('invoice_id', '=', move_ids.id), ])
-    #         last_qty, last_total_value = 0, 0
-    #         for rec in lines:
-    #             last_qty += rec.quantity
-    #             last_total_value += rec.total_value
-    #
-    #         res.last_qty = last_qty
-    #         res.last_total_value = last_total_value
-    #     if res.invoice_id.contract_id.type == 'supconstractor':
-    #         domain.append(('tender_id', '=', res.tender_id.id))
-    #         domain.append(('invoice_id', '=', move_ids.id))
-    #
-    #         if res.wbs_item:
-    #             domain.append(('wbs_item', '=', res.wbs_item.id))
-    #         if res.sub_contarctor_item:
-    #             domain.append(('sub_contarctor_item', '=', res.sub_contarctor_item.id))
-    #         lines = self.env['account.invoice.line'].search(domain)
-    #
-    #         last_qty, last_total_value = 0, 0
-    #         for rec in lines:
-    #             last_qty += rec.quantity
-    #             last_total_value += rec.total_value
-    #
-    #         res.last_qty = last_qty
-    #         res.last_total_value = last_total_value
-    #
-    #     return res
-
-    @api.depends('total_value', 'last_total_value')
-    def _get_total_current_value(self):
-        for rec in self:
-            rec.current_total_value = rec.total_value - rec.last_total_value
-
-    @api.depends('rate', 'value')
-    def _get_total_value(self):
-        for rec in self:
-            if rec.value > 0:
-                rec.total_value = (rec.rate / 100) * rec.value
-            else:
-                rec.total_value = 0
-
     @api.depends('price_unit', 'quantity')
     def _get_value_line(self):
         for rec in self:
             rec.value = rec.price_unit * rec.quantity
-
-    @api.onchange('current_qty')
-    def _onchange_current_qty(self):
-        if self.current_qty > self.contract_qty:
-            raise ValidationError("Current Qty must be less than or equal Contarct Qty ...!")
-
-    @api.onchange('quantity')
-    def _onchange_q(self):
-        if self.quantity:
-            self.current_qty = self.quantity - self.last_qty
-
-    def write(self, vals):
-        print(vals)
-
-        if 'quantity' in vals:
-            vals['current_qty'] = vals['quantity'] - self.last_qty
-        res = super(InvoiceLine, self).write(vals)
-        return res

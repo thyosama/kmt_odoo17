@@ -5,7 +5,7 @@ class PurchaseRequest(models.Model):
     _inherit = 'purchase.request'
     boq_id = fields.Many2one('res.boq')
 class ModelName(models.Model):
-    _name = 'res.boq'
+    _name = "res.boq"
     _inherit = ['mail.thread', 'mail.activity.mixin', 'utm.mixin']
     _description = 'Description'
     project_id = fields.Many2one("project.project")
@@ -13,7 +13,7 @@ class ModelName(models.Model):
     name = fields.Char(related='project_id.name', tracking=True)
     partner_id = fields.Many2one(related='project_id.partner_id', string="Customer")
 
-    consultant = fields.Many2one(related='project_id.consultant', string="Consultant", tracking=True)
+    consultant = fields.Many2many(related='project_id.consultant', string="Consultant", tracking=True)
     analytic_account = fields.Many2one(related='project_id.analytic_account')
     date_from = fields.Date(related='project_id.date_from', string="Project Start Date", tracking=True)
     date_to = fields.Date(related='project_id.date_to', string="Project End Date", tracking=True)
@@ -221,7 +221,7 @@ class ModelName(models.Model):
 
 
 class BOQlines(models.Model):
-    _name = 'res.boq.lines'
+    _name = "res.boq.lines"
     boq_id = fields.Many2one(comodel_name="res.boq")
     product_id = fields.Many2one("product.product", string="Product", readonly=True \
                                  , domain=[('material', '=', True)])

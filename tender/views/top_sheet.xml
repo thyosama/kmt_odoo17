@@ -8,8 +8,22 @@
             <field name="arch" type="xml">
                 <tree string="_tree">
                     <field name="project_id"/>
+                    <field name="total_value"/>
                     <field name="split_method"/>
+                    <field name="state"/>
                 </tree>
+            </field>
+        </record>
+        <record id="search_top_sheet" model="ir.ui.view">
+            <field name="name">search_top_sheet</field>
+            <field name="model">top.sheet</field>
+            <field name="arch" type="xml">
+                <search string="">
+                    <field name="project_id" string="Project"/>
+                    <field name="total_value" string="Total Value"/>
+                    <field name="split_method" string="Split Method"/>
+                    <field name="state" string="State"/>
+                </search>
             </field>
         </record>
         <record id="top_sheet_view_form" model="ir.ui.view">

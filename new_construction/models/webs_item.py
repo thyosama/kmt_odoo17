@@ -19,7 +19,7 @@ class JOBCOST(models.Model):
 
 
 class WBS_Item(models.Model):
-    _name = 'wbs.item'
+    _name = "wbs.item"
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin', 'utm.mixin']
     name = fields.Many2one('project.project', required=True, string="Project")
     partner_id = fields.Many2one("res.partner")
@@ -171,6 +171,6 @@ class WBS_lines(models.Model):
 
 
 class wbs_name(models.Model):
-    _name = 'wbs.name'
+    _name = "wbs.name"
     name = fields.Char(required=True)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)

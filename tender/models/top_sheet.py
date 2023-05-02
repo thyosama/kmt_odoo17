@@ -3,8 +3,9 @@ from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 
 
+
 class Topsheet(models.Model):
-    _name = 'top.sheet'
+    _name = "top.sheet"
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin', 'utm.mixin']
     project_id = fields.Many2one("project.project", required=True)
     lines_ids = fields.One2many("top.sheet.lines", "top_id", string="Lines")
@@ -14,6 +15,11 @@ class Topsheet(models.Model):
     is_direct = fields.Boolean()
     total_direct_indirect = fields.Float(compute='get_total_direct_indirect',string="Total Cost")
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
+
+    @api.constrains('project_id')
+    def get_constrind_project(self):
+        if self.project_id.profit_indirect:
+            raise ValidationError("profit is depends at related job")
 
 
     @api.depends('project_id')
@@ -46,23 +52,30 @@ class Topsheet(models.Model):
             raise ValidationError("top sheet must be unique bar project")
 
     def action_confirm(self):
-        self.state = 'confirm'
-        value = self.refersh_cost()
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", value)
-        if self.split_method == 'equal':
-            for rec in self.project_id.tender_ids:
-                if rec.display_type == False:
-                    rec.profit = value
-        if self.split_method == 'cost':
-            total_indirect_cost = sum(self.lines_ids.mapped('price'))
-            for rec in self.project_id.tender_ids:
-                if rec.display_type == False:
-                    # rec.prec = round(((rec.total_value / value) * 100), 2)
-                    rec.profit = (rec.total_value / self.project_id.total_value) * total_indirect_cost
-        self.project_id.top_sheet_id=self.id
+        if self.lines_ids.price < self.lines_ids.product_id.minimum_profit_amount:
+            raise ValidationError(f"The minimum profit is  { self.lines_ids.product_id.minimum_profit_amount} !!!")
+        elif self.lines_ids.prec < self.lines_ids.product_id.minimum_profit_percent:
+            raise ValidationError(f"The minimum profit % is {self.lines_ids.product_id.minimum_profit_percent} !!!")
+        else:
+            self.state = 'confirm'
+            value = self.refersh_cost()
+            if self.split_method == 'equal':
+                for rec in self.project_id.tender_ids:
+                    if rec.display_type == False:
+                        rec.profit = value
+            if self.split_method == 'cost':
+                total_indirect_cost = sum(self.lines_ids.mapped('price'))
+                for rec in self.project_id.tender_ids:
+                    if rec.display_type == False:
+                        # rec.prec = round(((rec.total_value / value) * 100), 2)
+                        rec.profit = (rec.total_value / self.project_id.total_value) * total_indirect_cost
+            self.project_id.top_sheet_id=self.id
 
     def action_cancel(self):
         self.state = 'cancel'
+        for rec in self.project_id.tender_ids:
+            if rec.display_type == False:
+                rec.profit = 0
 
     def refersh_cost(self):
         if self.split_method=='equal':
@@ -119,9 +132,9 @@ class Topsheet(models.Model):
 
 
 class TopSheetLines(models.Model):
-    _name = 'top.sheet.lines'
+    _name = "top.sheet.lines"
     top_id = fields.Many2one("top.sheet")
-    product_id = fields.Many2one("product.product",domain="[('detailed_type','=','service')]", required=True)
+    product_id = fields.Many2one("product.product",domain="[('topsheet','=',True),('detailed_type','=','service')]", required=True)
 
     prec = fields.Float()
     price = fields.Float()

@@ -26,7 +26,7 @@ class AccountPayment(models.Model):
     def get_partner(self):
         if self.contract_id:
              # if self.type_contract=='owner' :
-             self.partner_id = self.contract_id.parner_id.id
+             self.partner_id = self.contract_id.partner_id_2.id
              # if self.type_contract=='supconstractor' :
              #     self.partner_id = self.contract_id.sub_contactor.id
 
@@ -63,3 +63,9 @@ class AccountPayment(models.Model):
         self.payment_id.invoice_ids = inv
         self.invoice_ids=inv
         self.invoice_id._get_payment_state()
+
+    def action_post(self):
+        res = super(AccountPayment,self).action_post()
+        if self.contract_id.project_id:
+            self.move_id.project_id  = self.contract_id.project_id.id
+        return res

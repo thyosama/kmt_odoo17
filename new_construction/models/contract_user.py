@@ -2,7 +2,7 @@ from odoo import models, fields, api
 
 
 class contract(models.Model):
-    _name = 'construction.contract.user'
+    _name = "construction.contract.user"
     _inherit = [  'mail.thread', 'mail.activity.mixin', 'utm.mixin']
 
     name = fields.Char("Name")

@@ -3,7 +3,7 @@ from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 
 class Inderict(models.Model):
-    _name = 'indirect.cost'
+    _name = "indirect.cost"
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin', 'utm.mixin']
     project_id = fields.Many2one("project.project", required=True)
     lines_ids = fields.One2many('indirect.cost.line',"indirect_id")
@@ -13,6 +13,10 @@ class Inderict(models.Model):
     indirect_cost = fields.Float(related='project_id.total_value')
     total= fields.Float(compute='get_total')
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
+    @api.constrains('project_id')
+    def get_constrind_project(self):
+        if self.project_id.profit_indirect:
+            raise ValidationError("indirect cost is depends at related job")
 
     @api.depends('lines_ids')
     def get_total(self):
@@ -33,7 +37,6 @@ class Inderict(models.Model):
     def action_confirm(self):
         self.state = 'confirm'
         value = self.refersh_cost()
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",value)
         if self.split_method == 'equal':
             for rec in self.project_id.tender_ids:
                 if rec.display_type == False:
@@ -55,6 +58,9 @@ class Inderict(models.Model):
     #         raise ValidationError("total indirect cost must be equal total top sheet")
     def action_cancel(self):
         self.state = 'cancel'
+        for rec in self.project_id.tender_ids:
+            if rec.display_type == False:
+                rec.indirect_cost = 0
 
 
     # split_method = fields.Selection([('equal', 'Equal'), ('qty', 'Quantity'), ('cost', 'Cost')], default='equal')
@@ -89,7 +95,7 @@ class Inderict(models.Model):
 
 
 class Lines(models.Model):
-    _name = 'indirect.cost.line'
+    _name = "indirect.cost.line"
     product_id = fields.Many2one("product.product",domain="[('indirect_cost','=',True)]", required=True)
     indirect_id = fields.Many2one("indirect.cost")
     prec = fields.Float()

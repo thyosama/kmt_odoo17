@@ -2,7 +2,7 @@ from odoo import fields, models, api
 
 
 class Wizard(models.Model):
-    _name = 'template.items'
+    _name = "template.items"
     template_id = fields.Many2one("construction.engineer")
     items_ids= fields.Many2many(
          'product.item',"product_items","item","id")
@@ -57,7 +57,7 @@ class Wizard(models.Model):
                         'tender_id': rec.tender_id if rec.tender_id else '',
                         'stage_id': st.stage_id.id,
                         'remind_qty': abs(m_qty - ((rec.qty * prec) / 100)),
-                        'qty': (rec.qty * prec) / 100,
+                        # 'qty': (rec.qty * prec) / 100,
                         'tender_qty': rec.qty,
 
                         'contract_line_id': rec.id,
@@ -92,23 +92,13 @@ class Wizard(models.Model):
                     m_qty = self.get_remind_qty(rec.id)
                     if m_qty == 0:
                         m_qty = rec.qty
-                        # 'parent_id': self.template_id.id,
-                        # 'tender_id': rec.tender_id if rec.tender_id else '',
-                        # 'stage_id': st.stage_id.id,
-                        # 'remind_qty': abs(m_qty - ((rec.qty * prec) / 100)),
-                        # 'qty': (rec.qty * prec) / 100,
-                        # 'tender_qty': rec.qty,
-                        # 'contract_line_id': rec.id,
-                        # 'item': rec.item.id, 'other_prec': prec,
-                        # 'uom_id': rec.uom_id.id,
-                        # 'related_job': rec.related_job.id if rec.related_job else '',
-                        # 'name': rec.name
+
                     self.env['construction.engineer.lines'].create({
                         'parent_id': self.template_id.id,
                         # 'tender_id': rec.tender_id if rec.tender_id else '',
                         'stage_id': st.stage_id.id,
                         'remind_qty': abs(m_qty - ((rec.qty * other_prec) / 100)),
-                        'qty': (rec.qty * st.prec) / 100,
+                        # 'qty': (rec.qty * st.prec) / 100,
                         'tender_qty': rec.qty,
                         'contract_line_id': rec.id,
                         'item': rec.item.id,
@@ -118,3 +108,20 @@ class Wizard(models.Model):
                         'name': rec.name
 
                     })
+            else:
+                m_qty = self.get_remind_qty(rec.id)
+                if m_qty == 0:
+                    m_qty = rec.qty
+                self.env['construction.engineer.lines'].create({
+                    'parent_id': self.template_id.id,
+                    'remind_qty': abs(m_qty - ((rec.qty * 100) / 100)),
+
+                    'tender_qty': rec.qty,
+                    'contract_line_id': rec.id,
+                    'item': rec.item.id,
+                    'uom_id': rec.uom_id.id,
+                    'other_prec': 100,
+                    'related_job': rec.related_job.id if rec.related_job else '',
+                    'name': rec.name
+
+                })

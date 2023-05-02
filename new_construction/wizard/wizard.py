@@ -3,7 +3,7 @@ from datetime import datetime
 from odoo import models, fields, api
 
 class wizard(models.Model):
-    _name = 'invoice.tender.wizard'
+    _name = "invoice.tender.wizard"
     contract_id = fields.Many2one("construction.contract")
     tender_ids = fields.Many2many('construction.tender', 'tender_id_invoice_pop', "tender", 'id',)
     contract_lines_ids_ids = fields.Many2many('construction.contract.line', "contract_id_wizard", 'wizard_invi_id','id',

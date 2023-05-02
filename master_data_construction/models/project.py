@@ -18,6 +18,8 @@ class Project(models.Model):
     analytic_account = fields.Many2one("account.analytic.account")
     currancy_ids = fields.One2many("project.currency", "project_id")
     partner_id = fields.Many2one("res.partner",required=True)
+    percentage = fields.Float("نسبه الانجاز")
+    profit_indirect = fields.Boolean("Profit / indirect")
     def update_ratio_currancy(self):
         job_ids = self.env['construction.job.cost'].search([('techical_type','=',False),('state','!=','quotation'),('project_id', '=', self.id)])
 
