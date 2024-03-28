@@ -91,24 +91,8 @@
                                         </td>
                                     </tr>
                                 </tbody>
-                            </table><br/>
-
-                            <table class="tb" style="width:50%">
-                                <thead>
-                                    <tr>
-                                        <th>Total Amount Before Discount</th>
-                                        <th><span t-esc="doc.amount_before_dis" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></th>
-                                    </tr>
-                                    <tr>
-                                        <th>Amount Tax</th>
-                                        <th><span t-esc="doc.amount_tax" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></th>
-                                    </tr>
-                                    <tr>
-                                        <th>Total</th>
-                                        <th><span t-esc="doc.total" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></th>
-                                    </tr>
-                                </thead>
                             </table>
+
                         </div>
                     </t>
                 </t>

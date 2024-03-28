@@ -30,6 +30,7 @@ class contract(models.Model):
                             'name': rec.description,
                             'qty': rec.qty,
                             'notes': rec.notes,
+                            'tax_ids':[(4,tax.id)for tax in rec.tax_ids] if rec.tax_ids else [],
                             'price_unit': rec.price, 'discount': rec.discount,
                             'type': 'owner', 'tender_id': rec.tender_id.id,
 

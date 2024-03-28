@@ -2,6 +2,9 @@
 
 from odoo import fields, models, api
 
+class Prtner(models.Model):
+    _inherit = "res.partner"
+    vendor_code = fields.Char(string="Vendor Code")
 
 class AccountMove(models.Model):
     _inherit = "account.move"

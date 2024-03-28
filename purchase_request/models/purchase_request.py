@@ -151,6 +151,7 @@ class PurchaseRequest(models.Model):
         string="Total Estimated Cost",
         store=True,
     )
+    project_id = fields.Many2one("project.project")
 
     @api.depends("line_ids", "line_ids.estimated_cost")
     def _compute_estimated_cost(self):

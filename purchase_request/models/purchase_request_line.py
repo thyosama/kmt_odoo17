@@ -25,7 +25,9 @@ class PurchaseRequestLine(models.Model):
         comodel_name="uom.uom",
         string="UoM",
         tracking=True,
+        domain="[('category_id', '=', product_uom_category_id)]",
     )
+    product_uom_category_id = fields.Many2one(related="product_id.uom_id.category_id")
     product_qty = fields.Float(
         string="Quantity", tracking=True, digits="Product Unit of Measure"
     )
@@ -183,6 +185,7 @@ class PurchaseRequestLine(models.Model):
         "purchase_request_allocation_ids.purchase_line_id",
         "purchase_request_allocation_ids.purchase_line_id.state",
         "request_id.state",
+        "product_qty",
     )
     def _compute_qty_to_buy(self):
         for pr in self:
