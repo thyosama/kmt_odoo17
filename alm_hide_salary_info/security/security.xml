@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+<record id="group_contract_salary_info_access" model="res.groups">
+    <field name="name">Contract: Salary Information Access</field>
+    <field name="comment">Access Salary Information In Contract Form View</field>
+</record>
+
+</odoo>

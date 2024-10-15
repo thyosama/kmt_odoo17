@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <record id="ibra_bounce_view_form" model="ir.ui.view">
+            <field name="name">bounce</field>
+            <field name="model">bounce</field>
+            <field name="inherit_id" ref="bounce_v17.bounce_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='confirmed']" position="after">
+                    <field name="appraisal_id" invisible="1" />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

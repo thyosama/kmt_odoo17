@@ -1,0 +1,11 @@
+<odoo>
+    <data>
+        <record id="bounce_sequence" model="ir.sequence">
+            <field name="name">bounce</field>
+            <field name="code">bounce</field>
+            <field name="prefix">B</field>
+            <field name="padding">4</field>
+        </record>
+
+    </data>
+</odoo>

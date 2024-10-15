@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="view_hr_job_form_inherit_alm" model="ir.ui.view">
+        <field name="name">view.hr.job.form.inherit.alm</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='recruitment2']" position="inside">
+                <field name="is_confidential" widget="boolean_toggle" string="Confidential?"
+                    groups="alm_payroll_restriction.group_payroll_confidential_position" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

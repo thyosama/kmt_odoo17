@@ -1,0 +1,125 @@
+<odoo>
+    <data>
+
+        <template id="pro_applicant_template">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-foreach="docs" t-as="doc">
+                        <div class="page">
+                            <center>
+                                <h2>Candidate Evaluation Sheet</h2>
+                            </center>
+                            <div class="row">
+                                <div class="col-3">
+                                    <strong>Name:</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-esc="doc.name"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <strong>Position Applied for:</strong>
+                                </div>
+                                <div class="col-3">
+                                    <span t-esc="doc.job_id.name"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <strong>Practice Group:</strong>
+                                </div>
+                                <div class="col-3">
+                                    <span t-esc="doc.department_id.name"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <strong>Date:</strong>
+                                </div>
+                                <div class="col-3">
+                                    <span t-esc="doc.availability"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <strong>Interviewers:</strong>
+                                </div>
+                                <div class="col-3">
+                                    <span t-esc="doc.user_id.name"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" scope="col">Skill and Competencies</th>
+                                            <th scope="col">1</th>
+                                            <th scope="col">2</th>
+                                            <th scope="col">3</th>
+                                            <th scope="col">4</th>
+                                            <th scope="col">Total</th>
+    <!--                                        <th class="text-right" scope="col">المهارات والقدارات</th>-->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="total" t-value="0" />
+                                        <tr t-foreach="doc.skills_ids" t-as="skill">
+                                            <td><span t-esc="skill.skill_id.name" /> </td>
+                                            <td><t t-if="skill.skill_score == '1'">1</t></td>
+                                            <td><t t-if="skill.skill_score == '2'">2</t></td>
+                                            <td><t t-if="skill.skill_score == '3'">3</t></td>
+                                            <td><t t-if="skill.skill_score == '4'">4</t></td>
+                                            <td></td>
+                                            <t t-set="total" t-value="total+int(skill.skill_score)" />
+                                        </tr>
+                                        <tr t-if="doc.skills_ids">
+                                            <td colspan="5">Total</td>
+                                            <td >
+                                                <span t-esc="total"/>/
+                                                <span t-esc="len(doc.skills_ids.ids)*4" />=
+                                                <span t-esc="'%.2f'%float(total/(len(doc.skills_ids.ids)*4)*100)" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <td class="text-center"><strong>Candidate Data</strong></td>
+                                            <td class="text-center"><strong>Recommendation</strong></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span t-esc="doc.description" />
+                                            </td>
+                                            <td>
+                                                <span t-esc="doc.recommendation" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <record id="pro_applicant_report" model="ir.actions.report">
+            <field name="name">Candidate Evaluation Sheet</field>
+            <field name="model">hr.applicant</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pro_recruitment.pro_applicant_template</field>
+            <field name="report_file">pro_recruitment.pro_applicant_template</field>
+            <field name="print_report_name">'Candidate Evaluation Sheet'</field>
+            <field name="binding_model_id" ref="hr_recruitment.model_hr_applicant"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,56 @@
+<odoo>
+    <data>
+        <record id="lang_grade_tree_view" model="ir.ui.view">
+            <field name="name">lang.grade</field>
+            <field name="model">lang.grade</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" >
+                    <field name="name"/>
+                    <field name="percentage"/>
+                </tree>
+            </field>
+        </record>
+        <record id="education_grade_view" model="ir.ui.view">
+            <field name="name">education.grade</field>
+            <field name="model">education.grade</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" >
+                    <field name="name" />
+                    <field name="percentage"/>
+                </tree>
+            </field>
+        </record>
+        <record id="experience_tree_view" model="ir.ui.view">
+            <field name="name">experience</field>
+            <field name="model">experience</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" >
+                    <field name="name"/>
+                    <field name="percentage"/>
+                </tree>
+            </field>
+        </record>
+        <record id="lang_grade_action" model="ir.actions.act_window">
+            <field name="name">Language Grade</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">lang.grade</field>
+            <field name="view_mode">tree</field>
+        </record>
+        <record id="experience_action" model="ir.actions.act_window">
+            <field name="name">Years Of Experience</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">experience</field>
+            <field name="view_mode">tree</field>
+        </record>
+        <record id="education_action" model="ir.actions.act_window">
+            <field name="name">Education Grade</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">education.grade</field>
+            <field name="view_mode">tree</field>
+        </record>
+        <menuitem id="job_position_criteria" name="Job Position Criteria" parent="hr_recruitment.menu_hr_recruitment_configuration"/>
+        <menuitem id="lang_grade_menu" name="Language Grade" action="lang_grade_action" parent="pro_recruitment.job_position_criteria"/>
+        <menuitem id="experience_menu" name="Years of Experience" action="experience_action" parent="pro_recruitment.job_position_criteria"/>
+        <menuitem id="education_grade_menu" name="Education Grade" action="education_action" parent="pro_recruitment.job_position_criteria"/>
+    </data>
+</odoo>

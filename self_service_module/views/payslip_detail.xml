@@ -1,0 +1,109 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data>
+        <template id="show_payslip_detail" name="Show Payslip Detail">
+            <t t-call="website.layout">
+                <section class="s_text_block pt40 pb40 o_colored_level" data-snippet="s_text_block" data-name="Text"
+                         style="background-image: none;">
+
+                    <div  class="s_allow_columns container">
+                        <span t-if="payslip.state=='cancel'" class="alert alert-danger" style="float:right;font-size:18px;"> Rejected</span>
+                        <span t-if="payslip.state=='paid'" class="alert alert-success" style="float:right;font-size:18px;"> Paid</span>
+                        <span t-if="payslip.state=='done'" class="alert alert-info" style="float:right;font-size:18px;"> Done</span>
+                        <span t-if="payslip.state=='verify'" class="alert alert-warning" style="float:right;font-size:18px;color:#AF5F0F"> Done</span>
+                       <h2 >Payslip # <span t-esc="payslip.number"/>
+                          </h2>
+
+<!--                         <h2 t-if="payslip.state=='paid'" style="color:green">Payslip # <span t-esc="payslip.number"/>-->
+<!--                          - Paid </h2>-->
+
+<!--                        <h2 t-if="payslip.state=='done'" style="color:#e7e712">Payslip # <span t-esc="payslip.number"/>-->
+<!--                          - Done </h2>-->
+
+<!--                        <h2 t-if="payslip.state=='verify'" style="color:#AF5F0F">Payslip # <span t-esc="payslip.number"/>-->
+<!--                          - Waiting </h2>-->
+
+
+                        <div style="font-size:20px;margin-top:50px;">
+                                Period : <span style="color:gray;font-size:18px;" t-esc="payslip.date_from"/> /
+                            <span style="color:gray;font-size:18px;" t-esc="payslip.date_to"/><br/>
+                            Contract : <span style="color:gray;font-size:18px;" t-esc="payslip.contract_id.name"/><br/>
+                            Structure : <span style="color:gray;font-size:18px;" t-esc="payslip.struct_id.name"/>
+
+                        </div>
+                    </div>
+                </section>
+                <section class="s_faq_collapse pt32 pb32 o_colored_level" data-snippet="s_faq_collapse"
+                         data-name="Accordion" style="background-image: none;">
+                    <div class="container">
+                        <div id="myCollapse" class="accordion" role="tablist">
+                            <div class="card bg-white" data-name="Item">
+                                <a href="#" role="tab" data-bs-toggle="collapse"  aria-expanded="true"
+                                   class="card-header o_default_snippet_text" data-bs-target="#myCollapseTab942934_1">
+                                        Work Days
+                                </a>
+                                <div class="collapse show" data-bs-parent="#myCollapse" role="tabpanel"
+                                     id="myCollapseTab942934_1">
+                                    <div class="card-body" style="margin-left:-30px !important">
+                                       <table class="table table-striped col-" >
+                                           <thead>
+                                               <tr>
+                                                   <th>Type</th>
+<!--                                                   <th>Description</th>-->
+                                                   <th>Number of days</th>
+                                                   <th>Amount</th>
+                                               </tr>
+                                           </thead>
+                                           <tbody>
+                                                <t t-foreach="payslip.worked_days_line_ids or []" t-as="t">
+                                                    <tr>
+                                                    <td><span t-esc="t.work_entry_type_id.name"/> </td>
+<!--                                                    <td><span t-esc="t.name"/> </td>-->
+                                                    <td><span t-esc="t.number_of_days"/> </td>
+                                                    <td><span t-esc="t.amount"/> </td>
+                                                    </tr>
+                                                </t>
+                                           </tbody>
+                                       </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card bg-white" data-name="Item">
+                                <a href="#" role="tab" data-bs-toggle="collapse" aria-expanded="false"
+                                   class="collapsed card-header o_default_snippet_text"
+                                   data-bs-target="#myCollapseTab942934_2">Salary Computation
+                                </a>
+                                <div class="collapse" data-bs-parent="#myCollapse" role="tabpanel"
+                                     id="myCollapseTab942934_2">
+                                    <div class="card-body" style="margin-left:-27px !important">
+                                         <table class="table table-striped ">
+                                           <thead>
+                                               <tr>
+                                                   <th>Name</th>
+                                                   <th>Category</th>
+                                                   <th>Amount</th>
+                                                   <th>total</th>
+                                               </tr>
+                                           </thead>
+                                           <tbody>
+                                                <t t-foreach="payslip.line_ids or []" t-as="t">
+                                                    <tr>
+                                                    <td><span t-esc="t.name"/> </td>
+                                                    <td><span t-esc="t.category_id.name"/> </td>
+                                                    <td><span t-esc="t.amount"/> </td>
+                                                    <td><span t-esc="t.total"/> </td>
+                                                    </tr>
+                                                </t>
+                                           </tbody>
+                                       </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </t>
+        </template>
+
+    </data>
+</odoo>

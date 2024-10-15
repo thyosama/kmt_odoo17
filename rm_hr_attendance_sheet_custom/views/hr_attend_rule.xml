@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="custom_hr_miss_rule_form_view" model="ir.ui.view">
+            <field name="name">hr.miss.rule</field>
+            <field name="model">hr.miss.rule</field>
+            <field name="inherit_id" ref="surgi_attendance_sheet.hr_miss_rule_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='amount']" position="replace">
+                    <field name="amount"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="custom_hr_late_rule_form_view" model="ir.ui.view">
+            <field name="name">hr.late.rule</field>
+            <field name="model">hr.late.rule</field>
+            <field name="inherit_id" ref="rm_hr_attendance_sheet.hr_late_rule_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='amount']" position="after">
+                    <field name="percentage" invisible="type != 'percentage'"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="custom_hr_hr_diff_rule_form_view" model="ir.ui.view">
+            <field name="name">hr.diff.rule</field>
+            <field name="model">hr.diff.rule</field>
+            <field name="inherit_id" ref="rm_hr_attendance_sheet.hr_diff_rule_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='amount']" position="after">
+                    <field name="percentage" invisible="type != 'percentage'"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="custom_attendance_sheet_form_view" model="ir.ui.view">
+            <field name="name">attendance.sheet</field>
+            <field name="model">attendance.sheet</field>
+            <field name="inherit_id" ref="rm_hr_attendance_sheet.attendance_sheet_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='late_in']" position="replace">
+                    <field name="late_in" optional="show" sum="Total"/>
+                </xpath>
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='diff_time']" position="replace">
+                    <field name="diff_time" optional="show" sum="Total"/>
+                </xpath>
+                <xpath expr="//field[@name='tot_late']" position="replace">
+                    <field name="tot_late"/>
+                </xpath>
+                <xpath expr="//field[@name='tot_absence']" position="replace">
+                    <field name="tot_absence"/>
+                </xpath>
+                <xpath expr="//field[@name='tot_difftime']" position="replace">
+                    <field name="tot_difftime"/>
+                </xpath>
+                <xpath expr="//field[@name='tot_overtime']" position="replace">
+                    <field name="tot_overtime"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

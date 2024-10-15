@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="view_employee_form_inherit_alm" model="ir.ui.view">
+        <field name="name">view.employee.form.inherit.alm</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form" />
+        <field name="priority">2000</field>
+        <field name="arch" type="xml">
+            <xpath expr="." position="inside">
+                <field name="show_contract" invisible="1" />
+            </xpath>
+            <xpath expr="//button[@name='action_open_contract']" position="attributes">
+                <attribute name="invisible">not show_contract</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <template id="employee_list_template" name="Employee List">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_text_block pt24 o_colored_level" data-snippet="s_text_block"
+                        data-name="Text"
+                        style="background-image: none;">
+                        <div class="s_allow_columns container">
+                            <h1>Employees</h1>
+                            <table class="table table-hover">
+                                <thead style="background:gray">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Code</th>
+                                        <th>Department</th>
+                                        <th>Job</th>
+                                        <th>Manager</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="employees" t-as="employee">
+                                        <tr>
+                                            <td>
+                                                <span t-esc="employee.name" />
+                                            </td>
+                                            <td>
+                                                <span t-esc="employee.code" />
+                                            </td>
+                                            <td>
+                                                <span t-esc="employee.department_id.name" />
+                                            </td>
+                                            <td>
+                                                <span t-esc="employee.job_id.name" />
+                                            </td>
+                                            <td>
+                                                <span t-esc="employee.parent_id.name" />
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination">
+                                    <li class="page-item"
+                                        t-att-class="'disabled' if page &lt;= 1 else ''">
+                                        <a class="page-link"
+                                            t-att-href="'/employee-list?page=%d' % (page - 1)">
+                                            Previous</a>
+                                    </li>
+                                    <li class="page-item"
+                                        t-att-class="'disabled' if page &gt;= total_pages else ''">
+                                        <a class="page-link"
+                                            t-att-href="'/employee-list?page=%d' % (page + 1)">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+    </data>
+</odoo>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+       <record id="multi_company_batch_attendance" model="ir.rule">
+           <field name="name">multi_company_batch_attendance</field>
+           <field ref="model_attendance_sheet_batch" name="model_id"/>
+           <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+           <field name="perm_write" eval="1"/>
+           <field name="perm_create" eval="1"/>
+           <field name="perm_read" eval="1"/>
+           <field name="perm_unlink" eval="1"/>
+           <!--<field name="global" eval="1"/> -->
+       </record>
+
+    </data>
+</odoo>

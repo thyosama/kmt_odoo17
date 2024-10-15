@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="deduction_type_view_tree" model="ir.ui.view">
+            <field name="name">deduction_view_tree</field>
+            <field name="model">deduction.type</field>
+            <field name="arch" type="xml">
+                <tree string="deduction_tree">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="deduction_type_view_form" model="ir.ui.view">
+            <field name="name">deduction_view_form</field>
+            <field name="model">deduction.type</field>
+            <field name="arch" type="xml">
+                <form string="deduction_form">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="code"/>
+                                <field name="name"/>
+                                <field name="type"/>
+                                <field name="value"/>
+                                <field name="struct_ids" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="deduction_type_action" model="ir.actions.act_window">
+            <field name="name">deduction Type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">deduction.type</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="deduction_type_menu" name="Deduction Type" parent="deduction_root"
+                  action="deduction_type_action"/>
+    </data>
+</odoo>

@@ -1,0 +1,109 @@
+<odoo>
+    <data>
+        <!-- Inherit Form View to Modify it -->
+        <!-- <record id="ibra_view_employee_form_inherit_hr_attendance" model="ir.ui.view">
+            <field name="name">hr.employee</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr_attendance.view_employee_form_inherit_hr_attendance" />
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_open_last_month_attendances']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record> -->
+
+        <record id="ibrrr_view_employee_form" model="ir.ui.view">
+            <field name="name">hr.employee</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='job_title']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='pin']" position="before">
+                    <field name="extension_code" invisible="1" />
+                </xpath>
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="get_all_emp_job_title" invisible="1" type="object"
+                        string="Get all EMP JOB title" />
+                    <button type="object" name="action_view_targets" class="oe_stat_button"
+                        icon="fa-pencil-square-o"
+                        invisible="target_count == 0">
+                        <field name="target_count" widget="statinfo" string="Target Goals" />
+                    </button>
+                </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page name="appraisal_info" string="Appraisal Info">
+                        <group>
+                            <group>
+                                <field name="target_ids" widget="many2many_tags" />
+                            </group>
+                            <field name="target_line_ids" edit="0" create="0">
+                                <tree editable="bottom">
+                                    <field name="id" />
+                                    <field name="target_id" />
+                                    <field name="skill_id" />
+                                    <field name="description" />
+                                    <field name="note" />
+                                </tree>
+                            </field>
+
+                        </group>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+        <record id="disability_view_tree" model="ir.ui.view">
+            <field name="name">disability_view_tree</field>
+            <field name="model">hr.employee</field>
+            <field name="arch" type="xml">
+                <tree create="0" edit='0' string="disability_tree">
+                    <field name="name" />
+                    <field name="department_id" />
+                    <field name="disability_type" />
+                    <field name="disability" />
+                </tree>
+            </field>
+        </record>
+        <record id="disability_action" model="ir.actions.act_window">
+            <field name="name">Disability</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.employee</field>
+            <field name="domain">[('disability', '=', True)]</field>
+            <field name="view_ids"
+                eval="[(5, 0, 0),(0, 0, {'view_mode': 'tree', 'view_id': ref('disability_view_tree')})]" />
+            <field name="view_mode">tree</field>
+        </record>
+        <menuitem id="disability_menu" name="Disability" parent="hr.hr_menu_hr_reports"
+            action="disability_action" />
+
+
+        <record id="hr.open_view_employee_list_my" model="ir.actions.act_window">
+            <field name="name">Employees</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+            <field name="domain">[]</field>
+            <field name="context">{'chat_icon': True}</field>
+            <field name="view_id" eval="False" />
+            <field name="search_view_id" ref="hr.view_employee_filter" />
+            <field name="view_ids"
+                eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('hr.view_employee_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('hr.view_employee_form')}),
+                ]" />
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add a new employee
+                </p>
+                <p>
+                    With just a quick glance on the Odoo employee screen, you
+                    can easily find all the information you need for each person;
+                    contact data, job position, availability, etc.
+                </p>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

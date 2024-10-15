@@ -1,0 +1,223 @@
+<odoo>
+    <data>
+
+        <record id="ibra_hr_appraisal_goal_view_kanban" model="ir.ui.view">
+            <field name="name">hr.appraisal.goal</field>
+            <field name="model">hr.appraisal.goal</field>
+            <field name="inherit_id" ref="hr_appraisal.hr_appraisal_goal_view_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='progression']" position="after">
+                    <field name="goal_progress"/>
+                </xpath>
+                <xpath expr="//t[contains(@t-esc, 'record.progression.value')]/../.." position="replace">
+                    <t t-if="record.goal_progress.raw_value != 100">
+                        <div class="o_kanban_top_right mr-2 font-weight-bold">
+                            <t t-esc="record.goal_progress.value"/>
+                            %
+                        </div>
+                    </t>
+                </xpath>
+            </field>
+        </record>
+        <record id="ibrashy_hr_appraisal_goal_view_form" model="ir.ui.view">
+            <field name="name">hr.appraisal.goal</field>
+            <field name="model">hr.appraisal.goal</field>
+            <field name="inherit_id" ref="hr_appraisal.hr_appraisal_goal_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_confirm']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='progression']" position="replace">
+                    <field name="progression" invisible="1"/>
+                    <!--                    <field name="goal_weight"/>-->
+                </xpath>
+                <xpath expr="//field[@name='progression']/.." position="after">
+                    <group name="goal" invisible="1">
+                        <label for="goal_weight"/>
+                        <div class="o_row" name="goal_weight">
+                            <field name="goal_weight" nolabel="1"/>
+                            <span>%</span>
+                        </div>
+                    </group>
+                    <group name="goal_progress">
+                        <label for="goal_progress"/>
+                        <div class="o_row" name="goal_progress">
+                            <field name="goal_progress" nolabel="1"/>
+                            <span>%</span>
+                        </div>
+                    </group>
+
+                </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page string="Targets">
+                        <field name="emp_min_skills_ids">
+                            <tree create="0" editable="bottom" decoration-success="skill_type=='skill'"
+                                  decoration-bf="skill_type=='skill'" decoration-danger="skill_type=='not_skill'">
+                                <field name="target_line_id" invisible="1"/>
+                                <!--                                <field name="skill_id" string="Target" readonly="1" force_save="1"/>-->
+                                <field name="target_goal_id" string="Target" readonly="1" force_save="1"/>
+                                <field name="target_weight_float" string="Target Weight"/>
+                                 <field name="target_score_weight" widget="progressbar" optional="show"/>
+                                <field name="skill_score_weight" widget="progressbar" optional="show"/>
+                                <field name="skill_score_float" string="Target Score"/>
+                                <!--                                <field name="target_skill_score"/>-->
+                                <!--                                <field name="target_level" string="Skill Level" widget="progressbar"/>-->
+                                <!--                                <field name="level"/>-->
+                                <!--                                <field name="level_progress" nolabel="1" widget="progressbar"/>-->
+                                <field name="skill_type" invisible="1" force_save="1"/>
+                                <field name="note" string="Description"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+                <xpath expr="//field[@name='deadline']/.." position="after">
+                    <group name=""></group>
+                    <group name="target_ratio">
+                        <label for="target_ratio"/>
+                        <div class="o_row" name="target_ratio">
+                            <field name="target_ratio" nolabel="1" readonly="1" force_save="1"/>
+                            <span>%</span>
+                        </div>
+                        <label for="target_achieve"/>
+                        <div class="o_row" name="target_achieve">
+                            <field name="target_achieve" nolabel="1"/>
+                            <span>%</span>
+                        </div>
+                        <label for="final_score"/>
+                        <div class="o_row" name="final_score">
+                            <field name="final_score" nolabel="1"/>
+                            <span>%</span>
+                        </div>
+                    </group>
+
+                </xpath>
+                <xpath expr="//field[@name='name']/../.." position="after">
+                    <div class="oe_title">
+                        <label for="target_goal_ids" string="Target To Do"/>
+                        <h1>
+                            <field name="target_goal_ids" widget="many2many_tags"
+                                   placeholder="Target To Do"/>
+                        </h1>
+                    </div>
+                </xpath>
+                <xpath expr="//field[@name='deadline']" position="after">
+                    <field name="not_skilled" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_appraisal.action_hr_appraisal_goal" model="ir.actions.act_window">
+            <field name="name">Target Evaluation</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.appraisal.goal</field>
+            <field name="view_mode">kanban,tree,form,pivot,graph</field>
+        </record>
+
+        <menuitem name="Target"
+                  parent="hr_appraisal.menu_hr_appraisal_root"
+                  id="hr_appraisal.menu_hr_appraisal_goal"
+                  sequence="2"/>
+
+        <menuitem name="Target Evaluation"
+                  parent="hr_appraisal.menu_hr_appraisal_goal"
+                  id="menu_hr_appraisal_target_evaluation"
+                  action="hr_appraisal.action_hr_appraisal_goal"
+                  sequence="1"/>
+
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="ibra_hr_appraisal_skill_view_form" model="ir.ui.view">
+            <field name="name">hr.appraisal</field>
+            <field name="model">hr.appraisal</field>
+            <field name="inherit_id" ref="hr_appraisal_skills.view_hr_appraisal_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='skill_ids']/../.." position="attributes">
+                    <attribute name="string">Performance Factors</attribute>
+                </xpath>
+                <xpath expr="//field[@name='skill_ids']" position="attributes">
+                    <attribute name="widget">one2many</attribute>
+                </xpath>
+                <xpath expr="//field[@name='skill_ids']/tree//field[@name='skill_id']" position="after">
+                    <field name="description"/>
+                </xpath>
+                <xpath expr="//field[@name='skill_ids']/tree//field[@name='justification']" position="after">
+                    <field name="score" required="1"/>
+                    <field name="appraisal_note_id" string="Performance Level"/>
+                </xpath>
+                <xpath expr="//field[@name='skill_ids']/tree//field[@name='level_progress']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                                <xpath expr="//field[@name='skill_ids']/tree//field[@name='skill_level_id']" position="attributes">
+                                    <attribute name="optional">hide</attribute>
+                                </xpath>
+                <!--                <xpath expr="//field[@name='skill_ids']/tree//field[@name='skill_type_id']" position="attributes">-->
+                <!--                    <attribute name="invisible">1</attribute>-->
+                <!--                </xpath>-->
+                <xpath expr="//field[@name='skill_ids']/tree//field[@name='skill_id']" position="attributes">
+                    <attribute name="string">Performance Factor</attribute>
+                </xpath>
+                <xpath expr="//field[@name='skill_ids']/tree//field[@name='justification']" position="before">
+                    <field name="skill_score" invisible="1" force_save="1" readonly="1"/>
+                </xpath>
+
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="editable">bottom</attribute>
+                    
+                </xpath>
+
+            </field>
+        </record>
+        <record id="ibra_hr_appraisal_note_view_tree" model="ir.ui.view">
+            <field name="name">hr.appraisal.note</field>
+            <field name="model">hr.appraisal.note</field>
+            <field name="inherit_id" ref="hr_appraisal.hr_appraisal_note_view_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="score_from" required="1"/>
+                    <field name="score_to" required="1"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="ibra_view_hr_appraisal_form" model="ir.ui.view">
+            <field name="name">hr.appraisal</field>
+            <field name="model">hr.appraisal</field>
+            <field name="inherit_id" ref="hr_appraisal.view_hr_appraisal_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_close']" position="before">
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="date_str"/>
+                    <field name="month_count"/>
+                </xpath>
+                <xpath expr="//field[@name='date_close']" position="replace">
+                    <field name="date_close" invisible="1"/>
+                    <!--                    <field name="goals_weight" /> -->
+                    <label for="goals_weight"/>
+                    <div class="o_row" name="goals_weight">
+                        <field name="goals_weight" nolabel="1"/>
+                        <span style="margin-right:200px;">%</span>
+                    </div>
+                </xpath>
+                <xpath expr="//field[@name='assessment_note']" position="after">
+                    <field name="score"/>
+                    <field name="competencies_ratio" readonly="1" force_save="1"/>
+                    <field name="final_score" readonly="1" force_save="1"/>
+                    <field name="total_reserved_value" readonly="1" force_save="1"/>
+                    <field name="performance_over_all" force_save="True"/>
+                    <field name="bounce_id" invisible="0" readonly="1" force_save="1"/>
+                </xpath>
+                <xpath expr="//field[@name='assessment_note']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page name="job_description" string="Job Description">
+                        <field name="job_description" placeholder="Write Job Description ..."/>
+                    </page>
+                    <page name="job_specification" string="Job specification">
+                        <field name="job_specification" placeholder="Write Job specification ..."/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

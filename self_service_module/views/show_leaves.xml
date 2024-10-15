@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <template id="show_leaves" name="Show Time Off">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_text_block pt24 o_colored_level" data-snippet="s_text_block"
+                        data-name="Text"
+                        style="background-image: none;">
+                        <div class="s_allow_columns container">
+                            <h3> You have <span style="color:blue" t-esc="no_leaves" /> Leaves </h3>
+                            <table class="table table-hover">
+                                <thead style="background:gray">
+                                    <th>Serial</th>
+                                    <th>Employee</th>
+                                    <th>Time Off Type</th>
+                                    <th>Description</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Duration</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </thead>
+                                <tbody>
+                                    <t t-set="s" t-value="0" />
+                                    <t t-foreach="leaves or []" t-as="t">
+                                        <t t-set="s" t-value="s+1" />
+                                        <tr t-if="t.state=='draft'" style="color:blue">
+                                            <td><span t-esc="s" /></td>
+                                            <td><span t-esc="t.employee_id.name" /></td>
+                                            <td><span t-esc="t.holiday_status_id.name" /></td>
+                                            <td><span t-esc="t.name" /></td>
+                                            <td><span t-esc="t.date_to" /></td>
+                                            <td><span t-esc="t.date_from" /></td>
+                                            <td><span t-esc="t.number_of_days_display" /></td>
+                                            <td>To Submit</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr t-if="t.state=='confirm'" style="color:#AF5F0F">
+                                            <td><span t-esc="s" /></td>
+                                            <td><span t-esc="t.employee_id.name" /></td>
+                                            <td><span t-esc="t.holiday_status_id.name" /></td>
+                                            <td><span t-esc="t.name" /></td>
+                                            <td><span t-esc="t.date_to" /></td>
+                                            <td><span t-esc="t.date_from" /></td>
+                                            <td><span t-esc="t.number_of_days_display" /></td>
+                                            <td>To Approve</td>
+                                            <td>
+                                                <a t-att-href="'/timeoff/approve/%d' % t.id" class="btn btn-primary">Approve</a>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="t.state=='refuse'" style="color:red">
+                                            <td><span t-esc="s" /></td>
+                                            <td><span t-esc="t.employee_id.name" /></td>
+                                            <td><span t-esc="t.holiday_status_id.name" /></td>
+                                            <td><span t-esc="t.name" /></td>
+                                            <td><span t-esc="t.date_to" /></td>
+                                            <td><span t-esc="t.date_from" /></td>
+                                            <td><span t-esc="t.number_of_days_display" /></td>
+                                            <td>Refused</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr t-if="t.state=='validate1'" style="color:yellow">
+                                            <td><span t-esc="s" /></td>
+                                            <td><span t-esc="t.employee_id.name" /></td>
+                                            <td><span t-esc="t.holiday_status_id.name" /></td>
+                                            <td><span t-esc="t.name" /></td>
+                                            <td><span t-esc="t.date_to" /></td>
+                                            <td><span t-esc="t.date_from" /></td>
+                                            <td><span t-esc="t.number_of_days_display" /></td>
+                                            <td>Second Approval</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr t-if="t.state=='validate'" style="color:green">
+                                            <td><span t-esc="s" /></td>
+                                            <td><span t-esc="t.employee_id.name" /></td>
+                                            <td><span t-esc="t.holiday_status_id.name" /></td>
+                                            <td><span t-esc="t.name" /></td>
+                                            <td><span t-esc="t.date_to" /></td>
+                                            <td><span t-esc="t.date_from" /></td>
+                                            <td><span t-esc="t.number_of_days_display" /></td>
+                                            <td>Approved</td>
+                                            <td></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,225 @@
+<odoo>
+    <data>
+
+        <template id="survey_template">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-foreach="docs" t-as="doc">
+                        <div class="page">
+                            <center>
+                                <h2>Short List</h2>
+                            </center>
+                            <div t-if="doc.survey_id.display_name" class="row">
+                                <div class="col-3">
+                                    <strong>Name:</strong>
+                                </div>
+                                <div class="col-9">
+                                    <span t-esc="doc.survey_id.display_name"/>
+                                </div>
+                            </div>
+                            <div t-if="doc.create_date" class="row">
+                                <div class="col-3">
+                                    <strong>Create Date:</strong>
+                                </div>
+                                <div class="col-9">
+                                    <span t-esc="str(doc.create_date)[:19]"/>
+                                </div>
+                            </div>
+                            <div t-if="doc.access_token" class="row">
+                                <div class="col-3">
+                                    <strong>Applicant Name:</strong>
+                                </div>
+                                <div class="col-9">
+                                    <span t-esc="doc.partner_id.name"/>
+                                </div>
+                            </div>
+                            <div t-if="doc.partner_id" class="row">
+                                <div class="col-3">
+                                    <strong>Partner:</strong>
+                                </div>
+                                <div class="col-9">
+                                    <span t-esc="doc.partner_id.name"/>
+                                </div>
+                            </div>
+                            <div t-if="doc.deadline" class="row">
+                                <div class="col-3">
+                                    <strong>Deadline:</strong>
+                                </div>
+                                <div class="col-9">
+                                    <span t-esc="doc.deadline"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" scope="col">question</th>
+                                            <th scope="col">Answer</th>
+                                            <th scope="col">Created On</th>
+                                            <th scope="col">Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody t-if="doc.user_input_line_ids">
+                                        <t t-set="total" t-value="0"/>
+                                        <tr t-foreach="doc.user_input_line_ids" t-as="line">
+                                            <td>
+                                                <span t-field="line.question_id"/>
+                                            </td>
+                                            <td t-if="line.value_char_box">
+                                                <span t-field="line.value_char_box"/>
+                                            </td>
+                                            <td t-elif="line.value_text_box">
+                                                <span t-field="line.value_text_box"/>
+                                            </td>
+                                            <td t-elif="line.value_date">
+                                                <span t-field="line.value_date"/>
+                                            </td>
+                                            <td t-elif="line.value_datetime">
+                                                <span t-field="line.value_datetime"/>
+                                            </td>
+                                            <td t-elif="line.matrix_row_id">
+                                                <span t-field="line.matrix_row_id"/>
+                                            </td>
+                                            <td t-elif="line.suggested_answer_id">
+                                                <span t-field="line.suggested_answer_id"/>
+                                            </td>
+                                            <td t-else="">
+                                            </td>
+                                            <td>
+                                                <span t-esc="line.create_date"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="line.answer_score"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        <template id="evaluation_template">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-foreach="docs" t-as="doc">
+                        <div class="page">
+                            <center>
+                                <h2>Evaluation</h2>
+                            </center>
+                            <div t-if="doc.survey_id.display_name" class="row">
+                                <div class="col-3">
+                                    <strong>Name:</strong>
+                                </div>
+                                <div class="col-9">
+                                    <span t-esc="doc.survey_id.display_name"/>
+                                </div>
+                            </div>
+                            <div t-if="doc.create_date" class="row">
+                                <div class="col-3">
+                                    <strong>Create Date:</strong>
+                                </div>
+                                <div class="col-9">
+                                    <span t-esc="str(doc.create_date)[:19]"/>
+                                </div>
+                            </div>
+                            <div t-if="doc.access_token" class="row">
+                                <div class="col-3">
+                                    <strong>Applicant Name:</strong>
+                                </div>
+                                <div class="col-9">
+                                    <span t-esc="doc.partner_id.name"/>
+                                </div>
+                            </div>
+                            <div t-if="doc.partner_id" class="row">
+                                <div class="col-3">
+                                    <strong>Partner:</strong>
+                                </div>
+                                <div class="col-9">
+                                    <span t-esc="doc.partner_id.name"/>
+                                </div>
+                            </div>
+                            <div t-if="doc.deadline" class="row">
+                                <div class="col-3">
+                                    <strong>Deadline:</strong>
+                                </div>
+                                <div class="col-9">
+                                    <span t-esc="doc.deadline"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" scope="col">question</th>
+                                            <th scope="col">Answer</th>
+                                            <th scope="col">Created On</th>
+                                            <th scope="col">Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody t-if="doc.user_input_line_ids">
+                                        <t t-set="total" t-value="0"/>
+                                        <tr t-foreach="doc.user_input_line_ids" t-as="line">
+                                            <td>
+                                                <span t-field="line.question_id"/>
+                                            </td>
+                                            <td t-if="line.value_char_box">
+                                                <span t-field="line.value_char_box"/>
+                                            </td>
+                                            <td t-elif="line.value_text_box">
+                                                <span t-field="line.value_text_box"/>
+                                            </td>
+                                            <td t-elif="line.value_date">
+                                                <span t-field="line.value_date"/>
+                                            </td>
+                                            <td t-elif="line.value_datetime">
+                                                <span t-field="line.value_datetime"/>
+                                            </td>
+                                            <td t-elif="line.matrix_row_id">
+                                                <span t-field="line.matrix_row_id"/>
+                                            </td>
+                                            <td t-elif="line.suggested_answer_id">
+                                                <span t-field="line.suggested_answer_id"/>
+                                            </td>
+                                            <td t-else="">
+                                            </td>
+                                            <td>
+                                                <span t-esc="line.create_date"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="line.answer_score"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <record id="survey_report" model="ir.actions.report">
+            <field name="name">Short List</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pro_recruitment.survey_template</field>
+            <field name="report_file">pro_recruitment.survey_template</field>
+            <field name="print_report_name">'Short List'</field>
+            <field name="binding_model_id" ref="survey.model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+        <record id="survey_evaluation_report" model="ir.actions.report">
+            <field name="name">Evaluation</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pro_recruitment.evaluation_template</field>
+            <field name="report_file">pro_recruitment.evaluation_template</field>
+            <field name="print_report_name">'Evaluation'</field>
+            <field name="binding_model_id" ref="survey.model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>

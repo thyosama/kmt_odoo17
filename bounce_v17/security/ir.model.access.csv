@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bounce,bounce,model_bounce,base.group_user,1,1,1,1
+access_bounce_type,bounce_type,model_bounce_type,base.group_user,1,1,1,1
+bounce_line_id,bounce_line,model_bounce_line,base.group_user,1,1,1,1,

@@ -1,0 +1,214 @@
+<odoo>
+    <data>
+
+        <!--        <record id="ibra_hr_employee_view_attendance" model="ir.ui.view">-->
+        <!--            <field name="name">hr.employee</field>-->
+        <!--            <field name="model">hr.employee</field>-->
+        <!--            <field name="inherit_id" ref="hr_attendance_zktecho.hr_employee_view_attendance"/>-->
+        <!--            <field name="arch" type="xml">-->
+        <!--                <xpath expr="//page[@name='attendance_device']" position="attributes">-->
+        <!--                    <attribute name="string">Attendance Information</attribute>-->
+        <!--                </xpath>-->
+        <!--            </field>-->
+        <!--        </record>-->
+
+        <record id="ibra_view_employee_filter" model="ir.ui.view">
+            <field name="name">hr.employee</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_filter" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='job_id']" position="after">
+                    <field name="disability" />
+                    <filter string="Disability" name="disability"
+                        domain="[('disability', '=', True)]" />
+                    <filter name="disability" string="Disability" domain="[]"
+                        context="{'group_by': 'disability'}" />
+
+                </xpath>
+            </field>
+        </record>
+        <record id="ibra_view_employee_tree" model="ir.ui.view">
+            <field name="name">hr.employee</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_tree" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="disability" />
+                    <field name="disability_type" invisible="disability != True" />
+                </xpath>
+            </field>
+        </record>
+        <record id="pro_recruit_hr_employee_view_form" model="ir.ui.view">
+            <field name="name">hr.employee</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr_skills.hr_employee_view_form" />
+            <field name="arch" type="xml">
+                <!--                <xpath expr="//field[@name='employee_skill_ids']/tree//field[@name='skill_id']"
+                position="after">-->
+                <!--                    <field name="skill_desc" optinal="hide"/>-->
+                <!--                </xpath>-->
+                <!--                <xpath expr="//field[@name='employee_skill_ids']" position="attributes">-->
+                <!--                    <attribute name="invisible">1</attribute>-->
+                <!--                </xpath>-->
+                <!--                <xpath expr="//separator[1]" position="attributes">-->
+                <!--                    <attribute name="invisible">1</attribute>-->
+                <!--                </xpath>-->
+                <xpath expr="//field[@name='resume_line_ids']/../../.." position="attributes">
+                    <attribute name="string">Work Experience</attribute>
+                </xpath>
+                <!--                  <xpath expr="//field[@name='resume_line_ids']" position="replace">-->
+                <!--                      <tree>-->
+                <!--                                    <field name="line_type_id"/>-->
+                <!--                                    <field name="name"/>-->
+                <!--                                    <field name="description"/>-->
+                <!--                                    <field name="date_start"/>-->
+                <!--                                    <field name="date_end"/>-->
+                <!--                                    <field name="display_type" invisible="1"/>-->
+                <!--                                </tree>-->
+                <!--                </xpath>-->
+                <xpath expr="//field[@name='resume_line_ids']/tree/field[@name='description']"
+                    position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <!--                    <field name="description" widget="text" invisible="1"/>-->
+                    <!--                    <input type="text" name="description" hidden="true"
+                    t-att-value="description"/>-->
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_recruit_view_employee_form" model="ir.ui.view">
+            <field name="name">hr.employee</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='permit_no']" position="after">
+                    <field name="extension_code" />
+                </xpath>
+                <xpath expr="//field[@name='coach_id']" position="attributes">
+                    <attribute name="string">Supervisor</attribute>
+                </xpath>
+                <xpath expr="//field[@name='job_title']" position="before">
+                    <div>
+                        <field name="emp_job_title_id" />
+                    </div>
+                </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page string="Insurance &amp;  Taxes">
+                        <group>
+                            <group>
+                                <field name="is_social_insurance" />
+                                <field name="social_insurance" string="Amount"
+                                    invisible="not is_social_insurance" />
+                            </group>
+                            <group>
+                                <field name="is_private_insurance" />
+                                <field name="private_insurance" string="Amount"
+                                    invisible="not is_private_insurance" />
+                            </group>
+                            <group>
+                                <field name="is_tax_card" />
+                                <field name="tax_card" string="Card Number"
+                                    invisible="not is_tax_card" />
+                            </group>
+                            <group>
+                                <field name="is_tax_info" />
+                                <field name="tax_info" string="Info"
+                                    invisible="not is_tax_info" />
+                                <field name="tax_card_expire" string="Expire Date"
+                                    invisible="not is_tax_info" required="is_tax_info" />
+                            </group>
+                            <group>
+                                <field name="have_income_taxes" />
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+                <!--                <xpath expr="//field[@name='employee_skill_ids']" position="after">-->
+                <!--                    <field name="skill_rate_ids">-->
+                <!--                        <tree editable="bottom">-->
+                <!--                            <field name="skill_id"/>-->
+                <!--                            <field name="skill_score"/>-->
+                <!--                        </tree>-->
+                <!--                    </field>-->
+                <!--                </xpath>-->
+                <xpath expr="//notebook" position="inside">
+                    <page name="job_description" string="Job Description &amp; Specification">
+                            <label for="job_description" />
+                            <field name="job_description" placeholder="Write Job Description ..." nolabel="1"/>
+                            <label for="job_specification" />
+                            <field name="job_specification" placeholder="Write Job specification ..." nolabel="1" />
+                        
+                            <field name="skill_rate_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="skill_id" string="Competencies" />
+                                    <field name="skill_score" string="Level" />
+                                </tree>
+                            </field>
+                    </page>
+                    <page string="Department Objective" name="objective">
+
+                        <field name="objective_ids">
+                            <tree editable="bottom">
+                                <field name="name" required="1" />
+                                <field name="description" required="1" />
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Firm Goals">
+                        <field name="goal" placeholder="Firm Goals........." />
+                    </page>
+
+                </xpath>
+                <xpath expr="//field[@name='coach_id']/.." position="after">
+                    <group></group>
+                    <grpu>
+                        <!--                        <group name="max_bounce_percentage">-->
+                        <!--                            <label for="max_bounce_percentage"/>-->
+                        <!--                            <div class="o_row" name="bounce_percentage">-->
+                        <!--                                <field name="max_bounce_percentage" nolabel="1"/>-->
+                        <!--                                <span>%</span>-->
+                        <!--                            </div>-->
+                        <!--                        </group>-->
+                        <br />
+                        <group name="max_bonuce">
+                            <label for="max_bonuce" />
+                            <div class="o_row" name="bounce_percentage">
+                                <field name="max_bonuce" nolabel="1" />
+                                <span>%</span>
+                            </div>
+                        </group>
+                        <br />
+                        <group name="minimum2deserve">
+                            <label for="minimum2deserve" />
+                            <div class="o_row" name="minimum2deserve">
+                                <field name="minimum2deserve" nolabel="1" />
+                                <span>%</span>
+                            </div>
+                        </group>
+
+                    </grpu>
+                    <!--                    <field name="minimum2deserve"/>-->
+                </xpath>
+                <xpath expr="//field[@name='coach_id']" position="after">
+                    <field name="disability" />
+                    <field name="disability_type" invisible="disability != True" />
+                </xpath>
+                <!--                <xpath
+                expr="//field[@name='employee_skill_ids']/tree//field[@name='skill_level_id']"
+                position="attributes">-->
+                <!--                    <attribute name="invisible">1</attribute>-->
+                <!--                </xpath>-->
+                <!--                <xpath
+                expr="//field[@name='employee_skill_ids']/tree//field[@name='level_progress']"
+                position="after">-->
+                <!--                    <field name="skill_score" />-->
+                <!--                </xpath>-->
+                <!--                <xpath
+                expr="//field[@name='employee_skill_ids']/tree//field[@name='level_progress']"
+                position="attributes">-->
+                <!--                    <attribute name="invisible">1</attribute>-->
+                <!--                </xpath>-->
+            </field>
+        </record>
+    </data>
+</odoo>

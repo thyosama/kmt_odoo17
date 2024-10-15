@@ -1,0 +1,211 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <template id="timesheet_form_template">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <div class="container mt-5" style="margin-top: 50px;">
+                    <h2>
+                        Add Your Timesheet:
+                    </h2>
+                    <t t-if="error">
+                        <div class="alert alert-danger" role="alert">
+                            <t t-esc="error" />
+                        </div>
+                    </t>
+                    <form action="/timesheet/submit" method="post" class="form o_mark_required"
+                        data-mark="*" data-model_name="">
+                        <input type="hidden" name="csrf_token"
+                            t-att-value="request.csrf_token()" />
+                        <div class="s_website_form_rows row s_col_no_bgcolor">
+                            <div
+                                class="form-group mb-3 col-8 s_website_form_field s_website_form_required"
+                                data-type="char" data-name="Field">
+                                <div class="row s_col_no_resize s_col_no_bgcolor">
+                                    <label
+                                        class="col-form-label col-sm-auto s_website_form_label"
+                                        style="width: 200px" for="project">
+                                        <span class="s_website_form_label_content">Project</span>
+                                        <span class="s_website_form_mark">*</span>
+                                    </label>
+                                    <div class="col-sm">
+                                        <select name="project" id="project"
+                                            t-attf-class="form-control s_website_form_input"
+                                            required="1">
+                                            <t t-foreach="projects" t-as="project">
+                                                <option t-att-value="project.id"
+                                                    t-esc="project.name" />
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="form-group mb-3 col-8 s_website_form_field s_website_form_required"
+                                data-type="char" data-name="Field">
+                                <div class="row s_col_no_resize s_col_no_bgcolor">
+                                    <label
+                                        class="col-form-label col-sm-auto s_website_form_label"
+                                        style="width: 200px" for="task">
+                                        <span class="s_website_form_label_content">Task</span>
+                                        <span class="s_website_form_mark">*</span>
+                                    </label>
+                                    <div class="col-sm">
+                                        <select name="task" id="task"
+                                            t-attf-class="form-control s_website_form_input"
+                                            required="1">
+                                            <t t-foreach="tasks" t-as="task">
+                                                <option t-att-value="task.id"
+                                                    t-esc="task.name" />
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="form-group mb-3 col-8 s_website_form_field s_website_form_required"
+                                data-type="char" data-name="Field">
+                                <div class="row s_col_no_resize s_col_no_bgcolor">
+                                    <label
+                                        class="col-form-label col-sm-auto s_website_form_label"
+                                        style="width: 200px" for="date">
+                                        <span class="s_website_form_label_content">Date</span>
+                                        <span class="s_website_form_mark">*</span>
+                                    </label>
+                                    <div class="col-sm">
+                                        <input id="date" type="date"
+                                            class="form-control s_website_form_input"
+                                            name="date"
+                                            required="1" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="form-group mb-3 col-8 s_website_form_field s_website_form_required"
+                                data-type="char" data-name="Field">
+                                <div class="row s_col_no_resize s_col_no_bgcolor">
+                                    <label
+                                        class="col-form-label col-sm-auto s_website_form_label"
+                                        style="width: 200px" for="hours_spent">
+                                        <span class="s_website_form_label_content">Hours Spent</span>
+                                        <span class="s_website_form_mark">*</span>
+                                    </label>
+                                    <div class="col-sm">
+                                        <input id="hours_spent" type="number" step="0.01"
+                                            name="hours_spent"
+                                            class="form-control s_website_form_input"
+                                            required="1" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row s_col_no_resize mb-3 col-8 s_col_no_bgcolor"
+                                data-type="text" data-name="Field">
+                                <div class="row s_col_no_resize s_col_no_bgcolor">
+                                    <label
+                                        class="col-form-label col-sm-auto s_website_form_label "
+                                        style="width: 200px">
+                                        <span class="s_website_form_label_content">Description</span>
+                                    </label>
+                                    <div class="col-sm">
+                                        <textarea class="form-control s_website_form_input"
+                                            name="description"
+                                            id="oa9l3ww434xb" rows="3" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-3 col-8 s_website_form_submit"
+                                data-name="Submit Button">
+                                <div style="width: 200px;" class="s_website_form_label" />
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+
+    <template id="timesheet_list_template" name="Timesheet List">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <section class="s_text_block">
+                    <div class="container mt-5 mb-5">
+                        <h1>My Timesheets</h1>
+                        <table class="table table-hover">
+                            <thead style="background:gray">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Employee</th>
+                                    <th>Project</th>
+                                    <th>Task</th>
+                                    <th>Description</th>
+                                    <th style="white-space: nowrap;">Hours Spent</th>
+                                    <th>Validated</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="timesheets" t-as="timesheet">
+                                    <tr>
+                                        <td>
+                                            <span t-esc="timesheet.date" />
+                                        </td>
+                                        <td>
+                                            <span t-esc="timesheet.employee_id.name" />
+                                        </td>
+                                        <td>
+                                            <span t-esc="timesheet.project_id.name" />
+                                        </td>
+                                        <td>
+                                            <span t-esc="timesheet.task_id.name" />
+                                        </td>
+                                        <td>
+                                            <span t-esc="timesheet.name" />
+                                        </td>
+                                        <td>
+                                            <span t-esc="timesheet.unit_amount"
+                                                t-options="{'widget': 'float_time'}" />
+                                        </td>
+                                        <td>
+                                            <span>
+                                                <t t-if="timesheet.validated">
+                                                    <i class="fa fa-check" style="color: green;"></i>
+                                                </t>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span>
+                                                <t
+                                                    t-if="timesheet.employee_id.timesheet_manager_id.id == request.env.user.id and timesheet.validated == False">
+                                                    <a
+                                                        t-att-href="'/timesheet/validate/%d' % timesheet.id"
+                                                        class="btn btn-primary">Validate</a>
+                                                </t>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <!-- Pagination controls -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li class="page-item"
+                                    t-att-class="'disabled' if page &lt;= 1 else ''">
+                                    <a class="page-link"
+                                        t-att-href="'/my-timesheets?page=%d' % (page - 1)">Previous</a>
+                                </li>
+                                <li class="page-item"
+                                    t-att-class="'disabled' if page &gt;= total_pages else ''">
+                                    <a class="page-link"
+                                        t-att-href="'/my-timesheets?page=%d' % (page + 1)">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+</odoo>

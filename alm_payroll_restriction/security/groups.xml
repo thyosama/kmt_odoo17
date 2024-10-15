@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data noupdate="0">
+        <record id="group_payroll_confidential_position" model="res.groups">
+            <field name="name">Confidential Positions Access Right</field>
+            <field name="comment">Confidential Positions Access Right</field>
+        </record>
+        <record id="hr_contract_rule_non_confidential" model="ir.rule">
+            <field name="name">Non Confidential Contracts</field>
+            <field name="model_id" ref="hr_contract.model_hr_contract" />
+            <field name="domain_force">[('is_confidential', '=', False)]</field>
+            <field name="groups"
+                eval="[(4, ref('hr_contract.group_hr_contract_employee_manager')), (4, ref('hr_contract.group_hr_contract_manager'))]" />
+        </record>
+        <record id="hr_contract_rule_confidential" model="ir.rule">
+            <field name="name">Confidential Contracts</field>
+            <field name="model_id" ref="hr_contract.model_hr_contract" />
+            <field name="domain_force">[('is_confidential', '=', True)]</field>
+            <field name="groups"
+                eval="[(4, ref('alm_payroll_restriction.group_payroll_confidential_position'))]" />
+        </record>
+        <record id="hr_contract.ir_rule_hr_contract_manager" model="ir.rule">
+            <field name="active" eval="False" />
+        </record>
+    </data>
+
+</odoo>

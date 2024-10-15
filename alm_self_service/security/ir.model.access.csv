@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_employee_public_portal,access.hr.employee.public.portal,hr.model_hr_employee_public,base.group_portal,1,0,0,0
+access_project_project_portal,access.project.project.portal,project.model_project_project,base.group_portal,1,0,0,0
+access_account_analytic_line_portal,access.account.analytic.line.portal,analytic.model_account_analytic_line,base.group_portal,1,0,0,0

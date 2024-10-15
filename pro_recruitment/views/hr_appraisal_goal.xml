@@ -1,0 +1,74 @@
+<odoo>
+    <data>
+        <record id="target_goal_view_tree" model="ir.ui.view">
+            <field name="name">target_goal_view_tree</field>
+            <field name="model">target.goal</field>
+            <field name="arch" type="xml">
+                <tree string="target_goal_tree">
+                    <field name="name"/>
+                    <field name="note"/>
+                    <field name="employee_ids" widget="many2many_tags"/>
+                </tree>
+            </field>
+        </record>
+        <record id="target_goal_view_form" model="ir.ui.view">
+            <field name="name">target_goal_view_form</field>
+            <field name="model">target.goal</field>
+            <field name="arch" type="xml">
+                <form string="target_goal_form">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" required="True"/>
+                                <field name="employee_ids" widget="many2many_tags"/>
+                                <field name="target_weight_float" required="1"/>
+                            </group>
+                        </group>
+<!--                        <field name="line_ids">-->
+<!--                            <tree editable="bottom">-->
+<!--                                <field name="id"/>-->
+<!--                                <field name="skill_id" string="Target Weight"/>-->
+<!--                                <field name="description" />-->
+<!--                                &lt;!&ndash;                                <field name="skill_score"/>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                <field name="level"/>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                <field name="level_progress" nolabel="1" widget="progressbar"/>&ndash;&gt;-->
+<!--                                <field name="note"/>-->
+<!--                            </tree>-->
+<!--                        </field>-->
+                        <label for="note" string="Description"/>
+                        <field name="note"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="target_goal_action" model="ir.actions.act_window">
+            <field name="name">Employee Target</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">target.goal</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="hr_department_tree_objective_action" model="ir.actions.act_window">
+            <field name="name">Department Objectives</field>
+            <field name="res_model">hr.department</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="search_view_id" ref="hr.view_department_filter"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new department
+                </p>
+                <p>
+                    Odoo's department structure is used to manage all documents
+                    related to employees by departments: expenses, timesheets,
+                    leaves, recruitments, etc.
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="target_goal_menu" name="Employee Target" parent="hr_appraisal.menu_hr_appraisal_goal"
+                  action="target_goal_action"/>
+        <menuitem id="target_goal_department_tree" action="hr_department_tree_objective_action" name="Department Objectives"
+                  sequence="99" groups="hr.group_hr_user" parent="hr_appraisal.menu_hr_appraisal_configuration"/>
+
+    </data>
+</odoo>

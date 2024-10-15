@@ -1,0 +1,64 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="attendance_sheet_batch.list">
+            <field name="name">attendance_sheet_batch list</field>
+            <field name="model">attendance.sheet.batch</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+<!--                    <field name="att_policy_id"/>-->
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="attendance_sheet_batch.form">
+            <field name="name">attendance_sheet_batch from</field>
+            <field name="model">attendance.sheet.batch</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <field name="is_generate" invisible="1"/>
+                        <button name="generate_bacth" type="object" string="Generate" invisible="is_generate"/>
+                        <button name="action_attsheet_confirm" invisible="state != 'draft'" type="object" string="Submit To Manager"/>
+                        <field name="state" widget="statusbar" statusbar_visible="new,confirm,done"/>
+                           <button name="action_attsheet_approve" invisible="state != 'confirm'" string="Approve" type="object" class="oe_highlight" groups="rm_hr_attendance_sheet.group_attendance_sheet_manager"/>
+                    </header>
+                    <sheet>
+                         <div class="oe_button_box" name="button_box">
+                        <button name="view_attendance_sheet" type="object" class="oe_stat_button" icon="fa-globe icon">
+                           Attendance Sheet
+                        </button>
+                         </div>
+                        <group>
+                            <group>
+                                <field name="name" required="1"/>
+<!--                                <field name="att_policy_id" required="1"/>-->
+                                <field name="company_id" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="date_from" required="1"/>
+                                <field name="date_to" required="1"/>
+
+                            </group>
+                        </group>
+
+
+                    </sheet>
+
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="attendance_sheet_batch.action_window">
+            <field name="name">Attendance sheet Batch</field>
+            <field name="res_model">attendance.sheet.batch</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem name="Attendance sheet Batch"
+                  id="menu_1_list"
+                  action="action_window"
+                  parent="rm_hr_attendance_sheet.attendance_sheet_menu"/>
+    </data>
+</odoo>

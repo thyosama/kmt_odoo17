@@ -1,0 +1,64 @@
+<odoo>
+    <data>
+        <record id="emp_appraisal_view_form" model="ir.ui.view">
+            <field name="name">emp_appraisal_view_form</field>
+            <field name="model">emp.appraisal</field>
+            <field name="arch" type="xml">
+                <form string="emp_appraisal_form">
+                    <sheet>
+                        <div class="oe_title" style="width: 100%;">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" placeholder="e.g. Employee Appraisal"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="date"/>
+                                <field name="employee_id"/>
+                                <field name="manager_id"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Objective">
+                                <field name="line_ids">
+                                    <tree editable="bottom">
+                                        <field name="target_goal_id"/>
+                                        <field name="score"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="emp_appraisal_view_tree" model="ir.ui.view">
+            <field name="name">emp_appraisal_view_tree</field>
+            <field name="model">emp.appraisal</field>
+            <field name="arch" type="xml">
+                <tree string="emp_appraisal_tree">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="manager_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="employee_appraisals_action" model="ir.actions.act_window">
+            <field name="name">Employee Appraisal</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">emp.appraisal</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem name="Appraisal" parent="hr_appraisal.menu_hr_appraisal_root"
+                  id="menu_open_view_hr_appraisal_tree_root"
+                  sequence="1" groups="base.group_user"/>
+        <menuitem name="Appraisals" parent="menu_open_view_hr_appraisal_tree_root"
+                  id="hr_appraisal.menu_open_view_hr_appraisal_tree"
+                  action="hr_appraisal.open_view_hr_appraisal_tree" sequence="1" groups="base.group_user"/>
+        <menuitem name="Employee self assessment" parent="menu_open_view_hr_appraisal_tree_root"
+                  id="employee_appraisals_menu"
+                  action="employee_appraisals_action" sequence="2" groups="base.group_user"/>
+
+    </data>
+</odoo>

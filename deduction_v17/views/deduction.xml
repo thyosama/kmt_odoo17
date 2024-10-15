@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="deduction_view_tree" model="ir.ui.view">
+            <field name="name">deduction_view_tree</field>
+            <field name="model">deduction</field>
+            <field name="arch" type="xml">
+                <tree string="deduction_tree">
+                    <field name="employee_id" optional="show"/>
+                    <field name="date" optional="show"/>
+                    <field name="type_id" optional="show"/>
+                    <field name="type" optional="show"/>
+                    <field name="deduction_value" optional="show"/>
+
+                    <field name="contract_id" optional="hide"/>
+                    <field name="state" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="deduction_view_form" model="ir.ui.view">
+            <field name="name">deduction_view_form</field>
+            <field name="model">deduction</field>
+            <field name="arch" type="xml">
+                <form string="deduction_form">
+                    <header>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,confirmed"/>
+                        <button name="set_draft" type="object" string="Set Draft"
+                                invisible="state != 'confirmed' or confirmed"/>
+                        <button name="confirm" groups="deduction_v17.group_deduction_manger" type="object" string="Confirm"
+                                invisible="state != 'draft'"/>
+
+                    </header>
+                    <sheet>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <group>
+                            <group>
+                                <field name="employee_id" readonly="state == 'confirmed'"/>
+                                <field name="contract_id" readonly="state == 'confirmed'"/>
+                                <field name="type_id" readonly="state == 'confirmed'"/>
+                                <field name="type" readonly="state == 'confirmed'"/>
+                            </group>
+                            <group>
+                                <field name="date" readonly="state == 'confirmed'"/>
+                                <field name="value" readonly="state == 'confirmed'"/>
+                                <field name="deduction_value"/>
+                                <field name="confirmed" invisible="1"/>
+                            </group>
+                            <field name="note" readonly="state == 'confirmed'"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="deduction_action" model="ir.actions.act_window">
+            <field name="name">deduction</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">deduction</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="deduction_root" name="Deduction" parent="hr.menu_hr_root"/>
+        <menuitem id="deduction_menu" name="Deduction" parent="deduction_root" action="deduction_action"/>
+
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="view_hr_payslip_form_inherited11" model="ir.ui.view">
+            <field name="name">hr.payslip</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//page[last()]" position="after">
+                    <page string="Deduction">
+                        <field name="deduction_line_ids">
+                            <tree string="Bounes Lines">
+                                <field name="deduction_id" invisible="1"/>
+                                <field name="name"/>
+                                <field name="date"/>
+                                <field name="notes"/>
+                                <field name="deduction_value"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+
+
+    <odoo>
+        <data noupdate="1">
+
+            <record id="deduction_sequence" model="ir.sequence">
+                <field name="name">deduction</field>
+                <field name="code">deduction</field>
+                <field name="prefix">D</field>
+                <field name="padding">4</field>
+            </record>
+
+        </data>
+    </odoo>
+</odoo>

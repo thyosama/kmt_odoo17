@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <template id="self_services_link" name="Self Services" inherit_id="portal.user_dropdown">
+        <xpath expr="//*[@id='o_logout_divider']" position="before">
+            <a href="/SelfServices" role="menuitem" class="dropdown-item ps-3">
+                <i class="fa fa-fw fa-user-o me-1 small text-primary" />Self Services </a>
+        </xpath>
+    </template>
+
+    <template id="self_service_home_page" name="timehseet"
+        inherit_id="self_service_module.self_service_home_page">
+        <xpath expr="//div[hasclass('container')]/div/div[1]/div/div[1]" position="after">
+            <div class="col-lg-12 pt24 pb24 o_colored_level" data-name="Block">
+                <div class="s_showcase_title d-flex flex-lg-row-reverse mb-2">
+                    <span
+                        class="fa fa-calendar-o s_showcase_icon fa-2x text-secondary me-3 me-lg-0 ms-lg-3" />
+                    <h3 data-bs-original-title="" title="" aria-describedby="tooltip442432">
+                        <a href="/timesheet" data-bs-original-title="" title="">
+                            <font class="text-o-color-1">Add Your Timesheet</font>
+                        </a>
+                    </h3>
+                </div>
+                <p>Fill the form From Here To Add Your Timesheet</p>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[hasclass('container')]/div/div[1]/div" position="inside">
+            <div class="col-lg-12 pt24 pb24 o_colored_level" data-name="Block">
+                <div class="s_showcase_title d-flex flex-lg-row-reverse mb-2">
+                    <span
+                        class="fa fa-users s_showcase_icon fa-2x text-secondary me-3 me-lg-0 ms-lg-3" />
+                    <h3 data-bs-original-title="" title="" aria-describedby="tooltip442432">
+                        <a href="/employees" data-bs-original-title="" title="">
+                            <font class="text-o-color-1">Employees</font>
+                        </a>
+                    </h3>
+                </div>
+                <p>Show All Employees</p>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[hasclass('container')]/div/div[3]/div/div[1]" position="after">
+            <div class="col-lg-12 pt24 pb24 o_colored_level" data-name="Block">
+                <div class="s_showcase_title d-flex mb-2">
+                    <span class="fa fa-list-alt s_showcase_icon fa-2x text-secondary me-3" />
+                    <h3>
+                        <a href="/my-timesheets">See Your Timesheet</a>
+                    </h3>
+                </div>
+                <p>You Can see Your Timesheet From Here</p>
+            </div>
+        </xpath>
+    </template>
+</odoo>

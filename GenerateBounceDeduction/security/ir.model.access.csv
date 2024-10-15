@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+generate_bounce_id,generate_bounce,model_generate_bounce,,1,1,1,1,
+generate_deduction_id,generate_deduction,model_generate_deduction,,1,1,1,1,

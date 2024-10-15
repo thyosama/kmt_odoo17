@@ -1,0 +1,48 @@
+<odoo>
+    <data>
+        <record id="obj_view_department_form" model="ir.ui.view">
+            <field name="name">hr.department</field>
+            <field name="model">hr.department</field>
+            <field name="inherit_id" ref="hr.view_department_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/notebook" position="inside">
+                        <page string="Department Objective" name="objective">
+
+                            <field name="objective_ids">
+                                <tree editable="bottom">
+                                    <field name="name" required="1"/>
+                                    <field name="description" required="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Firm Goals">
+                            <field name="goal" placeholder="Firm Goals........."/>
+                        </page>
+                </xpath>
+
+            </field>
+        </record>
+        <record id="depart_obj_view_tree" model="ir.ui.view">
+            <field name="name">hr.department.obj</field>
+            <field name="model">hr.department.obj</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="department_id" required="1"/>
+                    <field name="name" required="1"/>
+                    <field name="description" required="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="department_obj_action" model="ir.actions.act_window">
+            <field name="name">Objectives</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.department.obj</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+
+        <!--        <menuitem id="department_obj_menu" name="Objectives" parent="hr_appraisal.menu_hr_appraisal_configuration"-->
+        <!--                  action="department_obj_action"/>-->
+    </data>
+</odoo>

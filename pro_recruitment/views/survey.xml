@@ -1,0 +1,46 @@
+<odoo>
+    <data>
+        <record id="ibra_survey_tree" model="ir.ui.view">
+            <field name="name">survey.survey</field>
+            <field name="model">survey.survey</field>
+            <field name="inherit_id" ref="survey.survey_survey_view_tree" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='answer_count']" position="after">
+                    <field name="emp_id" />
+                    <field name="type" />
+                    <field name="start_date" />
+                    <field name="end_date" />
+                </xpath>
+            </field>
+        </record>
+        <record id="ibra_survey_form" model="ir.ui.view">
+            <field name="name">survey.survey</field>
+            <field name="model">survey.survey</field>
+            <field name="inherit_id" ref="survey.survey_survey_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="emp_id" />
+                    <field name="type" />
+                    <field name="start_date" />
+                    <field name="end_date" />
+                </xpath>
+            </field>
+        </record>
+
+        <record id="ibra_survey_user_input_view_form" model="ir.ui.view">
+            <field name="name">survey.user_input</field>
+            <field name="model">survey.user_input</field>
+            <field name="inherit_id" ref="survey.survey_user_input_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="partner_id" invisible="1" />
+                    <field name="applicant_id" invisible="1" />
+                    <field name="applicant_name" />
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="groups">pro_recruitment.survey_partner_field_group</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,160 @@
+<odoo>
+    <data>
+
+        <template id="appraisal_template">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-foreach="docs" t-as="doc">
+                        <div class="page">
+                            <center>
+                                <h2>Appraisal Form</h2>
+                            </center>
+                            <div class="row">
+                                <div class="col-3">
+                                    <strong>Employee Name:</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-esc="doc.employee_id.name"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <strong>Managers:</strong>
+                                </div>
+                                <div class="col-3">
+                                    <t t-foreach="doc.manager_ids" t-as="manager">
+                                        <span t-esc="manager.name"/>
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <strong>Appraisal Date</strong>
+                                </div>
+                                <div class="col-3">
+                                    <span t-esc="doc.date_close"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <strong>Department:</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-esc="doc.department_id.name"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <strong>Final Rating:</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="doc.assessment_note"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <strong>Score:</strong>
+                                </div>
+                                <div class="col-3">
+                                    <span t-esc="'%.2f'%(float(doc.score))"/>
+                                    <!--                                    <span t-esc="'%.2f'%(line.discount)"/>-->
+                                </div>
+                            </div>
+<!--                            <div class="row">-->
+<!--                                <div class="col-3">-->
+<!--                                    <strong>Performance Level:</strong>-->
+<!--                                </div>-->
+<!--                                <div class="col-3">-->
+<!--                                    <span t-if="doc.performance_over_all == '0'">Not Applicable</span>-->
+<!--                                    <span t-if="doc.performance_over_all == '1'">75% - 84%</span>-->
+<!--                                    <span t-if="doc.performance_over_all == '2'">65% - 74%</span>-->
+<!--                                    <span t-if="doc.performance_over_all == '3'">75% - 84%</span>-->
+<!--                                    <span t-if="doc.performance_over_all == '4'">85% - 95%</span>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                            <div class="row">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" scope="col">Skill</th>
+                                            <th>Justification</th>
+                                            <th>Score</th>
+                                            <th>Evaluation Skills</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="total" t-value="0"/>
+                                        <t t-set="total" t-value="0"/>
+                                        <tr t-foreach="doc.skill_ids" t-as="skill">
+                                            <td>
+                                                <span t-esc="skill.skill_id.name"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="skill.justification"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="skill.score"/>
+                                                <t t-set="total" t-value="total+int(skill.score)"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="skill.appraisal_note_id.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center">
+                                                <b>Total</b>
+                                            </td>
+                                            <td/>
+                                            <td class="text-center">
+                                                <span t-esc="total"/>
+                                            </td>
+                                            <td/>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center">
+                                                <b>Over All Rating</b>
+                                            </td>
+                                            <td />
+                                            <td class="text-center">
+                                                <span t-if="doc.performance_over_all == '0'">Not Applicable</span>
+                                                <span t-if="doc.performance_over_all == '1'">75% - 84%</span>
+                                                <span t-if="doc.performance_over_all == '2'">65% - 74%</span>
+                                                <span t-if="doc.performance_over_all == '3'">75% - 84%</span>
+                                                <span t-if="doc.performance_over_all == '4'">85% - 95%</span>
+                                            </td>
+                                            <td />
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row">
+                                <strong>Job Description:</strong>
+                            </div>
+                            <div class="row">
+                                <p t-field="doc.job_description" />
+                            </div>
+                            <div class="row">
+                                <p><strong>Job Specification:</strong></p>
+                            </div>
+                            <div class="row">
+                                <p t-field="doc.job_specification" />
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <record id="appraisal_report" model="ir.actions.report">
+            <field name="name">Appraisal Form</field>
+            <field name="model">hr.appraisal</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pro_recruitment.appraisal_template</field>
+            <field name="report_file">pro_recruitment.appraisal_template</field>
+            <field name="print_report_name">'Appraisal Form'</field>
+            <field name="binding_model_id" ref="hr_appraisal.model_hr_appraisal"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>

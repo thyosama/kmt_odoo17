@@ -1,0 +1,58 @@
+<odoo>
+    <data>
+        <record id="survey_partner_field_group" model="res.groups">
+            <field name="name">Survey Partner</field>
+        </record>
+        <record id="survey_categ" model="ir.module.category">
+            <field name="name">Survey Security</field>
+            <field name="sequence" eval="1"/>
+        </record>
+
+        <record id="survey_partner_group" model="res.groups">
+            <field name="name">Partner</field>
+            <field name="category_id" ref="pro_recruitment.survey_categ"/>
+        </record>
+        <record id="survey_partner_rule" model="ir.rule">
+            <field name="name">Survey Partner Rule</field>
+            <field ref="survey.model_survey_survey" name="model_id"/>
+            <field name="groups" eval="[(4, ref('survey_partner_group'))]"/>
+            <field name="domain_force">[('type', '=', 'partner'),('emp_id', '!=', user.id)]</field>
+        </record>
+
+        <record id="survey_employee_group" model="res.groups">
+            <field name="name">Employee</field>
+            <field name="category_id" ref="pro_recruitment.survey_categ"/>
+        </record>
+        <record id="survey_employee_rule" model="ir.rule">
+            <field name="name">Survey Employee Rule</field>
+            <field ref="survey.model_survey_survey" name="model_id"/>
+            <field name="groups" eval="[(4, ref('survey_employee_group'))]"/>
+            <field name="domain_force">[('type', '=', 'employee'),('emp_id', '!=', user.id)]</field>
+        </record>
+
+        <record id="survey_manager_group" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="pro_recruitment.survey_categ"/>
+        </record>
+        <record id="survey_manager_rule" model="ir.rule">
+            <field name="name">Survey Manager Rule</field>
+            <field ref="survey.model_survey_survey" name="model_id"/>
+            <field name="groups" eval="[(4, ref('survey_manager_group'))]"/>
+            <field name="domain_force">[('type', '=', 'manager'),('emp_id', '!=', user.id)]</field>
+        </record>
+        <record id="survey_see_all_group" model="res.groups">
+            <field name="name">See All Surveys</field>
+            <field name="category_id" ref="pro_recruitment.survey_categ"/>
+        </record>
+        <record id="survey_see_all_rule" model="ir.rule">
+            <field name="name">See All Surveys</field>
+            <field ref="survey.model_survey_survey" name="model_id"/>
+            <field name="groups" eval="[(4, ref('survey_see_all_group'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <delete model="ir.rule" id="survey.survey_survey_rule_survey_manager"/>
+        <delete model="ir.rule" id="survey.survey_survey_rule_survey_user_read"/>
+        <delete model="ir.rule" id="survey.survey_survey_rule_survey_user_cwu"/>
+    </data>
+</odoo>

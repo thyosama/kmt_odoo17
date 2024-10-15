@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="emp_certificate_tree" model="ir.ui.view">
+            <field name="name">emp.certificate</field>
+            <field name="model">emp.certificate</field>
+            <field name="arch" type="xml">
+                <tree editable="top" string="emp_job_title_tree">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="emp_certificate_action" model="ir.actions.act_window">
+            <field name="name">Certificate</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">emp.certificate</field>
+            <field name="view_mode">tree</field>
+        </record>
+        <menuitem id="emp_certificate_menu" name="Certificates" action="emp_certificate_action" sequence="0"
+                  parent="hr.menu_human_resources_configuration"/>
+    </data>
+</odoo>

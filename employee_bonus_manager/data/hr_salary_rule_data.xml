@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo noupdate="1">
+    <!-- Salary rule Employee Bonus   -->
+    <record id="hr_salary_rule_bonus" model="hr.salary.rule">
+        <field name="category_id" ref="hr_payroll.ALW" />
+        <field name="name">Employee Bonus</field>
+        <field name="sequence">59</field>
+        <field name="code">BONUS</field>
+        <field name="condition_select">python</field>
+        <field name="condition_python">result = 'BONUS' in inputs</field>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = inputs['BONUS'].amount
+        </field>
+        <field name="struct_id" ref="hr_payroll.default_structure"/>
+    </record>
+</odoo>

@@ -1,0 +1,22 @@
+<odoo>
+    <data>
+        <record id="generate_bounce_sequence" model="ir.sequence">
+            <field name="name">bounce1</field>
+            <field name="code">bounce1</field>
+            <field name="prefix">GB</field>
+            <field name="padding">4</field>
+        </record>
+    </data>
+        <odoo>
+        <data noupdate="1">
+
+            <record id="generate_deduction_sequence" model="ir.sequence">
+                <field name="name">deduction1</field>
+                <field name="code">deduction1</field>
+                <field name="prefix">D</field>
+                <field name="padding">4</field>
+            </record>
+
+        </data>
+    </odoo>
+</odoo>

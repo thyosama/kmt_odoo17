@@ -1,0 +1,154 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data>
+        <template id="show_payslips" name="Show Time Off">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_text_block pt24 o_colored_level" data-snippet="s_text_block" data-name="Text"
+                             style="background-image: none;">
+                        <div class="s_allow_columns container">
+                            <!--  <h3>-->
+                            <!-- You have <span  style="color:blue" t-esc="no_leaves"/> Leaves-->
+                            <!-- </h3>-->
+                            <table class="table table-hover">
+                                <thead style="background:gray">
+                                    <th>Serial</th>
+                                    <th>Number</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Status</th>
+                                    <th>To PaySlip</th>
+                                    <th>Download</th>
+                                </thead>
+                                <tbody>
+                                    <t t-set="s" t-value="0"/>
+                                    <t t-foreach="payslip or []" t-as="t">
+                                        <t t-set="s" t-value="s+1"/>
+                                        <a t-attf-href="PayslipShow/%s , t.id">
+                                            <tr t-if="t.state=='verify'" style="color:#AF5F0F">
+                                                <td>
+                                                    <span t-esc="s"/>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="t.number"/>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="t.date_from"/>
+                                                </td>
+                                                <td>
+
+                                                    <span t-esc="t.date_to"/>
+
+                                                </td>
+                                                <td>
+                                                    Waiting
+                                                </td>
+                                                <td>
+                                                    <a t-att-href="'payslipshow/%s'  % t.id">
+                                                        <span class='fa fa-arrow-circle-right'
+                                                              style='font-size:35px;color:#AF5F0F;'></span>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a t-att-href="'print/%s'  % t.id">
+                                                         <span class='fa fa-download'
+                                                              style='font-size:35px;color:#AF5F0F;'></span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr t-if="t.state=='cancel'" t-attf-href="PayslipShow/%s , t.id"
+                                                style="color:red">
+                                                <td>
+                                                    <span t-esc="s"/>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="t.number"/>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="t.date_from"/>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="t.date_to"/>
+                                                </td>
+                                                <td>Rejected</td>
+                                                <td>
+                                                    <a t-att-href="'payslipshow/%s'  % t.id">
+                                                        <span class='fa fa-arrow-circle-right'
+                                                              style='font-size:35px;color:red;'></span>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a t-att-href="'print/%s'  % t.id">
+                                                         <span class='fa fa-download'
+                                                               style='font-size:35px;color:red;'></span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr t-if="t.state=='done'" t-attf-href="PayslipShow/%s , t.id"
+                                                style="color:#e7e712">
+                                                <td>
+                                                    <span t-esc="s"/>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="t.number"/>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="t.date_from"/>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="t.date_to"/>
+                                                </td>
+                                                <td>Done</td>
+                                                <td>
+                                                    <a t-att-href="'payslipshow/%s'  % t.id">
+                                                        <span class='fa fa-arrow-circle-right'
+                                                              style='font-size:35px;color:yellow;'></span>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a t-att-href="'print/%s'  % t.id">
+                                                         <span class='fa fa-download'
+                                                               style='font-size:35px;color:yellow;'></span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr t-if="t.state=='paid'" t-attf-href="PayslipShow/%s , t.id"
+                                                style="color:green">
+                                                <td>
+                                                    <span t-esc="s"/>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="t.number"/>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="t.date_from"/>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="t.date_to"/>
+                                                </td>
+                                                <td>Paid</td>
+                                                <td>
+                                                    <a t-att-href="'payslipshow/%s'  % t.id">
+                                                        <span class='fa fa-arrow-circle-right'
+                                                              style='font-size:35px;color:green;'></span>
+                                                    </a>
+                                                </td>
+                                                 <td>
+                                                    <a t-att-href="'print/%s'  % t.id">
+                                                         <span class='fa fa-download'
+                                                               style='font-size:35px;color:green;'></span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </a>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+    </data>
+</odoo>

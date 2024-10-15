@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_payslip_salary_excel,access.hr.payslip.salary.excel,model_hr_payslip_salary_excel,,1,1,1,1
+access_report_salary_report_xlsx_payslip_salary,report_salary_report_xlsx_payslip_salary,model_report_salary_report_xlsx_payslip_salary,,1,1,1,1
+
+
+
+
+

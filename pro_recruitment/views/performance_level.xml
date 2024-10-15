@@ -1,0 +1,26 @@
+<odoo>
+    <data>
+
+        <record id="performance_level_view_tree" model="ir.ui.view">
+            <field name="name">Performance Level</field>
+            <field name="model">performance.level</field>
+            <field name="arch" type="xml">
+                <tree string="performance_level_tree" editable="bottom">
+                    <field name="name"/>
+                    <field name="form_per"/>
+                    <field name="to_per"/>
+                </tree>
+            </field>
+        </record>
+        <record id="performance_level_action" model="ir.actions.act_window">
+            <field name="name">Performance Level</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">performance.level</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="performance_level_menu" name="Performance Level"
+                  parent="hr_appraisal.menu_hr_appraisal_configuration"
+                  action="performance_level_action" sequence="99"/>
+    </data>
+</odoo>

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+deduction_id,deduction,model_deduction,,1,1,1,1,
+access_deduction_type,deduction_type,model_deduction_type,,1,1,1,1
+deduction_line_id,deduction_line,model_deduction_line,,1,1,1,1,

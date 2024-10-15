@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tech_criteria_view_tree" model="ir.ui.view">
+            <field name="name">tech_criteria_view_tree</field>
+            <field name="model">tech.criteria</field>
+            <field name="arch" type="xml">
+                <tree string="Technical Criteria">
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record id="tech_evaluation_view_tree" model="ir.ui.view">
+            <field name="name">tech_evaluation_view_tree</field>
+            <field name="model">technical.evaluation</field>
+            <field name="arch" type="xml">
+                <tree string="Technical Evaluation" editable="bottom">
+                    <field name="name" />
+                    <field name="from_score" />
+                    <field name="to_score" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="tech_criteria_view_form" model="ir.ui.view">
+            <field name="name">tech_criteria_view_form</field>
+            <field name="model">tech.criteria</field>
+            <field name="arch" type="xml">
+                <form string="Technical Criteria">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" />
+                            <h1>
+                                <field name="name" placeholder="e.g. Software Engineer" />
+                            </h1>
+                        </div>
+                        <group string="Options">
+                            <field name="questions_selection" widget="radio" />
+                        </group>
+                        <notebook>
+                            <page string="Questions" name="questions">
+                                <field name="question_and_page_ids" nolabel="1"
+                                    widget="question_page_one2many"
+                                    mode="tree,kanban"
+                                    context="{'default_tech_criteria_id': active_id, 'default_questions_selection': questions_selection}">
+                                    <tree decoration-bf="is_page" editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="title" widget="survey_description_page" />
+                                        <field name="question_type" />
+                                        <field name="is_page" invisible="1" />
+                                        <field name="questions_selection" invisible="1" />
+                                        <field name="survey_id" invisible="1" />
+                                        <field name="triggering_question_ids" invisible="1" />
+                                        <field name="random_questions_count"
+                                            column_invisible="parent.questions_selection == 'all'"
+                                            invisible="not is_page" />
+                                        <button disabled="disabled" icon="fa-code-fork"
+                                            invisible="not triggering_question_ids"
+                                            title="This question depends on another question's answer."
+                                            class="icon_rotates" />
+                                        <control>
+                                            <create name="add_question_control"
+                                                string="Add a question" />
+                                            <create name="add_section_control"
+                                                string="Add a section"
+                                                context="{'default_is_page': True, 'default_questions_selection': 'all'}" />
+                                        </control>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tech_criteria_action" model="ir.actions.act_window">
+            <field name="name">Technical Criteria</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tech.criteria</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="tech_evaluation_action" model="ir.actions.act_window">
+            <field name="name">Technical Evaluation</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">technical.evaluation</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <menuitem id="technical_criteria_parent_menu" name="Technical Criteria"
+            parent="hr_recruitment.menu_hr_recruitment_configuration" />
+        <menuitem id="tech_criteria_menu" name="Technical Question" action="tech_criteria_action"
+            parent="pro_recruitment.technical_criteria_parent_menu" />
+        <menuitem id="tech_evaluation_menu" name="Technical Evaluation"
+            action="tech_evaluation_action" parent="pro_recruitment.technical_criteria_parent_menu" />
+
+        <record id="hr_stage_view_form" model="ir.ui.view">
+            <field name="name">hr.recruitment.stage</field>
+            <field name="model">hr.recruitment.stage</field>
+            <field name="inherit_id" ref="hr_recruitment.hr_recruitment_stage_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='hired_stage']" position="after">
+                    <field name="tech_criteria" />
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_applicant_view_form" model="ir.ui.view">
+            <field name="name">hr.recruitment.applicant</field>
+            <field name="model">hr.applicant</field>
+            <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form" />
+            <field name="arch" type="xml">
+                <field name="job_id" position="after">
+                    <field name="tech_criteria" invisible="1" />
+                    <field name="technical_evaluation" force_save="1" />
+                </field>
+                <notebook position="inside">
+                    <page string="Technical interview"
+                        invisible="not tech_criteria">
+                        <field name="question_and_page_ids" nolabel="1" mode="tree">
+                            <tree editable="bottom">
+                                <field name="question" readonly="1" force_save="1" />
+                                <field name="question_type" readonly="1" force_save="1" />
+                                <field name="applicant_answer_choice"
+                                    readonly="question_type != 'simple_choice'" />
+                                <field name="applicant_answer_text_score"
+                                    readonly="question_type not in ['numerical_box','text_box','char_box']" />
+                                <field name="applicant_answer_date"
+                                    readonly="question_type != 'date'" />
+                                <field name="score"
+                                    readonly="question_type in ['simple_choice','numerical_box']"
+                                    force_save="1" />
+                            </tree>
+                        </field>
+                        <div class="oe_subtotal_footer oe_right">
+                            <label for="total_technical_score" />
+                            <field name="total_technical_score"
+                                force_save="1" readonly="1"></field> % <br />
+                            <label
+                                for="technical_evaluation" />
+                            <field name="technical_evaluation"
+                                force_save="1" />
+                        </div>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+    </data>
+</odoo>

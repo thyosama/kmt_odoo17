@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+ <record id="contract_history_job" model="ir.ui.view">
+            <field name="name">hr_contract.job</field>
+            <field name="model">hr.contract.history</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_history_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='job_id']" position="replace">
+                    <field name="emp_job_id"/>
+                </xpath>
+            </field>
+ </record>
+          <record id="contract_form_job" model="ir.ui.view">
+            <field name="name">hr.contract.job</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="arch" type="xml">
+ <xpath expr="//field[@name='job_id']" position="replace">
+                    <field name="emp_job_id"/>
+                </xpath>
+            </field>
+ </record>
+    </data>
+</odoo>
