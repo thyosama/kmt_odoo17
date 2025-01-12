@@ -12,9 +12,9 @@
             <div>
                 <strong>Contact Email#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_email">test@kmt4is.com</span>
                 <br/>
-                <strong>Attention To#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_related_field_44c_1iberm9c6"></span>
+                <strong>Attention To#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_attention_to"></span>
                 <br/>
-                <strong>Offer Subject#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_offer_subject"></span>
+                <strong>Offer Subject#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_offer_subject_1"></span>
             </div>
             <div style="float:right;margin-right:200px;">
                 <strong>Currency#</strong>
@@ -36,7 +36,7 @@
             <div t-if="doc.date_order" class="col-auto col-3 mw-100 mb-2" name="informations_date">
                 <strong>Offer Date:</strong>
                 <br/>
-                <span class="m-0" t-esc="doc.x_studio_quotation_date"></span>
+                <span class="m-0" t-esc="doc.x_studio_offer_date"></span>
             </div>
             <div name="sales_person" class="col-auto col-3 mw-100 mb-2">
                 <strong>Sales person:</strong>
