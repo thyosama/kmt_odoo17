@@ -77,7 +77,7 @@
         </xpath>
         <xpath expr="//td[@name='td_name']" position="after">
             <td name="td_stock" class="text-end">
-                <span t-esc="doc.x_studio_stock_or_not"></span>
+                <span t-esc="line.x_studio_stock_or_not"></span>
             </td>
         </xpath>
     </template>
