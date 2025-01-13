@@ -15,3 +15,6 @@ class HrContract(models.Model):
         for rec in self:
             print(rec.hour_value, "           ", rec.worked_dys)
             rec.day_value = rec.hour_value * rec.worked_dys
+
+
+

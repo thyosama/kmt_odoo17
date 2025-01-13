@@ -12,7 +12,7 @@
                     <field name="type_id" optional="show"/>
                     <field name="type" optional="show"/>
                     <field name="bounce_value" optional="show"/>
-                    <field name="contract_id" optional="hide"/>
+                    <field name="contract_id2" optional="hide"/>
                     <field name="state" optional="hide"/>
                 </tree>
             </field>
@@ -30,10 +30,11 @@
                     </header>
                     <sheet>
                         <h1><field name="name" readonly="1"/></h1>
+                        <h1><field name="company_id" invisible="1"/></h1>
                         <group>
                             <group>
                                 <field name="employee_id" readonly="state == 'confirmed'"/>
-                                <field name="contract_id" readonly="state == 'confirmed'"/>
+                                <field name="contract_id2" readonly="state == 'confirmed'"/>
                                 <field name="type_id" readonly="state == 'confirmed'"/>
                                 <field name="type" readonly="state == 'confirmed'"/>
                                 <field name="percentage" invisible="type != 'over'"/>

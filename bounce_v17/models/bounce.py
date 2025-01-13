@@ -10,7 +10,8 @@ class Bounce(models.Model):
     _name = 'bounce'
     _description = 'Bounce'
     _inherit = ['mail.thread']
-    
+    company_id = fields.Many2one('res.company', string='Company', index=True, default=lambda self: self.env.company)
+
     name = fields.Char('Name')
     date = fields.Date('Date', required=True, default=fields.Date.today())
     type = fields.Selection(string='Calculation base', selection=[
@@ -22,7 +23,8 @@ class Bounce(models.Model):
     value = fields.Float('Value')
     bounce_value = fields.Float('Addition Value', compute="get_bounce_value")
     employee_id = fields.Many2one('hr.employee', 'Employee', required=True, )
-    contract_id = fields.Many2one('hr.contract', related='employee_id.contract_id')
+    # contract_id = fields.Many2one('hr.contract', related='employee_id.contract_id')
+    contract_id2 = fields.Many2one('hr.contract', related='employee_id.contract_id')
     type_id = fields.Many2one('bounce.type')
     note = fields.Text(string="Note")
     bounce_id = fields.Many2one('bounce', string="Addition", store=True)
@@ -31,6 +33,7 @@ class Bounce(models.Model):
     # use this field to know it was taken in payslip
     confirmed = fields.Boolean(string='Confirmed', )
     state = fields.Selection([('draft', "Draft"), ('confirmed', "Confirmed")], string="State", default='draft')
+    # company_id = fields.Many2one(comodel_name="res.company", string="", required=False, )
 
     @api.depends('bounce_id')
     def get_last_value(self):
@@ -56,14 +59,17 @@ class Bounce(models.Model):
         values['name'] = self.env['ir.sequence'].get('bounce') or ' '
         return super(Bounce, self).create(values)
 
-    @api.depends('contract_id', 'value', 'type', 'bounce_id')
+
+    # Continue with your logic
+
+    @api.depends('contract_id2', 'value', 'type', 'bounce_id')
     def get_bounce_value(self):
         for rec in self:
             rec.bounce_value = 0
             if rec.type == 'hour':
-                rec.bounce_value = rec.value * rec.contract_id.hour_value
+                rec.bounce_value = rec.value * rec.contract_id2.hour_value
             elif rec.type == 'day':
-                rec.bounce_value = rec.value * rec.contract_id.day_value
+                rec.bounce_value = rec.value * rec.contract_id2.day_value
             elif rec.type == 'fixed':
                 rec.bounce_value = rec.value
             elif rec.type == 'over':
