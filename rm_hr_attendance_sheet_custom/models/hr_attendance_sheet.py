@@ -15,12 +15,13 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
 import pytz
 from datetime import datetime, date, timedelta, time
+from odoo.addons.resource.models.utils import float_to_time, HOURS_PER_DAY, \
+    make_aware, datetime_to_string, string_to_datetime
 
 
 class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
 
-    @api.onchange('date_from', 'date_to', 'struct_id')
     def change_date2(self):
         # if self.date_from and self.date_to:
         #     self.ensure_one()
@@ -37,7 +38,6 @@ class HrPayslip(models.Model):
         for payslip_id in self:
             print("XXXXXXXXXXXXXXXXXXXXXXXXX  custom XXXXXXXXXXXXXXXXXXXXXXXXX")
             worked_day_lines = payslip_id._get_workday_lines()
-            print(payslip_id.contract_id)
             if payslip_id.contract_id:
                 payslip_id.worked_days_line_ids = [(0, 0, x) for x in worked_day_lines]
             # payslip_id.compute_sheet()
@@ -78,13 +78,15 @@ class HrPayslip(models.Model):
                 for line in rec.worked_days_line_ids:
                     if line.code in ['ATTSHOT', 'ATTSHLI', 'ATTSHAB', 'ATTSHDT', 'ATTMISS']:
                         line.unlink()
+                hours_per_day = rec.contract_id.resource_calendar_id.hours_per_day
+                print('hours_per_day',hours_per_day,HOURS_PER_DAY)
                 overtime = [{
                     'name': "Overtime",
                     'code': 'OVT',
                     'work_entry_type_id': overtime_work_entry[0].id,
                     'sequence': 30,
                     'number_of_hours': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'ov')),
-                    'number_of_days': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'ov')) / rec.contract_id.resource_calendar_id.hours_per_day , #rec.tot_overtime
+                    'number_of_days': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'ov')) / (hours_per_day or HOURS_PER_DAY) , #rec.tot_overtime
                 }]
                 absence = [{
                     'name': "Absence",
@@ -92,7 +94,7 @@ class HrPayslip(models.Model):
                     'work_entry_type_id': absence_work_entry[0].id,
                     'sequence': 35,
                     'number_of_hours': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'ab')),
-                    'number_of_days': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'ab')) / rec.contract_id.resource_calendar_id.hours_per_day, # rec.tot_absence
+                    'number_of_days': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'ab')) / (hours_per_day or HOURS_PER_DAY), # rec.tot_absence
                 }]
                 late = [{
                     'name': "Late In",
@@ -100,7 +102,7 @@ class HrPayslip(models.Model):
                     'work_entry_type_id': latin_work_entry[0].id,
                     'sequence': 40,
                     'number_of_hours': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'late')),
-                    'number_of_days': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'late')) / rec.contract_id.resource_calendar_id.hours_per_day, #self.tot_late
+                    'number_of_days': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'late')) / (hours_per_day or HOURS_PER_DAY), #self.tot_late
                 }]
                 print("***********************************rm hr attendance sheet custom**************************************************")
                 difftime = [{
@@ -109,7 +111,7 @@ class HrPayslip(models.Model):
                     'work_entry_type_id': difftime_work_entry[0].id,
                     'sequence': 45,
                     'number_of_hours': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'diff')),
-                    'number_of_days': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'diff')) / rec.contract_id.resource_calendar_id.hours_per_day, #self.tot_difftime
+                    'number_of_days': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'diff')) / (hours_per_day or HOURS_PER_DAY), #self.tot_difftime
                 }]
                 miss_punch = [{
                     'name': "Miss Punch",
@@ -117,15 +119,15 @@ class HrPayslip(models.Model):
                     'work_entry_type_id': miss_work_entry[0].id,
                     'sequence': 45,
                     'number_of_hours': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'mis')),
-                    'number_of_days': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'mis')) / rec.contract_id.resource_calendar_id.hours_per_day, #self.tot_difftime
+                    'number_of_days': sum(line.amount for line in rec.penalty_ids.filtered(lambda slip: slip.type == 'mis')) / (hours_per_day or HOURS_PER_DAY), #self.tot_difftime
                 }]
                 worked_days_lines = overtime + late + absence + difftime + miss_punch
                 return worked_days_lines
 #
     def compute_sheet(self):
-        res = super(HrPayslip, self).compute_sheet()
         if self.contract_id:
             self.change_date2()
+        res = super(HrPayslip, self).compute_sheet()
         return res
 
 
@@ -162,10 +164,6 @@ class AttendanceSheet(models.Model):
             sheet.penalty_count = len(sheet.penalty_ids)
 
     def action_approve(self):
-        print(">>>>>>>>>>>>>>>>>>>>222>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print(">>>>>>>>>>>>>>>>>>>>222>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print(">>>>>>>>>>>>>>>>>>>>222>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print(">>>>>>>>>>>>>>>>>>>>222>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         self.action_create_penalties()
         self.action_create_payslip()
         self.write({'state': 'done'})
@@ -261,17 +259,16 @@ class AttendanceSheet(models.Model):
                     'name': 'Miss-Punch Penalty',
                     'amount': missline.miss_pen
                 }
-                if sheet.employee_id.contract_id.miss_rule == True:
-                    x = penalty_obj.create(values)
-                    late_ids = self.env['hr.attendance.penalty'].search([
-                        ('employee_id', '=', sheet.employee_id.id),
-                        ('date', '=', missline.date),
-                        ('accrual_date', '=', sheet.accrual_date),
-                        ('type', '=', 'late'),
-                        ('id', '!=', x.id),
-                    ])
-                    for late in late_ids:
-                        late.unlink()
+                x = penalty_obj.create(values)
+                late_ids = self.env['hr.attendance.penalty'].search([
+                    ('employee_id', '=', sheet.employee_id.id),
+                    ('date', '=', missline.date),
+                    ('accrual_date', '=', sheet.accrual_date),
+                    ('type', '=', 'late'),
+                    ('id', '!=', x.id),
+                ])
+                for late in late_ids:
+                    late.unlink()
 
     @api.model
     def cron_update_attendance_sheet(self):

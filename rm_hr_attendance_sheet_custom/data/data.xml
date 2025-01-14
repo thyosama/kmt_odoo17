@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+
+        <record id="work_entry_type_attendance_sheet_miss"
+                model="hr.work.entry.type">
+            <field name="name">Attendance Sheet Miss</field>
+            <field name="code">ATTMISS</field>
+            <field name="color">3</field>
+            <field name="is_leave">False</field>
+            <field name="round_days">HALF</field>
+            <field name="round_days_type">DOWN</field>
+        </record>
+
+
+
+        <record id="rm_hr_attendance_sheet.structure_attendance_sheet" model="hr.payroll.structure">
+            <field name="unpaid_work_entry_type_ids"
+                   eval="[(4, ref('rm_hr_attendance_sheet_custom.work_entry_type_attendance_sheet_miss'))]"/>
+        </record>
+
+
+
+
+
+
+        <!-- Hr Salary Rules for Absence Deduction-->
+        <record id="hr_salary_rule_att_miss" model="hr.salary.rule">
+            <field name="code">MS</field>
+            <field name="name">Miss Punch</field>
+            <field name="category_id" ref="hr_payroll.DED"/>
+            <field name="struct_id"
+                   ref="rm_hr_attendance_sheet.structure_attendance_sheet"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result ='ATTMISS' in worked_days and -(worked_days['ATTMISS'].number_of_hours * (contract.wage /
+                (9*26))) if worked_days['ATTMISS'].number_of_hours >0 else 0
+            </field>
+            <field name="sequence" eval="75"/>
+            <field name="note">deduction of Miss Punch days</field>
+        </record>
+    </data>
+</odoo>

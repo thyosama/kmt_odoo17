@@ -95,11 +95,10 @@
             <field name="category_id" ref="hr_payroll.DED"/>
             <field name="struct_id"
                    ref="rm_hr_attendance_sheet.structure_attendance_sheet"/>
-            <field name="condition_select">python</field>
-            <field name="condition_python">result =(worked_days.ATTSHAB and worked_days.ATTSHAB.number_of_hours > 0) or False
-            </field>
+            <field name="condition_select">none</field>
             <field name="amount_select">code</field>
-            <field name="amount_python_compute">result =-(worked_days.ATTSHAB.number_of_hours * (contract.wage / (9*26)))
+            <field name="amount_python_compute">result ='ATTSHAB' in worked_days and -(worked_days['ATTSHAB'].number_of_hours * (contract.wage /
+                (9*26))) if worked_days['ATTSHAB'].number_of_hours >0 else 0
             </field>
             <field name="sequence" eval="60"/>
             <field name="note">deduction of absence days</field>
@@ -110,11 +109,9 @@
             <field name="category_id" ref="hr_payroll.DED"/>
             <field name="struct_id"
                    ref="rm_hr_attendance_sheet.structure_attendance_sheet"/>
-            <field name="condition_select">python</field>
-            <field name="condition_python">result = (worked_days.ATTSHLI and worked_days.ATTSHLI.number_of_hours > 0) or False
-            </field>
+            <field name="condition_select">none</field>
             <field name="amount_select">code</field>
-            <field name="amount_python_compute">result =-worked_days.ATTSHLI.number_of_hours * contract.wage / (9*26)
+            <field name="amount_python_compute">result = 'ATTSHLI' in worked_days and - worked_days['ATTSHLI'].number_of_hours * contract.wage / (9*26) if worked_days['ATTSHLI'].number_of_hours >0 else 0
             </field>
             <field name="sequence" eval="65"/>
             <field name="note">deduction of late in</field>
@@ -125,11 +122,9 @@
             <field name="category_id" ref="hr_payroll.DED"/>
             <field name="struct_id"
                    ref="rm_hr_attendance_sheet.structure_attendance_sheet"/>
-            <field name="condition_select">python</field>
-            <field name="condition_python">result =(worked_days.ATTSHDF and worked_days.ATTSHDF.number_of_hours > 0) or False
-            </field>
+            <field name="condition_select">none</field>
             <field name="amount_select">code</field>
-            <field name="amount_python_compute">result =-worked_days.ATTSHDF.number_of_hours * contract.wage / (9*26)
+            <field name="amount_python_compute">result = 'ATTSHDT' in worked_days and -worked_days['ATTSHDT'].number_of_hours * contract.wage / (9*26) if worked_days['ATTSHDT'].number_of_hours >0 else 0
             </field>
             <field name="sequence" eval="70"/>
             <field name="note">deduction of Difference time</field>
@@ -143,11 +138,9 @@
             <field name="struct_id"
                    ref="rm_hr_attendance_sheet.structure_attendance_sheet"/>
 
-            <field name="condition_select">python</field>
-            <field name="condition_python">result = (worked_days.ATTSHOT and worked_days.ATTSHOT.number_of_hours > 0 ) or False
-            </field>
+            <field name="condition_select">none</field>
             <field name="amount_select">code</field>
-            <field name="amount_python_compute">result = (contract.wage / (9*26)) * worked_days.ATTSHOT.number_of_hours
+            <field name="amount_python_compute">result = 'ATTSHOT' in worked_days and (contract.wage / (9*26)) * worked_days['ATTSHOT'].number_of_hours if worked_days['ATTSHOT'].number_of_hours >0 else 0
             </field>
             <field name="sequence" eval="30"/>
             <field name="note">Over time</field>

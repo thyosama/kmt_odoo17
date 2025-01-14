@@ -270,17 +270,17 @@ class AttendanceSheet(models.Model):
                             }
                             att_line.create(values)
                     else:
-                        if any([att[2] != 'right' for att in
-                                attendance_intervals]):
+                        if any([att[2] != 'right' for att in attendance_intervals]):
                             act_float_miss_overtime = 0
                             float_miss_overtime = 0
                             policy_miss_diff = 0
                             act_float_miss_diff = 0
                             act_float_miss_late = 0
                             policy_miss_late = 0
-
                             all_miss_intervals = attendance_intervals
                             miss_cnt += 1
+                            print('miss_att_intervalssssssss', all_miss_intervals)
+
                             # miss_amount = policy_id.get_miss(miss_cnt,contract.job_id.id)
                             miss_amount = policy_id.get_miss(miss_cnt)
                             for i, work_interval in enumerate(work_intervals):
@@ -294,115 +294,72 @@ class AttendanceSheet(models.Model):
                                 miss_att_intervals = []
                                 miss_type = 'right'
                                 note = ''
-                                for j, miss_att in enumerate(
-                                        all_miss_intervals):
-                                    if miss_att[0] < work_interval[1] and \
-                                            miss_att[2] == 'fixout':
-                                        miss_att_intervals.append(
-                                            all_miss_intervals.pop(j))
-                                    elif (miss_att[1] == False or miss_att[1] >= work_interval[0]) and \
-                                            miss_att[2] == 'fixin':
+                                for j, miss_att in enumerate(all_miss_intervals):
+
+                                    if miss_att[0] < work_interval[1] and miss_att[2] == 'fixout':
+                                        miss_att_intervals.append(all_miss_intervals.pop(j))
+                                    elif (miss_att[1] == False or miss_att[1] >= work_interval[0]) and miss_att[2] == 'fixin':
                                         if i + 1 < len(work_intervals):
-                                            next_work_interval = work_intervals[
-                                                i + 1]
-                                            if miss_att[1] >= \
-                                                    next_work_interval[0]:
+                                            next_work_interval = work_intervals[i + 1]
+                                            if miss_att[1] >= next_work_interval[0]:
                                                 continue
                                         else:
-                                            miss_att_intervals.append(
-                                                all_miss_intervals.pop(j))
-                                if miss_att_intervals and miss_att_intervals[0][
-                                    2] != 'fixin':
+                                            miss_att_intervals.append(all_miss_intervals.pop(j))
+                                if miss_att_intervals and miss_att_intervals[0][2] != 'fixin':
                                     miss_type = 'missout'
                                     if leaves:
                                         for leave_interval in leaves:
-                                            if leave_interval[0] < \
-                                                    work_interval[1] < \
-                                                    leave_interval[1]:
+                                            if leave_interval[0] < work_interval[1] < leave_interval[1]:
                                                 miss_type = 'right'
                                                 miss_amount=0
                                                 miss_cnt -= 1
                                                 note = 'Removing Mis-punch Out due to leave'
 
-                                    ac_sign_in = self._get_float_from_time(
-                                        pytz.utc.localize(miss_att_intervals[0][
-                                                              0]).astimezone(
-                                            tz))
+                                    ac_sign_in = self._get_float_from_time(pytz.utc.localize(miss_att_intervals[0][0]).astimezone(tz))
                                     ac_sign_out = 0
-                                    miss_lat_in_interval = (
-                                        work_interval[0],
-                                        miss_att_intervals[0][0])
+                                    miss_lat_in_interval = (work_interval[0],miss_att_intervals[0][0])
                                     miss_late_in = timedelta(0, 0, 0)
                                     if leaves:
                                         miss_late_clean_intervals = calendar_id.att_interval_without_leaves(
                                             miss_lat_in_interval, leaves)
                                         for late_clean in miss_late_clean_intervals:
-                                            miss_late_in += late_clean[1] - \
-                                                            late_clean[0]
+                                            miss_late_in += late_clean[1] - late_clean[0]
                                     else:
-                                        miss_late_in = (
-                                                miss_att_intervals[0][0] -
-                                                work_interval[0])
+                                        miss_late_in = (miss_att_intervals[0][0] - work_interval[0])
                                     float_miss_late = miss_late_in.total_seconds() / 3600
                                     act_float_miss_late = float_miss_late
-                                    policy_miss_late, late_cnt = policy_id.get_late(
-                                        float_miss_late, late_cnt)
+                                    policy_miss_late, late_cnt = policy_id.get_late(float_miss_late, late_cnt)
                                     # ,contract.job_id.id
-                                elif miss_att_intervals and \
-                                        miss_att_intervals[-1][2] != 'fixout':
+                                elif miss_att_intervals and miss_att_intervals[-1][2] != 'fixout':
                                     miss_type = 'misin'
                                     if leaves:
                                         for leave_interval in leaves:
-                                            if leave_interval[0] < \
-                                                    work_interval[0] < \
-                                                    leave_interval[1]:
+                                            if leave_interval[0] < work_interval[0] < leave_interval[1]:
                                                 miss_type = 'right'
                                                 miss_amount=0
                                                 miss_cnt -= 1
                                                 note = 'Removing Mis-punch In due to leave'
                                     ac_sign_in = 0
-                                    ac_sign_out = self._get_float_from_time(
-                                        pytz.utc.localize(
-                                            miss_att_intervals[-1][
-                                                1]).astimezone(tz))
-                                    overtime_interval = (
-                                        work_interval[1],
-                                        miss_att_intervals[-1][1])
-                                    miss_diff_interval = (
-                                        miss_att_intervals[-1][1],
-                                        work_interval[1]
-                                    )
-                                    if overtime_interval[1] < overtime_interval[
-                                        0]:
-                                        miss_overtime = timedelta(hours=0,
-                                                                  minutes=0,
-                                                                  seconds=0)
-
+                                    print('miss_att_intervals',miss_att_intervals)
+                                    ac_sign_out = miss_att_intervals[-1][0] and self._get_float_from_time(pytz.utc.localize(miss_att_intervals[-1][0]).astimezone(tz)) or 0
+                                    overtime_interval = (work_interval[1],miss_att_intervals[-1][0])
+                                    miss_diff_interval = (miss_att_intervals[-1][0],work_interval[1])
+                                    if overtime_interval[1] < overtime_interval[0]:
+                                        miss_overtime = timedelta(hours=0,minutes=0,seconds=0)
                                     else:
-                                        miss_overtime = overtime_interval[1] - \
-                                                        overtime_interval[0]
-
+                                        miss_overtime = overtime_interval[1] - overtime_interval[0]
                                     float_miss_overtime = miss_overtime.total_seconds() / 3600
-                                    if float_miss_overtime <= overtime_policy[
-                                        'wd_after']:
+                                    if float_miss_overtime <= overtime_policy['wd_after']:
                                         act_float_miss_overtime = float_miss_overtime = 0
                                     else:
                                         act_float_miss_overtime = float_miss_overtime
-                                        float_miss_overtime = float_miss_overtime * \
-                                                              overtime_policy[
-                                                                  'wd_rate']
-                                    miss_diff_time = timedelta(hours=0,
-                                                               minutes=0,
-                                                               seconds=0)
-                                    if miss_diff_interval[0] < \
-                                            miss_diff_interval[1]:
+                                        float_miss_overtime = float_miss_overtime * overtime_policy['wd_rate']
+                                    miss_diff_time = timedelta(hours=0,minutes=0,seconds=0)
+                                    if miss_diff_interval[0] < miss_diff_interval[1]:
                                         if leaves:
-                                            miss_diff_clean_intervals = calendar_id.att_interval_without_leaves(
-                                                miss_diff_interval, leaves)
+                                            miss_diff_clean_intervals = calendar_id.att_interval_without_leaves(miss_diff_interval, leaves)
                                             for diff_clean in miss_diff_clean_intervals:
-                                                miss_diff_time += diff_clean[
-                                                                      1] - \
-                                                                  diff_clean[0]
+                                                miss_diff_time += diff_clean[1] - diff_clean[0]
                                         else:
                                             miss_diff_time = (
                                                     miss_diff_interval[1] -

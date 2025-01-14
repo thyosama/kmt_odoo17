@@ -11,7 +11,6 @@ from odoo.exceptions import ValidationError
 
 
 class move_attendance_wizard(models.Model):
-
     _name = "move.draft.attendance.wizard"
 
     date1 = fields.Datetime("From", required=True)
@@ -23,12 +22,7 @@ class move_attendance_wizard(models.Model):
     # @api.one
     def move_confirm(self):
         print("XXXXXXXXXXXXXXXXxherre")
-        if (
-            self.env["ir.config_parameter"]
-            .sudo()
-            .get_param("base_setup.one_days_login")
-            == "True"
-        ):
+        if (self.env["ir.config_parameter"].sudo().get_param("base_setup.one_days_login") == "True"):
             hr_attendance_adjusment = self.env["hr.draft.attendance"]
             hr_attendance = self.env["hr.attendance"]
             hr_employee = self.env["hr.employee"]
@@ -60,30 +54,13 @@ class move_attendance_wizard(models.Model):
                             "state": "fixout",
                             # 'check_out': check_in,
                         }
-                        print(
-                            str(att.name),
-                            "        ",
-                            att.employee_id.id,
-                            "        ",
-                            str(att.name)[:10],
-                            "        ",
-                            att.employee_id.name,
-                        )
+                        print(str(att.name), ":", att.employee_id.id, ":", str(att.name)[:10], ":",
+                              att.employee_id.name, )
                         hr_attendance = hr_attendance.search(
-                            [
-                                ("login_date", "=", str(att.name)[:10]),
-                                ("employee_id", "=", att.employee_id.id),
-                            ]
-                        )
+                            [("login_date", "=", str(att.name)[:10]), ("employee_id", "=", att.employee_id.id), ])
                         print("iiiiiiiiiiid ", hr_attendance)
                         if hr_attendance:
-                            print(
-                                att.date,
-                                "====>",
-                                hr_attendance.name,
-                                " -----xxxx----- ",
-                                att.name,
-                            )
+                            print(att.date, "====>", hr_attendance.name, " -----xxxx----- ", att.name, )
                             if hr_attendance.name > att.name:
                                 check_oout = hr_attendance.name
                                 hr_attendance.write(
@@ -101,12 +78,9 @@ class move_attendance_wizard(models.Model):
                                     }
                                 )
                             if hr_attendance.check_in.strftime(
-                                "%H"
+                                    "%H"
                             ) == hr_attendance.check_out.strftime("%H"):
-                                print(
-                                    ">>>>>>>>>>> ",
-                                    hr_attendance.check_in.strftime("%I"),
-                                )
+                                print(">>>>>>>>>>> ", hr_attendance.check_in.strftime("%I"), )
                                 if int(hr_attendance.check_in.strftime("%H")) > 12:
                                     hr_attendance.state = "fixin"
                                 else:
@@ -114,185 +88,129 @@ class move_attendance_wizard(models.Model):
                         else:
                             hr_attendance.create(vals)
         else:
-            hr_attendance_adjusment = self.env["hr.draft.attendance"]
-            hr_attendance = self.env["hr.attendance"]
-            hr_employee = self.env["hr.employee"]
-            employees = []
-            print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-            print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-            if self.employee_ids:
-                employees = self.employee_ids
-            else:
-                employees = hr_employee.search([])
+            hr_attendance_adjusment = self.env['hr.draft.attendance']
+            hr_attendance = self.env['hr.attendance']
+            hr_employee = self.env['hr.employee']
+            employees = self.employee_ids or hr_employee.search([])
 
             atten = {}
-            all_attendances = []
             for employee in employees:
-                attendance_ids = hr_attendance_adjusment.search(
-                    [
-                        ("employee_id", "=", employee.id),
-                        ("attendance_status", "!=", "sign_none"),
-                        ("name", ">=", self.date1),
-                        ("name", "<=", self.date2),
-                    ],
-                    order="name asc",
-                )
-                if attendance_ids:
-                    all_attendances += attendance_ids
-                    atten[employee.id] = {}
-                    for att in attendance_ids:
-                        if att.date in atten[employee.id]:
-                            atten[employee.id][att.date].append(att)
-                        else:
-                            atten[employee.id][att.date] = []
-                            atten[employee.id][att.date].append(att)
+                attendance_ids = hr_attendance_adjusment.search([
+                    ('employee_id', '=', employee.id),
+                    ('attendance_status', '!=', 'sign_none'),
+                    ('name', '>=', self.date1),
+                    ('name', '<=', self.date2)
+                ], order='name asc')
 
-            if atten:
-                for emp in atten:
-                    if emp:
-                        employee_dic = atten[emp]
-                        sorted_employee_dic = sorted(
-                            employee_dic.items(), key=operator.itemgetter(0)
-                        )
-                        last_action = False
-                        for attendance_day in sorted_employee_dic:
-                            day_dict = attendance_day[1]
-                            for line in day_dict:
-                                if line.attendance_status != "sign_none":
-                                    if line.attendance_status == "sign_in":
-                                        check_in = line.name
-                                        vals = {
-                                            "employee_id": line.employee_id.id,
-                                            "name": line.name,
-                                            "day": line.date,
-                                            "check_in": check_in,
-                                        }
-                                        hr_attendance = hr_attendance.search(
-                                            [
-                                                ("name", "=", str(line.name)),
-                                                (
-                                                    "employee_id",
-                                                    "=",
-                                                    line.employee_id.id,
-                                                ),
-                                            ]
-                                        )
-                                        if not hr_attendance:
-                                            if last_action != line.attendance_status:
-                                                created_rec = hr_attendance.create(vals)
-                                                _logger.info(
-                                                    "Create Attendance "
-                                                    + str(created_rec)
-                                                    + " for "
-                                                    + str(line.employee_id.name)
-                                                    + " on "
-                                                    + str(line.name)
-                                                )
+                for att in attendance_ids:
+                    day = att.name.date()  # Extract the date from 'name' datetime field
 
-                                    elif line.attendance_status == "sign_out":
-                                        check_out = line.name
-                                        hr_attendance_ids = hr_attendance.search(
-                                            [
-                                                (
-                                                    "employee_id",
-                                                    "=",
-                                                    line.employee_id.id,
-                                                ),
-                                                ("day", "=", line.date),
-                                            ]
-                                        )
-                                        if hr_attendance_ids:
-                                            for attend_id in hr_attendance_ids:
-                                                if (
-                                                    attend_id.day == line.date
-                                                    and attend_id.check_in
-                                                    and not attend_id.check_out
-                                                ):
-                                                    _logger.info(
-                                                        "Updated "
-                                                        + str(attend_id.day)
-                                                        + "'s Attendance, "
-                                                        + str(line.employee_id.name)
-                                                        + " Checked Out at: "
-                                                        + str(check_out)
-                                                    )
-                                    else:
-                                        raise ValidationError(
-                                            _(
-                                                "Error ! Sign in (resp. Sign out) must follow Sign out (resp. Sign in) at "
-                                                + str(line.name)
-                                                + " for "
-                                                + str(line.employee_id.name)
-                                            )
-                                        )
-                                    last_action = line.attendance_status
+                    if day not in atten:
+                        atten[day] = {}
+                    if att.employee_id.id not in atten[day]:
+                        atten[day][att.employee_id.id] = []
+                    atten[day][att.employee_id.id].append(att)
 
-    #
-    # the Original function Commented By Abdulrhman
-    # def move_confirm(self):
-    #     hr_attendance_adjusment = self.env['hr.draft.attendance']
-    #     hr_attendance = self.env['hr.attendance']
-    #     hr_employee = self.env['hr.employee']
-    #     employees = []
-    #     if self.employee_ids:
-    #         employees = self.employee_ids
-    #     else:
-    #         employees = hr_employee.search([])
-    #
-    #     atten = {}
-    #     all_attendances = []
-    #     for employee in employees:
-    #         attendance_ids = hr_attendance_adjusment.search([('employee_id','=',employee.id),
-    #                                                           ('attendance_status','!=','sign_none'),
-    #                                                           ('name','>=',self.date1),
-    #                                                           ('name','<=',self.date2)], order='name asc')
-    #         if attendance_ids:
-    #             all_attendances += attendance_ids
-    #             atten[employee.id] = {}
-    #             for att in attendance_ids:
-    #                 if att.date in atten[employee.id]:
-    #                     atten[employee.id][att.date].append(att)
-    #                 else:
-    #                     atten[employee.id][att.date] = []
-    #                     atten[employee.id][att.date].append(att)
-    #
-    #     if atten:
-    #         for emp in atten:
-    #             if emp:
-    #                 employee_dic = atten[emp]
-    #                 sorted_employee_dic = sorted(employee_dic.items(), key=operator.itemgetter(0))
-    #                 last_action = False
-    #                 for attendance_day in sorted_employee_dic:
-    #                     day_dict = attendance_day[1]
-    #                     for line in day_dict:
-    #                         if line.attendance_status != 'sign_none':
-    #                             if line.attendance_status == 'sign_in':
-    #                                 check_in = line.name
-    #                                 vals = {
-    #                                         'employee_id': line.employee_id.id,
-    #                                         'name': line.name,
-    #                                         'day': line.date,
-    #                                         'check_in':check_in,
-    #                                         }
-    #                                 hr_attendance = hr_attendance.search([('name','=', str(line.name)), ('employee_id','=',line.employee_id.id)])
-    #                                 if not hr_attendance:
-    #                                     if last_action != line.attendance_status:
-    #                                         created_rec = hr_attendance.create(vals)
-    #                                         _logger.info('Create Attendance '+ str(created_rec) +' for '+ str(line.employee_id.name)+' on ' + str(line.name))
-    #
-    #                             elif line.attendance_status == 'sign_out':
-    #                                 check_out = line.name
-    #                                 hr_attendance_ids = hr_attendance.search([('employee_id','=',line.employee_id.id), ('day','=',line.date)])
-    #                                 if hr_attendance_ids:
-    #                                     for attend_id in hr_attendance_ids:
-    #                                         if attend_id.day == line.date and attend_id.check_in and not attend_id.check_out:
-    #                                             attend_id.write({'check_out':check_out})
-    #                                             _logger.info('Updated '+str(attend_id.day)+ "'s Attendance, "+str(line.employee_id.name)+ ' Checked Out at: '+ str(check_out))
-    #                             else:
-    #                                 raise ValidationError(_('Error ! Sign in (resp. Sign out) must follow Sign out (resp. Sign in) at '+str(line.name)+' for '+str(line.employee_id.name)))
-    #                             last_action = line.attendance_status
+            for date, employees_dict in atten.items():
+                for emp_id, records in employees_dict.items():
+                    check_in, check_out = None, None
+                    state = 'fixout'  # Default state for fixout
 
+                    for record in records:
+                        print('record',record.attendance_status)
+                        if record.attendance_status == 'sign_in':
+                            check_in = record.name
+                            state = 'fixin'  # Set state to fixin if only check_in is present
+                        elif record.attendance_status == 'sign_out':
+                            if not check_in:
+                                check_in = record.name  # Move check_out to check_in
+                                state = 'fixout'  # Set state to fixout if only check_out is present
+                            else:
+                                check_out = record.name
+                                state = 'right'  # Set state to right if both check_in and check_out are present
 
-# move_attendance_wizard()
+                    vals = {
+                        'employee_id': emp_id,
+                        'day': date,
+                        'check_in': check_in,
+                        'check_out': check_out,
+                        'state': state,
+                    }
+                    existing_attendance = hr_attendance.search([
+                        ('day', '=', date),
+                        ('employee_id', '=', emp_id)
+                    ])
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+                    if existing_attendance:
+                        existing_attendance.write(vals)
+                    else:
+                        hr_attendance.create(vals)
+
+        #
+        # the Original function Commented By Abdulrhman
+        # def move_confirm(self):
+        #     hr_attendance_adjusment = self.env['hr.draft.attendance']
+        #     hr_attendance = self.env['hr.attendance']
+        #     hr_employee = self.env['hr.employee']
+        #     employees = []
+        #     if self.employee_ids:
+        #         employees = self.employee_ids
+        #     else:
+        #         employees = hr_employee.search([])
+        #
+        #     atten = {}
+        #     all_attendances = []
+        #     for employee in employees:
+        #         attendance_ids = hr_attendance_adjusment.search([('employee_id','=',employee.id),
+        #                                                           ('attendance_status','!=','sign_none'),
+        #                                                           ('name','>=',self.date1),
+        #                                                           ('name','<=',self.date2)], order='name asc')
+        #         if attendance_ids:
+        #             all_attendances += attendance_ids
+        #             atten[employee.id] = {}
+        #             for att in attendance_ids:
+        #                 if att.date in atten[employee.id]:
+        #                     atten[employee.id][att.date].append(att)
+        #                 else:
+        #                     atten[employee.id][att.date] = []
+        #                     atten[employee.id][att.date].append(att)
+        #
+        #     if atten:
+        #         for emp in atten:
+        #             if emp:
+        #                 employee_dic = atten[emp]
+        #                 sorted_employee_dic = sorted(employee_dic.items(), key=operator.itemgetter(0))
+        #                 last_action = False
+        #                 for attendance_day in sorted_employee_dic:
+        #                     day_dict = attendance_day[1]
+        #                     for line in day_dict:
+        #                         if line.attendance_status != 'sign_none':
+        #                             if line.attendance_status == 'sign_in':
+        #                                 check_in = line.name
+        #                                 vals = {
+        #                                         'employee_id': line.employee_id.id,
+        #                                         'name': line.name,
+        #                                         'day': line.date,
+        #                                         'check_in':check_in,
+        #                                         }
+        #                                 hr_attendance = hr_attendance.search([('name','=', str(line.name)), ('employee_id','=',line.employee_id.id)])
+        #                                 if not hr_attendance:
+        #                                     if last_action != line.attendance_status:
+        #                                         created_rec = hr_attendance.create(vals)
+        #                                         _logger.info('Create Attendance '+ str(created_rec) +' for '+ str(line.employee_id.name)+' on ' + str(line.name))
+        #
+        #                             elif line.attendance_status == 'sign_out':
+        #                                 check_out = line.name
+        #                                 hr_attendance_ids = hr_attendance.search([('employee_id','=',line.employee_id.id), ('day','=',line.date)])
+        #                                 if hr_attendance_ids:
+        #                                     for attend_id in hr_attendance_ids:
+        #                                         if attend_id.day == line.date and attend_id.check_in and not attend_id.check_out:
+        #                                             attend_id.write({'check_out':check_out})
+        #                                             _logger.info('Updated '+str(attend_id.day)+ "'s Attendance, "+str(line.employee_id.name)+ ' Checked Out at: '+ str(check_out))
+        #                             else:
+        #                                 raise except_orm(_('Warning !'), _('Error ! Sign in (resp. Sign out) must follow Sign out (resp. Sign in) at '+str(line.name)+' for '+str(line.employee_id.name)))
+        #                             last_action = line.attendance_status
+
+        # move_attendance_wizard()
+
+        # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
