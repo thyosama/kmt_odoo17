@@ -7,7 +7,9 @@
             <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='wage']/../.." position="after">
+
                     <group>
+                        <field name="company_id" invisble="1"/>
                         <field name="x_variable_salary"/>
                         <field name="worked_dys"/>
                         <field name="hour_value"/>

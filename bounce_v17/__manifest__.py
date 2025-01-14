@@ -8,7 +8,7 @@
     'website': "http://www.almoasherbiz.com",
     'category': 'HR',
     'version': '17.0',
-    'depends': ['base', 'hr','hr_payroll'],
+    'depends': ['base', 'hr', 'hr_payroll'],
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
