@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+    <template id="report_saleorder_document_custom_2" inherit_id="custom_pdf_quote.report_saleorder_document_custom">
+        <xpath expr="//t[@t-set='address']" position="replace">
+            <style>
+                .o_report_layout_boxed table tr{
+                border: 1px solid #111827;
+                }
+            </style>
+            <div>
+                <strong>Contact Email#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_email">test@kmt4is.com</span>
+                <br/>
+                <strong>Attention To#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_attention_to"></span>
+                <br/>
+                <strong>Offer Subject#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_offer_subject_1"></span>
+            </div>
+            <div style="float:right;margin-right:200px;">
+                <strong>Currency#</strong>
+                <span style="margin-left:5px;" t-esc="doc.pricelist_id.currency_id.name">EGP</span>
+            </div>
+            <t t-set="address">
+                <span style="float:left;font-weight:bold;">Client:</span>
+                <div style="margin-left:50px;" t-field="doc.partner_id"
+                     t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                <p style="margin-left:50px;" t-if="doc.partner_id.vat">
+                    <t t-if="doc.company_id.account_fiscal_country_id.vat_label"
+                       t-out="doc.company_id.account_fiscal_country_id.vat_label"/>
+                    <t t-else="">Tax ID</t>:
+                    <span t-field="doc.partner_id.vat"/>
+                </p>
+            </t>
+        </xpath>
+        <xpath expr="//div[@name='informations_date']" position="replace">
+            <div t-if="doc.date_order" class="col-auto col-3 mw-100 mb-2" name="informations_date">
+                <strong>Offer Date:</strong>
+                <br/>
+                <span class="m-0" t-esc="doc.x_studio_offer_date"></span>
+            </div>
+            <div name="sales_person" class="col-auto col-3 mw-100 mb-2">
+                <strong>Sales person:</strong>
+                <br/>
+                <span class="m-0" t-esc="doc.x_studio_sales_person.x_name"></span>
+            </div>
+            <div name="bidder_eng" class="col-auto col-3 mw-100 mb-2">
+                <strong>Bidder Engineer:</strong>
+                <br/>
+                <span class="m-0" t-esc="doc.x_studio_bidder_engineer.x_name"></span>
+            </div>
+        </xpath>
+        <xpath expr="//div[@name='expiration_date']" position="replace">
+        </xpath>
+        <xpath expr="//div[@t-if='doc.user_id.name']" position="replace">
+        </xpath>
+        <xpath expr="//th[@name='th_description']" position="before">
+            <th name="th_item" class="text-end">Item</th>
+            <th name="th_product" class="text-start">Product</th>
+        </xpath>
+<!--        <xpath expr="//th[@name='th_description']" position="after">-->
+<!--            <th name="th_stock">Stock Or Not</th>-->
+<!--        </xpath>-->
+        <xpath expr="//t[@t-foreach='lines_to_report']" position="before">
+            <t t-set="count" t-value="0"/>
+        </xpath>
+        <xpath expr="//t[@t-foreach='lines_to_report']/tr" position="attributes">
+            <attribute name="style">border-bottom:1px solid black;</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_name']" position="before">
+            <t t-set="count" t-value="count + 1"/>
+            <td name="td_index" class="text-end">
+                <span t-esc="count">1</span>
+            </td>
+            <td name="td_product">
+                <span t-esc="line.product_id.name">Bacon Burger</span>
+            </td>
+        </xpath>
+<!--        <xpath expr="//td[@name='td_name']" position="after">-->
+<!--            <td name="td_stock" class="text-end">-->
+<!--                <span t-esc="line.x_studio_stock_or_not"></span>-->
+<!--            </td>-->
+<!--        </xpath>-->
+    </template>
+
+
+
+    </data>
+</odoo>
