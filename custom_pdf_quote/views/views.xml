@@ -1,60 +1,53 @@
 <odoo>
   <data>
-    <!-- explicit list view definition -->
-<!--
-    <record model="ir.ui.view" id="custom_pdf_quote.list">
-      <field name="name">custom_pdf_quote list</field>
-      <field name="model">custom_pdf_quote.custom_pdf_quote</field>
-      <field name="arch" type="xml">
-        <tree>
-          <field name="name"/>
-          <field name="value"/>
-          <field name="value2"/>
-        </tree>
-      </field>
-    </record>
--->
 
-    <!-- actions opening views on models -->
-<!--
-    <record model="ir.actions.act_window" id="custom_pdf_quote.action_window">
-      <field name="name">custom_pdf_quote window</field>
-      <field name="res_model">custom_pdf_quote.custom_pdf_quote</field>
-      <field name="view_mode">tree,form</field>
-    </record>
--->
+      <record id="report_header_footer" model="ir.actions.act_window">
+            <field name="name">Report Header Footer</field>
+            <field name="res_model">report.header.footer</field>
+            <field name="view_mode">tree,form</field>
+           <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
 
-    <!-- server action to the one above -->
-<!--
-    <record model="ir.actions.server" id="custom_pdf_quote.action_server">
-      <field name="name">custom_pdf_quote server</field>
-      <field name="model_id" ref="model_custom_pdf_quote_custom_pdf_quote"/>
-      <field name="state">code</field>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "tree,form",
-          "res_model": model._name,
-        }
-      </field>
-    </record>
--->
 
-    <!-- Top menu item -->
-<!--
-    <menuitem name="custom_pdf_quote" id="custom_pdf_quote.menu_root"/>
--->
-    <!-- menu categories -->
-<!--
-    <menuitem name="Menu 1" id="custom_pdf_quote.menu_1" parent="custom_pdf_quote.menu_root"/>
-    <menuitem name="Menu 2" id="custom_pdf_quote.menu_2" parent="custom_pdf_quote.menu_root"/>
--->
-    <!-- actions -->
-<!--
-    <menuitem name="List" id="custom_pdf_quote.menu_1_list" parent="custom_pdf_quote.menu_1"
-              action="custom_pdf_quote.action_window"/>
-    <menuitem name="Server to list" id="custom_pdf_quote" parent="custom_pdf_quote.menu_2"
-              action="custom_pdf_quote.action_server"/>
--->
+        <record id="view_sale_order_form" model="ir.ui.view">
+          <field name="name">sale.order.form.view.inherit.header.footer</field>
+          <field name="model">sale.order</field>
+          <field name="inherit_id" ref="sale.view_order_form"/>
+          <field name="arch" type="xml">
+              <xpath expr="//field[@name='partner_id']" position="before">
+                  <field name="header_footer_template_id"/>
+              </xpath>
+          </field>
+        </record>
+
+         <record id="view_report_header_footer_form" model="ir.ui.view">
+            <field name="name">report.header.footer.form</field>
+            <field name="model">report.header.footer</field>
+            <field name="arch" type="xml">
+                <form>
+                   <header>
+                       <field name="logo_custom"/>
+                   </header>
+
+
+                   <group>
+                       <field name="name"/>
+                       <field name="company_id"/>
+                        <field name="report_header_custom"/>
+                        <field name="report_footer_custom"/>
+                        <field name="company_details_custom"/>
+                   </group>
+
+
+                </form>
+            </field>
+        </record>
+
+
+
+        <menuitem id="menu_report_header_footer" name="Report Header Footer" parent="sale.sale_menu_root"
+                  sequence="100"
+                  action="report_header_footer"/>
   </data>
 </odoo>
