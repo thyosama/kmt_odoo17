@@ -69,7 +69,7 @@
                     <img t-if="doc.header_footer_template_id.logo_custom" t-att-src="image_data_uri(doc.header_footer_template_id.logo_custom)" alt="Logo"/>
                 </div>
                 <div class="col-6 text-end mb4">
-                    <div class="mt0 h4" t-if="doc.header_footer_template_id.report_header_custom" t-field="doc.header_footer_template_id.report_header_custom">Company tagline</div>
+                    <div class="mt0 h6" t-if="doc.header_footer_template_id.report_header_custom" t-field="doc.header_footer_template_id.report_header_custom">Company tagline</div>
 <!--                    <div name="company_address" class="float-end mb4">-->
 <!--                        <ul class="list-unstyled" name="company_address_list">-->
 <!--                            <li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: true}">-->
