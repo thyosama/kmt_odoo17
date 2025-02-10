@@ -10,11 +10,14 @@
                 }
             </style>
             <div>
-                <strong>Contact Email#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_email">test@kmt4is.com</span>
+                <strong>Contact Email#</strong>
+                <span style="margin-left:5px;" t-esc="doc.x_studio_email">test@kmt4is.com</span>
                 <br/>
-                <strong>Attention To#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_attention_to"></span>
+                <strong>Attention To#</strong>
+                <span style="margin-left:5px;" t-esc="doc.x_studio_attention_to"></span>
                 <br/>
-                <strong>Offer Subject#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_offer_subject_1"></span>
+                <strong>Offer Subject#</strong>
+                <span style="margin-left:5px;" t-esc="doc.x_studio_offer_subject_1"></span>
             </div>
             <div style="float:right;margin-right:200px;">
                 <strong>Currency#</strong>
@@ -51,15 +54,33 @@
         </xpath>
         <xpath expr="//div[@name='expiration_date']" position="replace">
         </xpath>
+        <xpath expr="//th[@name='th_priceunit']" position="replace">
+        </xpath>
+        <xpath expr="//th[@name='th_quantity']" position="before">
+            <th name="th_priceunit" style="width:11%;" class="text-center">Unit Price</th>
+        </xpath>
+        <xpath expr="//th[@name='th_taxes']" position="replace">
+        </xpath>
+        <xpath expr="//td[@name='td_taxes']" position="replace">
+        </xpath>
+        <xpath expr="//td[@name='td_priceunit']" position="replace">
+        </xpath>
+        <xpath expr="//td[@name='td_quantity']" position="before">
+            <td name="td_priceunit" class="text-end">
+                <span t-field="line.price_unit">3</span>
+            </td>
+        </xpath>
         <xpath expr="//div[@t-if='doc.user_id.name']" position="replace">
         </xpath>
         <xpath expr="//th[@name='th_description']" position="before">
             <th name="th_item" class="text-end">Item</th>
             <th name="th_product" class="text-start">Product</th>
         </xpath>
-        <xpath expr="//th[@name='th_description']" position="after">
-            <th name="th_stock">Stock Or Not</th>
-        </xpath>
+        <!--
+                <xpath expr="//th[@name='th_description']" position="after">
+                    <th name="th_stock">Stock Or Not</th>
+                </xpath>
+        -->
         <xpath expr="//t[@t-foreach='lines_to_report']" position="before">
             <t t-set="count" t-value="0"/>
         </xpath>
@@ -75,10 +96,12 @@
                 <span t-esc="line.product_id.name">Bacon Burger</span>
             </td>
         </xpath>
-        <xpath expr="//td[@name='td_name']" position="after">
-            <td name="td_stock" class="text-end">
-                <span t-esc="line.x_studio_stock_or_not"></span>
-            </td>
-        </xpath>
+        <!--
+                <xpath expr="//td[@name='td_name']" position="after">
+                    <td name="td_stock" class="text-end">
+                        <span t-esc="line.x_studio_stock_or_not"></span>
+                    </td>
+                </xpath>
+        -->
     </template>
 </odoo>
