@@ -13,29 +13,29 @@
                 </div>
                 <div class="col-6 text-end mb4">
                     <div class="mt0 h4" t-if="company.report_header" t-field="company.report_header">Company tagline</div>
-                    <div name="company_address" class="float-end mb4">
-                        <ul class="list-unstyled" name="company_address_list">
-                            <li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: true}">
-                                <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
-                                    <strong>Company address block</strong>
-                                    <div>Contains the company address.</div>
-                                </div>
-                            </span></li>
-                            <li t-else="">
-                                <span t-field="company.company_details">
-                                    <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
-                                        <strong>Company details block</strong>
-                                        <div>Contains the company details.</div>
-                                    </div>
-                                </span>
-                            </li>
-                            <li t-if="not forced_vat"/>
-                            <li t-else="">
-                                <t t-esc="company.country_id.vat_label or 'Tax ID'">Tax ID</t>:
-                                <span t-esc="forced_vat">US12345671</span>
-                            </li>
-                        </ul>
-                    </div>
+<!--                    <div name="company_address" class="float-end mb4">-->
+<!--                        <ul class="list-unstyled" name="company_address_list">-->
+<!--                            <li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: true}">-->
+<!--                                <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">-->
+<!--                                    <strong>Company address block</strong>-->
+<!--                                    <div>Contains the company address.</div>-->
+<!--                                </div>-->
+<!--                            </span></li>-->
+<!--                            <li t-else="">-->
+<!--                                <span t-field="company.company_details">-->
+<!--                                    <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">-->
+<!--                                        <strong>Company details block</strong>-->
+<!--                                        <div>Contains the company details.</div>-->
+<!--                                    </div>-->
+<!--                                </span>-->
+<!--                            </li>-->
+<!--                            <li t-if="not forced_vat"/>-->
+<!--                            <li t-else="">-->
+<!--                                <t t-esc="company.country_id.vat_label or 'Tax ID'">Tax ID</t>:-->
+<!--                                <span t-esc="forced_vat">US12345671</span>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
                 </div>
             </div>
             </div>
@@ -70,29 +70,29 @@
                 </div>
                 <div class="col-6 text-end mb4">
                     <div class="mt0 h4" t-if="doc.header_footer_template_id.report_header_custom" t-field="doc.header_footer_template_id.report_header_custom">Company tagline</div>
-                    <div name="company_address" class="float-end mb4">
-                        <ul class="list-unstyled" name="company_address_list">
-                            <li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: true}">
-                                <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
-                                    <strong>Company address block</strong>
-                                    <div>Contains the company address.</div>
-                                </div>
-                            </span></li>
-                            <li t-else="">
-                                <span t-field="company.company_details">
-                                    <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
-                                        <strong>Company details block</strong>
-                                        <div>Contains the company details.</div>
-                                    </div>
-                                </span>
-                            </li>
-                            <li t-if="not forced_vat"/>
-                            <li t-else="">
-                                <t t-esc="company.country_id.vat_label or 'Tax ID'">Tax ID</t>:
-                                <span t-esc="forced_vat">US12345671</span>
-                            </li>
-                        </ul>
-                    </div>
+<!--                    <div name="company_address" class="float-end mb4">-->
+<!--                        <ul class="list-unstyled" name="company_address_list">-->
+<!--                            <li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: true}">-->
+<!--                                <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">-->
+<!--                                    <strong>Company address block</strong>-->
+<!--                                    <div>Contains the company address.</div>-->
+<!--                                </div>-->
+<!--                            </span></li>-->
+<!--                            <li t-else="">-->
+<!--                                <span t-field="company.company_details">-->
+<!--                                    <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">-->
+<!--                                        <strong>Company details block</strong>-->
+<!--                                        <div>Contains the company details.</div>-->
+<!--                                    </div>-->
+<!--                                </span>-->
+<!--                            </li>-->
+<!--                            <li t-if="not forced_vat"/>-->
+<!--                            <li t-else="">-->
+<!--                                <t t-esc="company.country_id.vat_label or 'Tax ID'">Tax ID</t>:-->
+<!--                                <span t-esc="forced_vat">US12345671</span>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
                 </div>
             </div>
             </div>

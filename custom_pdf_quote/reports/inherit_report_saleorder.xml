@@ -10,7 +10,11 @@
                 }
             </style>
             <div>
-                <strong>Contact Email#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_email">test@kmt4is.com</span>
+                <t t-if="doc.x_studio_email">
+                    <strong>Contact Email#</strong>
+                    <span style="margin-left:5px;" t-esc="doc.x_studio_email"/>
+                </t>
+<!--                <strong>Contact Email#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_email">test@kmt4is.com</span>-->
                 <br/>
                 <strong>Attention To#</strong><span style="margin-left:5px;" t-esc="doc.x_studio_attention_to"></span>
                 <br/>
