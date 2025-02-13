@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+
+        <record id="group_sale_order_readonly" model="res.groups">
+            <field name="name">Sale Order Readonly</field>
+        </record>
+        <record id="group_unit_price_readonly" model="res.groups">
+            <field name="name">Unit Price Readonly</field>
+        </record>
+    </data>
+</odoo>

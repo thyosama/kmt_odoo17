@@ -1,0 +1,18 @@
+<odoo>
+  <data>
+    <!-- Inherit Form View to Modify it -->
+    <record id="view_order_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+              <field name="unit_price_readonly" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="attributes">
+              <attribute name="readonly">qty_invoiced &gt; 0 or parent.unit_price_readonly</attribute>
+            </xpath>
+        </field>
+    </record>
+  </data>
+</odoo>
