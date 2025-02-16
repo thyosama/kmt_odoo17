@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Buttons -->
+    <t t-name="access_bank_reconcillation.BankRecRecordFormButtonsHeaderLeft"
+       t-inherit="account_accountant.BankRecRecordFormButtonsHeaderLeft" t-inherit-mode="extension">
+            <!-- Replace the 'Reset' button text -->
+        <xpath expr="//button[@accesskey='v']" position="replace">
+            <t t-set="isUserHasAccess" t-value="this.checkUserAccess()"/>
+            <t t-if="isUserHasAccess==true">
+                <button accesskey="v"
+                        class="btn btn-primary"
+                        t-if="data.state === 'valid' and areAllLinesValid "
+                        t-on-click="(ev) => this.actionValidate()">
+                    <span>Validate</span>
+                </button>
+            </t>
+        </xpath>
+        <!-- Replace the 'Reset' button text -->
+        <xpath expr="//div[hasclass('o_bank_rec_stats_buttons_aside_left')]" position="replace">
+            <div class="o_statusbar_buttons o_bank_rec_stats_buttons_aside_left py-1 ps-1">
+                <t t-set="areAllLinesValid" t-value="this.checkBankRecLinesInvalidFields(data)"/>
+                <t t-set="isUserHasAccess" t-value="this.checkUserAccess()"/>
+                <t t-if="isUserHasAccess==true">
+                    <button accesskey="v"
+                            class="btn btn-primary"
+                            t-if="data.state === 'valid' and areAllLinesValid"
+                            t-on-click="(ev) => this.actionValidate()">
+                        <span>Validate</span>
+                    </button>
+                    <button class="btn btn-secondary text-muted"
+                            t-if="data.state === 'invalid' or (data.state === 'valid' and !areAllLinesValid)">
+                        <span>Validate</span>
+                    </button>
+                </t>
+                <button accesskey="r"
+                        class="btn btn-secondary"
+                        t-if="data.state === 'reconciled'"
+                        t-on-click="(ev) => this.actionReset()">
+                <span>Reset</span>
+                </button>
+                <button accesskey="c"
+                        class="btn btn-secondary"
+                        t-if="!data.st_line_to_check and areAllLinesValid"
+                        t-on-click="(ev) => this.actionToCheck()">
+                    <span>To Check</span>
+                </button>
+                <button class="btn btn-secondary text-muted"
+                        t-if="!data.st_line_to_check and !areAllLinesValid">
+                    <span>To Check</span>
+                </button>
+                <t t-if="isUserHasAccess==true">
+                    <button accesskey="c"
+                            class="btn btn-secondary"
+                            t-if="data.st_line_to_check"
+                            t-on-click="(ev) => this.actionSetAsChecked()">
+                        <span>Set as Checked</span>
+                    </button>
+                </t>
+            </div>
+        </xpath>
+    </t>
+</templates>

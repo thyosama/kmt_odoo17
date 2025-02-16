@@ -1,0 +1,25 @@
+<odoo>
+
+    <record id="accounting_access_rights" model="ir.module.category">
+        <field name="name">Account Access</field>
+    </record>
+
+
+    <record id="journal_move_group" model="res.groups">
+        <field name="name">Journal Entries Group</field>
+        <field name="category_id" ref="access_right_account.accounting_access_rights"/>
+    </record>
+
+    <record id="invoice_move_group" model="res.groups">
+        <field name="name">Invoice Group</field>
+        <field name="category_id" ref="access_right_account.accounting_access_rights"/>
+    </record>
+
+    <record id="validate_account" model="res.groups">
+            <field name="name">Validate &amp; Set As Check Access</field>
+        <field name="category_id" ref="access_right_account.accounting_access_rights"/>
+    </record>
+
+
+
+</odoo>
