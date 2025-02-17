@@ -54,10 +54,6 @@
         </xpath>
         <xpath expr="//div[@name='expiration_date']" position="replace">
         </xpath>
-        <xpath expr="//th[@name='th_taxes']" position="replace">
-        </xpath>
-        <xpath expr="//td[@name='td_taxes']" position="replace">
-        </xpath>
         <xpath expr="//div[@t-if='doc.user_id.name']" position="replace">
         </xpath>
         <xpath expr="//th[@name='th_description']" position="before">
