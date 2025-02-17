@@ -11,7 +11,7 @@
             </style>
             <div>
                 <strong>Contact Email#</strong>
-                <span style="margin-left:5px;" t-esc="doc.x_studio_email">test@kmt4is.com</span>
+                <span style="margin-left:5px;" t-esc="doc.x_studio_email"/>
                 <br/>
                 <strong>Attention To#</strong>
                 <span style="margin-left:5px;" t-esc="doc.x_studio_attention_to"></span>
@@ -21,7 +21,7 @@
             </div>
             <div style="float:right;margin-right:200px;">
                 <strong>Currency#</strong>
-                <span style="margin-left:5px;" t-esc="doc.pricelist_id.currency_id.name">EGP</span>
+                <span style="margin-left:5px;" t-esc="doc.pricelist_id.currency_id.name"/>
             </div>
             <t t-set="address">
                 <span style="float:left;font-weight:bold;">Client:</span>
@@ -67,7 +67,7 @@
         </xpath>
         <xpath expr="//td[@name='td_quantity']" position="before">
             <td name="td_priceunit" class="text-end">
-                <span t-field="line.price_unit">3</span>
+                <span t-field="line.price_unit"/>
             </td>
         </xpath>
         <xpath expr="//div[@t-if='doc.user_id.name']" position="replace">
@@ -90,10 +90,10 @@
         <xpath expr="//td[@name='td_name']" position="before">
             <t t-set="count" t-value="count + 1"/>
             <td name="td_index" class="text-end">
-                <span t-esc="count">1</span>
+                <span t-esc="count"/>
             </td>
             <td name="td_product">
-                <span t-esc="line.product_id.name">Bacon Burger</span>
+                <span t-esc="line.product_id.name"/>
             </td>
         </xpath>
         <!--
