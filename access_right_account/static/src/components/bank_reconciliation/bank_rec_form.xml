@@ -32,13 +32,13 @@
                             t-if="data.state === 'invalid' or (data.state === 'valid' and !areAllLinesValid)">
                         <span>Validate</span>
                     </button>
+                    <button accesskey="r"
+                            class="btn btn-secondary"
+                            t-if="data.state === 'reconciled'"
+                            t-on-click="(ev) => this.actionReset()">
+                        <span>Reset</span>
+                    </button>
                 </t>
-                <button accesskey="r"
-                        class="btn btn-secondary"
-                        t-if="data.state === 'reconciled'"
-                        t-on-click="(ev) => this.actionReset()">
-                <span>Reset</span>
-                </button>
                 <button accesskey="c"
                         class="btn btn-secondary"
                         t-if="!data.st_line_to_check and areAllLinesValid"
