@@ -1,0 +1,193 @@
+<odoo>
+    <data>
+
+        <record id="account_feed_from_view" model="ir.ui.view">
+            <field name="name">view.account.payment.cheque.send</field>
+            <field name="model">account.payment</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="replace">
+                    <field name="delegate"/>
+                </xpath>
+                <xpath expr="//field[@name='payment_method_line_id']" position="attributes">
+                    <attribute name="required">False</attribute>
+                </xpath>
+                <xpath expr="//header" position="replace">
+                    <header>
+                        <field name="state" invisible="1"/>
+                        <!--                    <field name="available_partner_bank_ids" invisible="1"/>-->
+                        <field name="type_cheq" invisible="1"/>
+                        <field name="state_cheque" invisible="1"/>
+                        <field name="is_cash" invisible="1"/>
+                        <field name="ks_payment_cash_send" invisible="1"/>
+
+                        <button class="oe_stat_button" name="open_payment" string="Payments" type="object"
+                                icon="fa-university"
+                                invisible="state_cheque == 'draft'"/>
+
+                        <field name="state_cheque" widget="statusbar"
+                               statusbar_visible="draft,sent,reconciled,feed" force_save="1"/>
+                        <button name="post_cheque_send" class="oe_highlight" string="Confirm" type="object"
+                                invisible="state_cheque != 'draft'"/>
+
+                        <button name="collect_form_bank" class="oe_highlight"
+                                string="Collect" type="object"
+                                invisible="is_cash == True or state_cheque != 'sent'"/>
+
+                        <button name="cancel_send" class="oe_highlight" string="Cancel" type="object"
+                                invisible="state_cheque not in ['sent']"/>
+                        <button name="close_account_middle" class="oe_highlight" string="close" type="object"
+                                invisible="state_cheque != 'reconciled' or check_mid == False"/>
+
+                        <button name="mass_editing" class="oe_highlight" string="Set Draft"
+                                invisible="state_cheque not in ('sent')" type="object"/>
+                        <button name="payment_cach" class="oe_highlight" string="Pay Cash " type="object"
+                                invisible="ks_payment_cash_send == False or state_cheque not in ('sent') or is_cash == False"
+
+                        />
+                        <button name="create_payment_cash" class="oe_highlight" string="Create Payment " type="object"
+                                invisible="state_cheque not in ('sent') or is_cash == False"
+                        />
+                        <button name="return_send_cheque_cash" class="oe_highlight" string="Return To Vendor"
+                                type="object"
+                                invisible="state_cheque == 'return' or is_cash == False"
+                        />
+                        <button name="send_feed" class="oe_highlight" string="Feed" type="object"
+                                invisible="state_cheque != 'reconciled' or type_cheq not in ['account_feed']"/>
+
+
+                    </header>
+
+                </xpath>
+                <xpath expr="//field[@name='payment_type']" position="after">
+                    <field name="document_id" string="Cheque Ledger" invisible="state != 'draft'"/>
+                    <field name="cheque_id" string="cheque Number"
+                           invisible="state != 'draft'" required="1"/>
+                </xpath>
+                <xpath expr="//field[@name='cheque_no']" position="replace">
+                    <field name="move_id" invisible="1"/>
+                    <field name="cheque_no"
+                           readonly="state_cheque != 'draft'" invisible="1" required="1"/>
+                </xpath>
+                <xpath expr="//field[@name='date']" position="before">
+                    <field name="return_journal_id" invisible="1"/>
+                    <field name="effective_date"
+                           readonly="state_cheque != 'draft'" required="1"/>
+
+                </xpath>
+
+                <xpath expr="//field[@name='journal_id']" position="replace">
+                    <field name="journal_id" invisible="1"/>
+                    <field name="journal_cheque"
+                           readonly="state != 'draft'" required="1"
+                           domain="[('cheque_send','=',True)]"/>
+                    <field name="account_transfer_id"
+                           readonly="state != 'draft'" required="type_cheq == 'account_feed'"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="string">ddd</attribute>
+                    <attribute name="required">False</attribute>
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="string">www</attribute>
+                    <attribute name="required">False</attribute>
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_id']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <!--            <xpath expr="//field[@name='destination_account_id']" position="attributes">-->
+                <!--                <attribute name="invisible">True</attribute>-->
+                <!--            </xpath>-->
+                <xpath expr="//field[@name='is_internal_transfer']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='payment_type']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='currency_id']" position="replace">
+                    <field name="currency_id" options="{'no_create': True, 'no_open': True}" invisible="1" required="1"
+                           readonly="state != 'draft'"/>
+                </xpath>
+                <xpath expr="//field[@name='journal_id']" position="after">
+                    <field name="cheque_bank"
+                           readonly="state_cheque != 'draft'" required="1"/>
+                    <field name="bank_account"
+                           readonly="state_cheque != 'draft'" required="1"/>
+                    <field name="check_mid"
+                           invisible="middle_account_company_id == False"/>
+                    <field name="account_med_send"
+                           readonly="1" invisible="check_mid == False" required="check_mid == True"/>
+                </xpath>
+
+                <xpath expr="//field[@name='payment_method_line_id']" position="attributes">
+                    <attribute name="invisible">
+                        type_cheq == 'send_che'
+                    </attribute>
+                    <attribute name="readonly">
+                        state != 'draft'
+                    </attribute>
+                </xpath>
+
+
+                <xpath expr="//field[@name='ref']" position="replace">
+                    <field name="cheque_ref" readonly="state != 'draft'"/>
+                </xpath>
+
+
+            </field>
+        </record>
+        <record id="account_feed_tree_view" model="ir.ui.view">
+            <field name="name">view_account_payment_cheque_tree</field>
+            <field name="model">account.payment</field>
+            <field name="arch" type="xml">
+                <tree decoration-info="state_cheque == 'draft'"
+                      decoration-muted="state_cheque in ['reconciled', 'cancelled']">
+                    <field name="name" optional="show"/>
+                    <field name="cheque_bank" optional="show"/>
+                    <field name="cheque_no" optional="show"/>
+                    <field name="journal_last" optional="show"/>
+                    <field name="partner_id" string="Customer" optional="show"/>
+                    <field name="amount" sum="Amount" optional="show"/>
+                    <field name="state_cheque" optional="show"/>
+                    <field name="state" invisible="1" optional="show"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="partner_type" invisible="1"/>
+                    <field name="effective_date" optional="show"/>
+                    <field name="account_med" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_account_feed_view" model="ir.actions.act_window">
+            <field name="name">Account Feed</field>
+            <field name="res_model">account.payment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type_cheq', '=', 'account_feed')]</field>
+            <field name="context">{
+                'default_payment_type': 'outbound',
+                'default_type_cheq': 'account_feed',
+                'default_is_cheque': True,
+                'default_partner_type': 'supplier',
+                'default_move_journal_types': ('bank', 'cash')
+                }
+            </field>
+            <field name="search_view_id" ref="check_management.view_account_payment_cheque_search_send"/>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('account_feed_tree_view')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('account_feed_from_view')}),
+                ]"/>
+        </record>
+
+
+        <menuitem id="account_feed_menu" name="Account Feed" action="action_account_feed_view"
+                  parent="account_payment_cheque"/>
+    </data>
+</odoo>

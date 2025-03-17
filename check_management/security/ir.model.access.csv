@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cheque_doc,access.cheque.doc,model_cheque_document,,1,1,1,0
+access_account_cheque,access.account.cheque,model_account_cheque,,1,1,1,1
+access_account_cheque_wizard,access_account_cheque_wizard,model_account_payment_wizard,,1,1,1,1
+access_ir_model_data,access_ir_model_data,base.model_ir_model_data,,1,1,0,0

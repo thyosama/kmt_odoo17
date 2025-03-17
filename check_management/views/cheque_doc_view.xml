@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <record id="cheque_doc_form_view" model="ir.ui.view">
+        <field name="name">cheque.doc.form.view</field>
+        <field name="model">cheque.document</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="generate_cheques" type="object"
+                            string="Generate Cheques"
+                            class="oe_highlight"
+                            invisible="is_created == True"/>
+                </header>
+                <sheet>
+                     <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="toggle_active" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="bank_name"/>
+
+                            <field name="journal_id"/>
+                            <field name="is_created" invisible="1"/>
+                            <field name="num_first_cheque"/>
+                            <field name="num_cheque"/>
+                            <field name="gap"/>
+                            <field name="cheques_ids" widget="many2many_tags" readonly="1"/>
+                            <field name="name"/>
+
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cheque_doc_tree_view" model="ir.ui.view">
+        <field name="name">cheque.doc.tree.view</field>
+        <field name="model">cheque.document</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="name"/>
+                <field name="bank_name"/>
+                <field name="journal_id"/>
+            </tree>
+        </field>
+    </record>
+    <record id="cheque_doc_view_action" model="ir.actions.act_window">
+        <field name="name">دفتر شيكات</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cheque.document</field>
+        <field name="view_mode">tree,form</field>
+
+    </record>
+
+    <menuitem id="menu_cheque_doc" name="دفتر الشيكات" parent="account_payment_cheque"
+              action="cheque_doc_view_action"/>
+ </data>
+</odoo>

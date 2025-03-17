@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="seq_treasurey_serial" model="ir.sequence">
+        <field name="name">Treasury Feed Sequence</field>
+       <field name="code">cheque.feed.serial</field>
+       <field name="prefix">TF</field>
+       <field name="padding">6</field>
+    </record>
+</odoo>
