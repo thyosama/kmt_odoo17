@@ -62,5 +62,5 @@ class Base(models.AbstractModel):
                     #     for action in actions:
                     #         print('action',action.name)
                     #         action.binding_model_id = False
-        res['arch'] = etree.tostring(arch)
+        res['arch'] = etree.tostring(arch, encoding='utf-8').decode('utf-8')
         return res
