@@ -334,6 +334,9 @@
                     <field name="date_vendor"
                            invisible="is_transfer == True or type_cheq != 'recieve_chq' or state_cheque2 != 'payment_vendor'" required="type_cheq == 'recieve_chq' and state_cheque2 == 'payment_vendor'"/>
                     <field name="is_multi" invisible="1"/>
+                    <field name="new_memo"
+                           invisible="is_transfer == True or type_cheq not in ['recieve_chq', 'send_che']"/>
+
 
                 </group>
                 <footer>

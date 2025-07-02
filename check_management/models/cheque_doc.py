@@ -99,9 +99,17 @@ class ChequesDocs(models.Model):
         if not self.num_first_cheque:
             raise ValidationError('Please Enter Number of First Cheque')
         if self.num_cheque and self.num_first_cheque:
-            cheques_lst = []
-            for x in range(int(self.num_first_cheque), (int(self.num_first_cheque) + self.num_cheque )):
+            first_cheque = self.num_first_cheque
+            padding_length = len(first_cheque)
+            start_number = int(first_cheque)
+            end_number = start_number + self.num_cheque
 
-                cheques_lst.append({'name': x})
-                self.cheques_ids = [(0,0,{'name': x})]
+            # Generate cheque numbers with proper padding
+            cheque_vals = []
+            for number in range(start_number, end_number):
+                cheque_name = str(number).zfill(padding_length)
+                cheque_vals.append((0, 0, {'name': cheque_name}))
+
+            # Update cheques_ids
+            self.cheques_ids = cheque_vals
             self.is_created = True

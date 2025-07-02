@@ -47,6 +47,7 @@ class AccountPayment(models.Model):
 
     journal_return = fields.Many2one('account.journal', string="Return Journal", copy=False,
                                      domain=[('cheque_return', '=', True)])
+    new_memo = fields.Char("New Memo")
     journal_close = fields.Many2one('account.journal', string="Close Journal", copy=False,
                                     domain=[('cheque_close', '=', True)])
     journal_cancel = fields.Many2one('account.journal', string="Cancel Journal", copy=False,
@@ -118,8 +119,32 @@ class AccountPayment(models.Model):
                                             string="Return Cheque if pay cash")
     is_return_to_customer = fields.Boolean(default=False, copy=False)
     cheque_ref = fields.Char("Memo")
+    allowed_cheque_ids = fields.Many2many(
+        'account.cheque',
+        compute='_compute_allowed_cheque_ids',
+        store=False
+    )
 
+    @api.depends('document_id.cheques_ids', 'document_id')
+    def _compute_allowed_cheque_ids(self):
+        same_document_records = self.search([
+            ('document_id', '=', self.document_id.id),
+            ('id', '!=', self._origin.id),
+            ('state', 'not in', ['draft'])
+        ])
+        for record in self:
+            if record.document_id:
 
+                used_cheque_ids = same_document_records.mapped('cheque_id').ids
+
+                # Filter out used cheques from available ones
+                available_cheques = record.document_id.cheques_ids.filtered(
+                    lambda x: x.id not in used_cheque_ids
+                )
+
+                record.allowed_cheque_ids = available_cheques
+            else:
+                record.allowed_cheque_ids = False
 
     # @api.onchange('journal_cheque')
     # def get_currancy_id(self):
@@ -1057,7 +1082,7 @@ class AccountPayment(models.Model):
         second_journal_line = {
             'account_id': debit_account.id,
             'partner_id': self.partner_id.id,
-            'name': self.cheque_ref,
+            'name': self.cheque_ref if not self.new_memo else self.new_memo,
             'ref': self.cheque_no,
             'date_maturity': self.effective_date,
             'debit': self.amount,
@@ -1068,7 +1093,7 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': journal.default_account_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.cheque_ref,
+            'name': self.cheque_ref if not self.new_memo else self.new_memo,
             'ref': self.cheque_no,
             'date_maturity': self.effective_date,
             'debit': 0,
@@ -1137,7 +1162,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': credit_account.id,
                 'partner_id': self.vendor_id.id,
-                'name': self.cheque_ref,
+                'name': self.cheque_ref if not self.new_memo else self.new_memo,
                 'ref': self.cheque_no,
                 'date_maturity': self.effective_date,
                 'debit': 0,
@@ -1148,7 +1173,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': credit_account.id,
                 'partner_id': self.partner_id.id,
-                'name': self.cheque_ref,
+                'name': self.cheque_ref if not self.new_memo else self.new_memo,
                 'ref': self.cheque_no,
                 'date_maturity': self.effective_date,
                 'debit': 0,
@@ -1159,7 +1184,7 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': journal.default_account_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.cheque_ref,
+            'name': self.cheque_ref if not self.new_memo else self.new_memo,
             'ref': self.cheque_no,
             'date_maturity': self.effective_date,
             'debit': self.amount,
@@ -1537,7 +1562,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': self.account_med.id,
                 'partner_id': self.partner_id.id,
-                'name': self.cheque_ref,
+                'name': self.cheque_ref if not self.new_memo else self.new_memo,
                 'ref': self.cheque_no,
                 'date_maturity': self.effective_date,
                 'debit': self.amount,
@@ -1550,7 +1575,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': self.partner_id.property_account_receivable_id.id,
                 'partner_id': self.partner_id.id,
-                'name': self.cheque_ref,
+                'name': self.cheque_ref if not self.new_memo else self.new_memo,
                 'ref': self.cheque_no,
                 'date_maturity': self.effective_date,
                 'debit': self.amount,
@@ -1568,7 +1593,7 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': account_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.cheque_ref,
+            'name': self.cheque_ref if not self.new_memo else self.new_memo,
             'ref': self.cheque_no,
             'debit': 0,
             'date_maturity': self.effective_date,
@@ -1608,7 +1633,7 @@ class AccountPayment(models.Model):
             second_journal_line = {
                 'account_id': self.account_med_send.id,
                 'partner_id': self.partner_id.id,
-                'name': self.cheque_ref,
+                'name': self.cheque_ref if not self.new_memo else self.new_memo,
                 'ref': self.cheque_no,
                 'date_maturity': self.effective_date,
                 'debit': 0,
@@ -1622,7 +1647,7 @@ class AccountPayment(models.Model):
                 second_journal_line = {
                     'account_id': self.cash_journal_id.treasury_feed_account_id.id,
                     'partner_id': self.partner_id.id,
-                    'name': self.cheque_ref,
+                    'name': self.cheque_ref if not self.new_memo else self.new_memo,
                     'ref': self.cheque_no,
                     'date_maturity': self.effective_date,
                     'debit': 0,
@@ -1634,7 +1659,7 @@ class AccountPayment(models.Model):
                 second_journal_line = {
                     'account_id': self.journal_cheque.account_feed_account_id.id,
                     'partner_id': self.partner_id.id,
-                    'name': self.cheque_ref,
+                    'name': self.cheque_ref if not self.new_memo else self.new_memo,
                     'ref': self.cheque_no,
                     'date_maturity': self.effective_date,
                     'debit': 0,
@@ -1646,7 +1671,7 @@ class AccountPayment(models.Model):
                 second_journal_line = {
                     'account_id': self.partner_id.property_account_payable_id.id,
                     'partner_id': self.partner_id.id,
-                    'name': self.cheque_ref,
+                    'name': self.cheque_ref if not self.new_memo else self.new_memo,
                     'ref': self.cheque_no,
                     'date_maturity': self.effective_date,
                     'debit': 0,
@@ -1657,7 +1682,7 @@ class AccountPayment(models.Model):
         first_journal_line = {
             'account_id': self.journal_id.default_account_id.id,
             'partner_id': self.partner_id.id,
-            'name': self.cheque_ref,
+            'name': self.cheque_ref if not self.new_memo else self.new_memo,
             'ref': self.cheque_no,
             'date_maturity': self.effective_date,
             'debit': self.amount,

@@ -62,8 +62,10 @@
             <xpath expr="//field[@name='payment_type']" position="after">
                 <field name="document_id" string="Cheque Ledger"
                        readonly="state != 'draft'"/>
+                <field name="allowed_cheque_ids" invisible="1"/>
                 <field name="cheque_id" string="cheque Number"
                        readonly="state != 'draft'" required="1"
+                       domain="[('id', 'in', allowed_cheque_ids)]"
                        />
             </xpath>
             <xpath expr="//field[@name='cheque_no']" position="replace">
@@ -102,7 +104,7 @@
                 <field name="cheque_bank"
                        readonly="state_cheque != 'draft'" required="1"/>
                 <field name="bank_account"
-                       readonly="state_cheque != 'draft'" required="1"/>
+                       readonly="state_cheque != 'draft'" invisible="1"/>
                 <field name="check_mid"
                        invisible="middle_account_company_id == False"/>
                 <field name="account_med_send"
@@ -111,8 +113,8 @@
             <xpath expr="//field[@name='journal_id']" position="replace">
 <!--                <field name="journal_id" domain="[('cheque_send','=',True)]" invisible="0"/>-->
                 <field name="journal_id" invisible="1"/>
-                <field name="payment_method_line_id" invisible="1"/>
-                <field name="payment_method_line_id" invisible="1"/>
+<!--                <field name="payment_method_line_id" invisible="1"/>-->
+<!--                <field name="payment_method_line_id" invisible="1"/>-->
                 <field name="journal_cheque"
                        readonly="state != 'draft'" required="1"
                       domain="[('cheque_send','=',True)]" />
@@ -122,12 +124,10 @@
 
 
             <xpath expr="//field[@name='payment_method_line_id']" position="attributes">
-                <attribute name="invisible">
-                    type_cheq == 'send_che'
-                </attribute>
-                <attribute name="readonly">
-                    state != 'draft'
-                </attribute>
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_bank_id'][2]" position="attributes">
+                <attribute name="invisible">True</attribute>
             </xpath>
              <xpath expr="//field[@name='ref']" position="replace">
                     <field name="cheque_ref"
