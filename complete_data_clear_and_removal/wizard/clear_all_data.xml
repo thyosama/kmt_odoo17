@@ -66,7 +66,7 @@
 
     <record id="action_server_clear_data" model="ir.actions.server">
         <field name="name">Clear Data</field>
-        <field name="model_id" ref="model_clear_data_wizard"/>
+        <field name="model_name">clear.data.wizard</field>
         <field name="state">code</field>
         <field name="code">action = model.open_wizard_action()</field>
     </record>

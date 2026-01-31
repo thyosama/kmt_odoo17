@@ -1,0 +1,14 @@
+--- a/complete_data_clear_and_removal/__manifest__.py
++++ b/complete_data_clear_and_removal/__manifest__.py
+@@ -12,9 +12,9 @@
+     "description": "This app is designed to simplify large-scale data management, offering tools to clear and delete, data in bulk.",
+     "depends": ["base"],
+     "data": [
+-        "security/ir.model.access.csv",
+-        "views/qcent_mass_clear_and_delete_data_menu.xml",
+         "wizard/clear_all_data.xml",
++        "views/qcent_mass_clear_and_delete_data_menu.xml",
++        "security/ir.model.access.csv",
+     ],
+     "images": [
+         "static/description/banner.png",
