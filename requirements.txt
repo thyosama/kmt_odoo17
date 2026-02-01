@@ -1,0 +1,11 @@
+# Python dependencies for KMT Odoo 17 custom modules
+
+# Required by base_view_inheritance_extension
+astor
+
+# Required by report_xlsx and salary_report_xlsx
+xlsxwriter
+xlrd
+
+# Required by ent_ohrms_overtime
+pandas
