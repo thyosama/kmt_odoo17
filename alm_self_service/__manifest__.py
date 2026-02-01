@@ -8,6 +8,8 @@
     "depends": [
         "portal",
         "self_service_module",
+        "project",
+        "analytic",
     ],
     "data": [
         "security/ir.model.access.csv",
